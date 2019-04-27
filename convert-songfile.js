@@ -33,28 +33,44 @@ const typeMapping = {
   'F': 'FREESTYLE',
   '-': 'LINE_BREAK',
 };
-const songDataMapper = (row) =>
-{
-  const { type, bpm_start, bpm_length, pitch, text } = row.match(songRegExp).groups;
-
-  return {
-    type: typeMapping[type],
-    bpm_start: parseInt(bpm_start, 10),
-    bpm_length: bpm_length && parseInt(bpm_length, 10),
-    pitch: pitch && parseInt(pitch, 10), // TODO map pitch to note
-    text,
-  };
-};
 
 readFile('/home/benni/Downloads/Telegram Desktop/Ohrbooten - An Alle Ladies.txt', (err, content) =>
 {
   const contentStr = content.toString();
   const meta = contentStr.match(metaRowRegExp).reduce(metaDataReducer, {});
-  const song = contentStr.match(songRowRegExp).map(songDataMapper);
+  const song = [];
+  let lastLine;
+
+  if (/yes/i.test(meta.relative))
+  {
+    throw new Error('Parsing relative song files is not yet implemented!');
+  }
+
+  contentStr.match(songRowRegExp).forEach((row) =>
+  {
+    const { type, bpm_start, bpm_length, pitch, text } = row.match(songRegExp).groups;
+    const start = meta.gap + (parseInt(bpm_start, 10) * meta.bpm);
+
+    if (!lastLine || type === '-')
+    {
+      if (lastLine) lastLine.end = start;
+      lastLine = { start, end: null, syllables: [] };
+      song.push(lastLine);
+      if (type === '-') return;
+    }
+
+    lastLine.syllables.push({
+      type: typeMapping[type],
+      start: meta.gap + (parseInt(bpm_start, 10) * meta.bpm),
+      length: bpm_length && parseInt(bpm_length, 10) * meta.bpm,
+      pitch: pitch && parseInt(pitch, 10), // TODO map pitch to note
+      text,
+    });
+  });
 
   console.log(meta);
 
-  writeFile('/home/benni/Git/warble/public/songfiles/ohrbooten.json', JSON.stringify({ ...meta, song }, null, 2), (err) =>
+  writeFile('/home/benni/Git/cantalo/public/api/songs/LqDe5QeUjHY.json', JSON.stringify(song, null, 2), (err) =>
   {
     console.log('Saved');
   });

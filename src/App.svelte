@@ -2,29 +2,34 @@
 
 <script>
   import { onMount } from 'svelte';
-  import YouTube from './components/YouTube.svelte';
+  import Microphone from './services/Microphone.js';
 
-  let player;
-  let playing = true;
+  import YouTube from './components/YouTube.svelte';
+  import Lyrics from './components/Lyrics.svelte';
+
+  export let songId;
+
+  let player, time, playing = true;
+  let song;
   let windowHeight, windowWidth;
   let canvasElm, canvasCtx;
-  let text = '';
-  let song;
-  let prev_bpm, bpm, time;
+  let micLeft = {}, micRight = {};
 
-  onMount(() =>
+  onMount(async () =>
   {
-    canvasCtx = canvasElm.getContext('2d');
+    // canvasCtx = canvasElm.getContext('2d');
+    const permission = await Microphone.requestPermission();
+    console.log('Microphone permission:', permission);
+
+    const response = await fetch(`api/songs/${songId}.json`);
+    song = await response.json();
   });
 
   async function playerReady(event)
   {
     player = event.detail;
 
-    const response = await fetch('songfiles/ohrbooten.json');
-    song = await response.json();
-
-    //player.setPlaybackRate(0.1);
+    // player.setPlaybackRate(0.1);
     player.loadVideoById('LqDe5QeUjHY', 30);
   }
 
@@ -32,33 +37,14 @@
   {
     if (event.detail == YT.PlayerState.PLAYING)
     {
-      setInterval(updateCanvas, 10); // TODO add clearInterval onDestroy
+      // WARNING/FIXME can cause double interval when toggling play/pause
+      setInterval(updatePlayTime, 50); // TODO add clearInterval onDestroy
     }
   }
 
-  function updateCanvas()
+  function updatePlayTime()
   {
-    time = (player.getCurrentTime() - (song.gap / 1000));
-    bpm = parseInt(time / 60 * (song.bpm * 4), 10); // WTF bpm * 4?
-
-    if (prev_bpm != bpm)
-    {
-      prev_bpm = bpm;
-
-      const row = song.song.find(item => item.bpm_start === bpm);
-
-      if (row)
-      {
-        if (row.text)
-        {
-          text += row.text;
-        }
-        if (row.type === 'LINE_BREAK')
-        {
-          text = '';
-        }
-      }
-    }
+    time = player.getCurrentTime() * 1000;
   }
 
   function togglePlayState()
@@ -73,6 +59,17 @@
     }
 
     playing = !playing;
+  }
+
+  async function startMic()
+  {
+    await Microphone.start();
+
+    Microphone.updates().subscribe(data =>
+    {
+      micLeft = data.left;
+      micRight = data.right;
+    });
   }
 </script>
 
@@ -90,33 +87,24 @@
     position: absolute;
     top: 0;
   }
-
-  h1
-  {
-    position: absolute;
-    bottom: 10%;
-    left: 0;
-    right: 0;
-    /*text-shadow: 0 0 3px #333;*/
-    color: #fff;
-    text-align: center;
-    background-color: rgba(0,0,0,.5);
-  }
-
-  dl
-  {
-    position: absolute;
-    top: 10%;
-    right: 10%;
-    background-color: rgba(0,0,0,.8);
-    padding: 10px;
-    width: 400px;
-    color: #fff;
-  }
 </style>
 
+<!-- <button on:click={startMic}>Start</button>
+
+<div style="display:flex">
+  <div style="width: 100px">
+    <h4>Left</h4>
+    Note: {micLeft && micLeft.note || ''}
+  </div>
+
+  <div style="width:100px">
+    <h4>Right</h4>
+    Note: {micRight && micRight.note || ''}
+  </div>
+</div> -->
+
 <YouTube on:ready={playerReady}
-          on:stateChange={playerStateChange}/>
+         on:stateChange={playerStateChange}/>
 
 <canvas bind:this={canvasElm}
         width={windowWidth}
@@ -124,14 +112,6 @@
         on:click={togglePlayState}>
 </canvas>
 
-
-<dl>
-  {#if song}
-  <dd>BPM: {song.bpm}</dd>
-  <dd>Gap: {song.gap}</dd>
-  {/if}
-  <dd>Time: {time}</dd>
-  <dd>Current Beat: {bpm}</dd>
-</dl>
-
-<h1>{text}</h1>
+{#if song && time}
+  <Lyrics song={song} time={time} playing={playing} />
+{/if}

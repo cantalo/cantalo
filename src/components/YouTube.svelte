@@ -19,8 +19,8 @@
         controls: 0,
         disablekb: 0,
         showinfo: 0,
-        rel: 0,
-        modestbranding: 1,
+        // rel: 0,
+        // modestbranding: 1,
       },
       events:
       {
