@@ -11,6 +11,7 @@ const stylePreprocessor = sveltePreprocessPostcss
 	useConfigFile: false,
 	plugins:
 	[
+		require('postcss-nested'),
 		require('autoprefixer'),
 	],
 });

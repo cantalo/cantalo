@@ -1,7 +1,3 @@
-<svelte:head>
-  <link href="https://fonts.googleapis.com/css?family=Play:400,700&amp;subset=latin-ext" rel="stylesheet">
-</svelte:head>
-
 <script>
   import { fade } from 'svelte/transition';
   import Syllable from './Syllable.svelte';
@@ -12,35 +8,47 @@
   .song
   {
     position: absolute;
-    bottom: 10%;
+    bottom: 0;
     left: 0;
     right: 0;
-    height: 2em;
+    display: flex;
+    height: 25%;
+    background-color: rgba(0,0,0,.5);
+    pointer-events: none;
+  }
+  .text
+  {
+    height: calc(2em * 1.5);
     overflow: hidden;
-    font-family: Play;
+    margin: auto;
+    text-align: center;
     font-size: 2em;
     font-weight: bold;
-    text-align: center;
-    line-height: 1;
-    background-color: rgba(0,0,0,.5);
+    line-height: 1.5;
     color: lightskyblue;
   }
   .inactive
   {
     animation-play-state: paused;
   }
+  .paused
+  {
+    background: rgba(0,0,0, .9);
+  }
 </style>
 
-<div class="song">
-  {#each song as line}
-    {#if line.end > time && time > (line.start - 2000)}
-    <div in:fade>
-      <div class:inactive={line.start > time || !playing}>
-        {#each line.syllables as syllable}
-          <Syllable offset={syllable.start - line.start} duration={syllable.length}>{syllable.text}</Syllable>
-        {/each}
+<div class="song" class:paused={!playing}>
+  <div class="text">
+    {#each song as line}
+      {#if line.end > time && time > (line.start - 2000)}
+      <div in:fade>
+        <div class:inactive={line.start > time || !playing}>
+          {#each line.syllables as syllable}
+            <Syllable type={syllable.type} offset={syllable.start - line.start} duration={syllable.length}>{syllable.text}</Syllable>
+          {/each}
+        </div>
       </div>
-    </div>
-    {/if}
-  {/each}
+      {/if}
+    {/each}
+  </div>
 </div>

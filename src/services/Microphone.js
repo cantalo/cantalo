@@ -1,5 +1,6 @@
 import { readable } from 'svelte/store';
 
+import Note from './Note';
 import SystemRequirements from './SystemRequirements';
 SystemRequirements.addJS('Permissions', () => navigator.permissions instanceof Permissions);
 SystemRequirements.addJS('MediaDevices', () => navigator.mediaDevices instanceof MediaDevices);
@@ -8,8 +9,6 @@ SystemRequirements.addJS('AudioContext', () => !!AudioContext);
 SystemRequirements.addJS('requestAnimationFrame', () => !!requestAnimationFrame);
 
 const { permissions, mediaDevices } = navigator;
-
-const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 const bufferSize = 1024;
 const leftBuffer = new Float32Array(bufferSize);
@@ -172,7 +171,7 @@ class Microphone
           const note = noteFromPitch(leftPitch);
           left = {
             pitch: Math.round(leftPitch),
-            note: noteStrings[note%12],
+            note: new Note(note),
             detune: centsOffFromPitch(leftPitch, note),
           };
         }
@@ -182,7 +181,7 @@ class Microphone
           const note = noteFromPitch(rightPitch);
           right = {
             pitch: Math.round(rightPitch),
-            note: noteStrings[note%12],
+            note: new Note(note),
             detune: centsOffFromPitch(rightPitch, note),
           };
         }

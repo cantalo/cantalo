@@ -19,8 +19,11 @@
         controls: 0,
         disablekb: 0,
         showinfo: 0,
-        // rel: 0,
-        // modestbranding: 1,
+        cc_load_policy: 0,
+        fs: 0,
+        iv_load_policy: 3,
+        rel: 0,
+        modestbranding: 1,
       },
       events:
       {
