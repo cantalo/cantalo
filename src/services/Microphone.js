@@ -1,5 +1,12 @@
 import { readable } from 'svelte/store';
 
+import SystemRequirements from './SystemRequirements';
+SystemRequirements.addJS('Permissions', () => navigator.permissions instanceof Permissions);
+SystemRequirements.addJS('MediaDevices', () => navigator.mediaDevices instanceof MediaDevices);
+SystemRequirements.addJS('Float32Array', () => !!Float32Array);
+SystemRequirements.addJS('AudioContext', () => !!AudioContext);
+SystemRequirements.addJS('requestAnimationFrame', () => !!requestAnimationFrame);
+
 const { permissions, mediaDevices } = navigator;
 
 const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];

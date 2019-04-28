@@ -1,11 +1,13 @@
-<svelte:window bind:innerHeight={windowHeight} bind:innerWidth={windowWidth} />
-
 <script>
   import { onMount } from 'svelte';
-  import Microphone from './services/Microphone.js';
+  import Microphone from './services/Microphone';
+  import SystemRequirements from './services/SystemRequirements';
 
   import YouTube from './components/YouTube.svelte';
+  import Notes from './components/Notes.svelte';
   import Lyrics from './components/Lyrics.svelte';
+
+  SystemRequirements.addJS('fetch', () => !!fetch);
 
   export let songId;
 
@@ -102,6 +104,7 @@
     Note: {micRight && micRight.note || ''}
   </div>
 </div> -->
+<svelte:window bind:innerHeight={windowHeight} bind:innerWidth={windowWidth} />
 
 <YouTube on:ready={playerReady}
          on:stateChange={playerStateChange}/>

@@ -1,3 +1,10 @@
+<script context="module">
+  import SystemRequirements from '../services/SystemRequirements.js';
+  SystemRequirements.addCSS('background-clip', () => CSS.supports('background-clip', 'text') || CSS.supports('-webkit-background-clip', 'text'));
+  SystemRequirements.addCSS('text-fill-color', () => CSS.supports('text-fill-color', 'transparent') || CSS.supports('-webkit-text-fill-color', 'transparent'));
+  SystemRequirements.addCSS('variables', () => CSS.supports('color', 'var(--duration)'));
+</script>
+
 <script>
   export let offset, duration;
 </script>
