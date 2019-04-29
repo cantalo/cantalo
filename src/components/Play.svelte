@@ -25,7 +25,7 @@
     player = event.detail;
 
     // player.setPlaybackRate(0.1);
-    player.loadVideoById(meta.id, meta.gap);
+    player.loadVideoById(meta.id, meta.videogap || 0);
   }
 
   function playerStateChange(event)

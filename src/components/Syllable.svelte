@@ -32,6 +32,6 @@
   }
 </style>
 
-<span class:freestyle={type === 'FREESTYLE'} style="--duration: {duration * .8}ms; --offset: {offset}ms">
+<span class:freestyle={type === 0} style="--duration: {duration * .8}ms; --offset: {offset}ms">
   <slot></slot>
 </span>
