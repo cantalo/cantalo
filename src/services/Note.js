@@ -4,11 +4,12 @@ export default class Note extends Number
 {
   constructor(pitch)
   {
-    super(pitch);
+    super(pitch % 12);
+    this.pitch = pitch;
   }
 
   toString()
   {
-    return noteStrings[this.valueOf() % 12];
+    return noteStrings[this.valueOf()];
   }
 }

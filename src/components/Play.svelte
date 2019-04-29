@@ -11,6 +11,7 @@
   let song;
   let windowHeight, windowWidth;
   let canvasElm, canvasCtx;
+  let animationFrameId;
 
   onMount(async () =>
   {
@@ -32,14 +33,18 @@
   {
     if (event.detail == YT.PlayerState.PLAYING)
     {
-      // WARNING/FIXME can cause double interval when toggling play/pause
-      setInterval(updatePlayTime, 50); // TODO add clearInterval onDestroy
+      updatePlayTime();
+    }
+    else if (animationFrameId)
+    {
+      cancelAnimationFrame(animationFrameId);
     }
   }
 
   function updatePlayTime()
   {
     time = player.getCurrentTime() * 1000;
+    animationFrameId = requestAnimationFrame(updatePlayTime);
   }
 
   function togglePlayState()

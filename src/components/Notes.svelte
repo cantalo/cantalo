@@ -12,18 +12,27 @@
 
   let micLeft = {},
       micRight = {};
-  let songNote = '';
+  let currentSyllable;
+  let currentNote;
+  let sungLeft = {};
 
-  $: micLeftNote = micLeft && micLeft.note && micLeft.note.toString() || '';
-  $: micRightNote = micRight && micRight.note && micRight.note.toString() || '';
   $: {
-    try
+    const line = song.find(line => line.end > time && time > line.start);
+
+    if (line)
     {
-      const line = song.find(line => line.end > time && time > line.start);
-      const syllable = line.syllables.find(syllable => syllable.start < time && time < syllable.start + syllable.length);
-      songNote = new Note(syllable.pitch).toString();
+      currentSyllable = line.syllables.find(syllable => syllable.start < time && time < syllable.start + syllable.length);
+
+      if (currentSyllable)
+      {
+        currentNote = new Note(currentSyllable.pitch);
+
+        if (micLeft.note)
+        {
+          checkLeftMic();
+        }
+      }
     }
-    catch (err) { songNote = ''; }
   };
 
   onMount(async () =>
@@ -37,14 +46,58 @@
     });
   });
 
-  function position({ attributeStyleMap }, { line, syllable })
+  function checkLeftMic()
   {
-    const factor = (100 / (line.end - line.start));
+    const sung = sungLeft[currentSyllable.start] = sungLeft[currentSyllable.start] || [];
+    const diff = micLeft.note - currentNote;
+    const start = time - currentSyllable.start;
+    const lastSung = sung[sung.length - 1];
+
+    if (lastSung && lastSung.diff === diff)
+    {
+      lastSung.end = start;
+    }
+    else
+    {
+      sung.push({ start, end: start, diff });
+    }
+
+    console.log(sungLeft);
+  }
+
+  function notePosition({ attributeStyleMap }, { line, syllable })
+  {
+    const factor = 100 / (line.end - line.start);
 
     attributeStyleMap.set('top', CSS.percent((syllable.pitch % 12) * 10));
     attributeStyleMap.set('left', CSS.percent((syllable.start - line.start) * factor));
     attributeStyleMap.set('width', CSS.percent(syllable.length * factor));
   }
+
+  function sungPosition(node, { syllable, sung })
+  {
+    const { attributeStyleMap, classList } = node;
+    const factor = 100 / syllable.length;
+    const width = (sung.end - sung.start) * factor;
+
+    attributeStyleMap.set('left', CSS.percent(sung.start * factor));
+    attributeStyleMap.set('width', CSS.percent(width));
+
+    if (sung.diff > 2)
+    {
+      classList.add('too-high');
+    }
+    else if (sung.diff < -2)
+    {
+      classList.add('too-low');
+    }
+    else
+    {
+      classList.add('match');
+    }
+  }
+
+  const str = something => something ? something.toString() : '';
 </script>
 
 <style>
@@ -117,6 +170,36 @@
     animation-play-state: inherit;
   }
 
+  .note .sung :global(.match)
+  {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: red;
+  }
+
+  .note .sung :global(.too-high),
+  .note .sung :global(.too-low)
+  {
+    position: absolute;
+    height: 10px;
+    background: red;
+    border-radius: 3px;
+    z-index: 1;
+    opacity: .7;
+    margin: 1px 0;
+  }
+
+  .note .sung :global(.too-low)
+  {
+    top: 100%;
+  }
+
+  .note .sung :global(.too-high)
+  {
+    bottom: 100%;
+  }
+
   .inactive
   {
     animation-play-state: paused;
@@ -128,7 +211,7 @@
     to { width: 100%; opacity: 1; }
   }
 
-  .match
+  .note-info .match
   {
     color: red;
   }
@@ -138,9 +221,17 @@
   {#each song as line}
     {#if line.end > time && time > line.start}
       {#each line.syllables as syllable}
-        <div class="note" use:position={{line, syllable}} class:inactive={!playing}>
+        <div class="note" use:notePosition={{line, syllable}} class:inactive={!playing}>
           <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - line.start}ms"></div>
-          <div class="sung"></div>
+          <div class="sung">
+            {#if sungLeft[syllable.start]}
+              {#each sungLeft[syllable.start] as sung}
+                {#if sung.start != sung.end}
+                  <div use:sungPosition={{syllable, sung}}></div>
+                {/if}
+              {/each}
+            {/if}
+          </div>
           <div class="pill"></div>
         </div>
       {/each}
@@ -152,18 +243,18 @@
   <div>
     <h4>Song</h4>
     <div>Note:</div>
-    {songNote}
+    {str(currentNote)} {currentNote}
   </div>
 
-  <div class:match={micLeftNote && micLeftNote === songNote}>
+  <div class:match={micLeft.note == +currentNote}>
     <h4>Left Mic</h4>
     <div>Note:</div>
-    {micLeftNote}
+    {str(micLeft.note)} {micLeft.note || ''}
   </div>
 
-  <div class:match={micRightNote && micRightNote === songNote}>
+  <div class:match={micRight == +currentNote}>
     <h4>Right Mic</h4>
     <div>Note:</div>
-    {micRightNote}
+    {str(micRight.note)} {micRight.note || ''}
   </div>
 </div>

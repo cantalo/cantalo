@@ -161,7 +161,7 @@ class Microphone
         const leftPitch = autoCorrelate(leftBuffer, this.audioContext.sampleRate);
         const rightPitch = autoCorrelate(rightBuffer, this.audioContext.sampleRate);
 
-        let left, right;
+        let left = {}, right = {};
 
         console.debug('updatePitch leftPitch', leftPitch);
         console.debug('updatePitch rightPitch', rightPitch);
