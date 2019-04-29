@@ -51,6 +51,7 @@
     align-items: center;
     height: 100vh;
     scroll-snap-type: x mandatory;
+    scroll-padding: 0 10vw;
     overflow-x: scroll;
     overflow-y: hidden;
     scroll-behavior: smooth;
@@ -59,6 +60,7 @@
 
   .song
   {
+    position: relative;
     display: flex;
     align-items: center;
     min-width: 70%;
@@ -67,9 +69,38 @@
     background-color: rgba(0,0,0,.3);
     cursor: pointer;
 
+    &:not([lang="undefined"])::before
+    {
+      content: attr(lang);
+
+      position: absolute;
+      right: 4px;
+      top: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      padding: 3px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255, .5);
+      color: rgba(255,255,255, .8);
+    }
+
+    &:focus
+    {
+      outline: 0;
+      box-shadow: 0 0 40px #fff;
+    }
+
+    .cover
+    {
+      max-height: 50vh;
+      max-width: 50vh;
+      overflow: hidden;
+    }
+
     img
     {
       max-height: 50vh;
+      margin-left: -25%;
     }
 
     dl
@@ -90,9 +121,11 @@
   <Play meta={selectedSong} />
 {:else if songs}
   <div class="songs">
-    {#each songs as song}
-      <div class="song" on:click={() => selectedSong = song}>
-        <img src={song.cover} alt="Cover">
+    {#each songs as song, i}
+      <div class="song" on:click={() => selectedSong = song} lang={song.language} tabindex={i}>
+        <div class="cover">
+          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover">
+        </div>
         <dl>
           <dd>{song.title}</dd>
           <dd class="artist">{song.artist}</dd>
