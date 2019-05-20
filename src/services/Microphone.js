@@ -1,11 +1,11 @@
 import { readable } from 'svelte/store';
 
+import AnimationFrames from './AnimationFrames';
 import PitchDetection from './PitchDetection';
 import SystemRequirements from './SystemRequirements';
 SystemRequirements.addJS('Permissions', () => navigator.permissions instanceof Permissions);
 SystemRequirements.addJS('MediaDevices', () => navigator.mediaDevices instanceof MediaDevices);
 SystemRequirements.addJS('AudioContext', () => !!AudioContext);
-SystemRequirements.addJS('requestAnimationFrame', () => !!requestAnimationFrame);
 
 const { permissions, mediaDevices } = navigator;
 const audioContext = new AudioContext();
@@ -71,8 +71,6 @@ class Microphone
 
   updates()
   {
-    let animationFrameId;
-
     return readable({}, (set) =>
     {
       const update = () =>
@@ -88,12 +86,12 @@ class Microphone
           set({ left, right });
         }
 
-        animationFrameId = requestAnimationFrame(update);
+        AnimationFrames.add(this.constructor.name, update);
       };
 
       update();
 
-    	return () => { cancelAnimationFrame(animationFrameId); };
+    	return () => { AnimationFrames.remove(this.constructor.name) };
     });
   }
 }

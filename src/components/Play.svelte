@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import AnimationFrames from '../services/AnimationFrames';
 
   import YouTube from './YouTube.svelte';
   import Notes from './Notes.svelte';
@@ -11,7 +12,6 @@
   let song;
   let windowHeight, windowWidth;
   let canvasElm, canvasCtx;
-  let animationFrameId;
 
   onMount(async () =>
   {
@@ -35,16 +35,16 @@
     {
       updatePlayTime();
     }
-    else if (animationFrameId)
+    else
     {
-      cancelAnimationFrame(animationFrameId);
+      AnimationFrames.remove('PlayTime');
     }
   }
 
   function updatePlayTime()
   {
     time = player.getCurrentTime() * 1000;
-    animationFrameId = requestAnimationFrame(updatePlayTime);
+    AnimationFrames.add('PlayTime', updatePlayTime);
   }
 
   function togglePlayState()
