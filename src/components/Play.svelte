@@ -8,15 +8,11 @@
 
   export let meta;
 
-  let player, time, playing = true;
+  let player, time, playing;
   let song;
-  let windowHeight, windowWidth;
-  let canvasElm, canvasCtx;
 
   onMount(async () =>
   {
-    // canvasCtx = canvasElm.getContext('2d');
-
     const response = await fetch(`api/songs/${meta.id}.json`);
     song = await response.json();
   });
@@ -34,10 +30,12 @@
     if (event.detail == YT.PlayerState.PLAYING)
     {
       updatePlayTime();
+      playing = true;
     }
     else
     {
       AnimationFrames.remove('PlayTime');
+      playing = false;
     }
   }
 
@@ -46,40 +44,9 @@
     time = player.getCurrentTime() * 1000;
     AnimationFrames.add('PlayTime', updatePlayTime);
   }
-
-  function togglePlayState()
-  {
-    if (playing)
-    {
-      player.pauseVideo();
-    }
-    else
-    {
-      player.playVideo();
-    }
-
-    playing = !playing;
-  }
 </script>
 
-<style>
-  canvas
-  {
-    position: absolute;
-    top: 0;
-  }
-</style>
-
-<svelte:window bind:innerHeight={windowHeight} bind:innerWidth={windowWidth} />
-
-<YouTube on:ready={playerReady}
-         on:stateChange={playerStateChange}/>
-
-<canvas bind:this={canvasElm}
-        width={windowWidth}
-        height={windowHeight}
-        on:click={togglePlayState}>
-</canvas>
+<YouTube on:ready={playerReady} on:stateChange={playerStateChange} />
 
 {#if song && time}
   <Notes {song} {time} {playing} />
