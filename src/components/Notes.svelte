@@ -44,11 +44,11 @@
     const start = (time - syllable.start) * (100 / syllable.length);
     const match = getMatchingClass(syllable, input);
 
-    if (lastSung && lastSung.match === match)
+    if (lastSung)
     {
       lastSung.end = 100 - start;
     }
-    else
+    if (!lastSung || lastSung.match !== match)
     {
       sung.push({ start, match });
     }
@@ -114,6 +114,11 @@
     position: absolute;
     height: 20px;
     animation-play-state: inherit;
+  }
+
+  .note.golden
+  {
+    box-shadow: 0 0 15px goldenrod;
   }
 
   .note > div
@@ -201,7 +206,7 @@
     {#if line.end > time && time > line.start}
       {#each line.syllables as syllable}
         {#if syllable.type}
-          <div class="note" use:notePosition={{line, syllable}}>
+          <div class="note" use:notePosition={{line, syllable}} class:golden={syllable.type === 2}>
             <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - line.start}ms"></div>
             <div class="sung">
               {#if sungLeft[syllable.start]}
