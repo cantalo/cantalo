@@ -4,16 +4,23 @@
 </script>
 
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import Microphone from '../services/Microphone';
   import Note from '../services/Note';
 
+  onMount(async () =>
+  {
+    await Microphone.start();
+    Microphone.init();
+  });
+
+  onDestroy(() =>
+  {
+    Microphone.stop();
+  });
+
   export let song, time, playing;
 
-  let micLeft = {},
-      micRight = {};
-  let currentSyllable;
-  let currentNote;
   let sungLeft = {};
 
   $: {
@@ -21,48 +28,64 @@
 
     if (line)
     {
-      currentSyllable = line.syllables.find(syllable => syllable.start < time && time < syllable.start + syllable.length);
+      const currentSyllable = line.syllables.find(syllable => syllable.start < time && time < syllable.start + syllable.length);
 
       if (currentSyllable)
       {
-        currentNote = new Note(currentSyllable.pitch);
-
-        if (micLeft.note)
-        {
-          checkLeftMic();
-        }
+        sungLeft = checkMic(sungLeft, currentSyllable, Microphone.getLeft());
       }
     }
   };
 
-  onMount(async () =>
+  function checkMic(sungData, syllable, input)
   {
-    await Microphone.start();
-
-    Microphone.updates().subscribe(data =>
-    {
-      micLeft = data.left;
-      micRight = data.right;
-    });
-  });
-
-  function checkLeftMic()
-  {
-    const sung = sungLeft[currentSyllable.start] = sungLeft[currentSyllable.start] || [];
-    const diff = micLeft.note - currentNote;
-    const start = time - currentSyllable.start;
+    const sung = sungData[syllable.start] = sungData[syllable.start] || [];
     const lastSung = sung[sung.length - 1];
+    const start = (time - syllable.start) * (100 / syllable.length);
+    const match = getMatchingClass(syllable, input);
 
-    if (lastSung && lastSung.diff === diff)
+    if (lastSung && lastSung.match === match)
     {
-      lastSung.end = start;
+      lastSung.end = 100 - start;
     }
     else
     {
-      sung.push({ start, end: start, diff });
+      sung.push({ start, match });
     }
 
-    console.log(sungLeft);
+    return sungData;
+  }
+
+  function getMatchingClass(syllable, input)
+  {
+    if (input !== null)
+    {
+      if (syllable.type === 0)
+      {
+        return 'match';
+      }
+
+      if (input.note)
+      {
+        const note = new Note(syllable.pitch);
+        const diff = input.note - note;
+
+        if (Math.abs(diff) < 2) // allow half-note tolerance
+        {
+          return 'match' + (syllable.type === 2 ? ' golden' : '');
+        }
+        else if (diff < 0)
+        {
+          return 'too-low';
+        }
+        else
+        {
+          return 'too-high';
+        }
+      }
+    }
+
+    return '';
   }
 
   function notePosition({ attributeStyleMap }, { line, syllable })
@@ -73,61 +96,16 @@
     attributeStyleMap.set('left', CSS.percent((syllable.start - line.start) * factor));
     attributeStyleMap.set('width', CSS.percent(syllable.length * factor));
   }
-
-  function sungPosition(node, { syllable, sung })
-  {
-    const { attributeStyleMap, classList } = node;
-    const factor = 100 / syllable.length;
-    const width = (sung.end - sung.start) * factor;
-
-    attributeStyleMap.set('left', CSS.percent(sung.start * factor));
-    attributeStyleMap.set('width', CSS.percent(width));
-
-    if (sung.diff > 2)
-    {
-      classList.add('too-high');
-    }
-    else if (sung.diff < -2)
-    {
-      classList.add('too-low');
-    }
-    else
-    {
-      classList.add('match');
-    }
-  }
-
-  const str = something => something ? something.toString() : '';
 </script>
 
 <style>
-  .note-info
-  {
-    position: absolute;
-    top: 10%;
-    right: 5%;
-    background: rgba(0,0,0, .8);
-    color: #fff;
-    font-size: 20px;
-  }
-
-  .note-info > div
-  {
-    height: 100px;
-  }
-
-  .note-info > h4
-  {
-    margin-top: 0;
-  }
-
   .notes
   {
     position: absolute;
     top: 10%;
-    right: 20%;
+    right: 15%;
     bottom: 40%;
-    left: 20%;
+    left: 15%;
     pointer-events: none;
   }
 
@@ -135,6 +113,7 @@
   {
     position: absolute;
     height: 20px;
+    animation-play-state: inherit;
   }
 
   .note > div
@@ -170,7 +149,12 @@
     animation-play-state: inherit;
   }
 
-  .note .sung :global(.match)
+  .note .sung .running
+  {
+    will-change: right;
+  }
+
+  .note .sung .match
   {
     position: absolute;
     top: 0;
@@ -178,24 +162,24 @@
     background: red;
   }
 
-  .note .sung :global(.too-high),
-  .note .sung :global(.too-low)
+  .note .sung .too-high,
+  .note .sung .too-low
   {
     position: absolute;
     height: 10px;
     background: red;
     border-radius: 3px;
     z-index: 1;
-    opacity: .7;
+    opacity: .5;
     margin: 1px 0;
   }
 
-  .note .sung :global(.too-low)
+  .note .sung .too-low
   {
     top: 100%;
   }
 
-  .note .sung :global(.too-high)
+  .note .sung .too-high
   {
     bottom: 100%;
   }
@@ -208,53 +192,33 @@
   @keyframes grow
   {
     1% { opacity: 1; }
-    to { width: 100%; opacity: 1; }
-  }
-
-  .note-info .match
-  {
-    color: red;
+    to { opacity: 1; width: 100%; } /* TODO animating width is bad for performence */
   }
 </style>
 
-<div class="notes">
+<div class="notes" class:inactive={!playing}>
   {#each song as line}
     {#if line.end > time && time > line.start}
       {#each line.syllables as syllable}
-        <div class="note" use:notePosition={{line, syllable}} class:inactive={!playing}>
-          <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - line.start}ms"></div>
-          <div class="sung">
-            {#if sungLeft[syllable.start]}
-              {#each sungLeft[syllable.start] as sung}
-                {#if sung.start != sung.end}
-                  <div use:sungPosition={{syllable, sung}}></div>
-                {/if}
-              {/each}
-            {/if}
+        {#if syllable.type}
+          <div class="note" use:notePosition={{line, syllable}}>
+            <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - line.start}ms"></div>
+            <div class="sung">
+              {#if sungLeft[syllable.start]}
+                {#each sungLeft[syllable.start] as sung}
+                  {#if sung.end && sung.match}
+                    <div class={sung.match}
+                         class:running={syllable.start + syllable.length > time}
+                         style="left: {sung.start}%; right: {sung.end}%">
+                    </div>
+                  {/if}
+                {/each}
+              {/if}
+            </div>
+            <div class="pill"></div>
           </div>
-          <div class="pill"></div>
-        </div>
+        {/if}
       {/each}
     {/if}
   {/each}
-</div>
-
-<div class="note-info">
-  <div>
-    <h4>Song</h4>
-    <div>Note:</div>
-    {str(currentNote)} {currentNote}
-  </div>
-
-  <div class:match={micLeft.note == +currentNote}>
-    <h4>Left Mic</h4>
-    <div>Note:</div>
-    {str(micLeft.note)} {micLeft.note || ''}
-  </div>
-
-  <div class:match={micRight == +currentNote}>
-    <h4>Right Mic</h4>
-    <div>Note:</div>
-    {str(micRight.note)} {micRight.note || ''}
-  </div>
 </div>

@@ -22,22 +22,24 @@ function centsOffFromPitch( frequency, note ) {
 var MIN_SAMPLES = 0;  // will be initialized when AudioContext is created.
 var GOOD_ENOUGH_CORRELATION = 0.9; // this is the "bar" for how close a correlation needs to be
 
+function isNotEnoughSignal(buf)
+{
+  var rms = 0;
+  for (var i=0;i<buf.length;i++) {
+    var val = buf[i];
+    rms += val*val;
+  }
+  rms = Math.sqrt(rms/buf.length);
+  return rms<0.01;
+}
+
 function autoCorrelate( buf, sampleRate ) {
   var SIZE = buf.length;
   var MAX_SAMPLES = Math.floor(SIZE/2);
   var best_offset = -1;
   var best_correlation = 0;
-  var rms = 0;
   var foundGoodCorrelation = false;
   var correlations = new Array(MAX_SAMPLES);
-
-  for (var i=0;i<SIZE;i++) {
-    var val = buf[i];
-    rms += val*val;
-  }
-  rms = Math.sqrt(rms/SIZE);
-  if (rms<0.01) // not enough signal
-    return -1;
 
   var lastCorrelation=1;
   for (var offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
@@ -88,6 +90,12 @@ export default class PitchDetection extends AnalyserNode
   getPitch()
   {
     this.getFloatTimeDomainData(this.audioBuffer);
+
+    if (isNotEnoughSignal(this.audioBuffer))
+    {
+      return null;
+    }
+
     const pitch = autoCorrelate(this.audioBuffer, this.context.sampleRate);
 
     if (pitch > -1)
@@ -101,6 +109,6 @@ export default class PitchDetection extends AnalyserNode
       };
     }
 
-    return {};
+    return { unknown: true };
   }
 }

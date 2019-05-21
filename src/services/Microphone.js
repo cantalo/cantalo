@@ -1,6 +1,3 @@
-import { readable } from 'svelte/store';
-
-import AnimationFrames from './AnimationFrames';
 import PitchDetection from './PitchDetection';
 import SystemRequirements from './SystemRequirements';
 SystemRequirements.addJS('Permissions', () => navigator.permissions instanceof Permissions);
@@ -20,6 +17,17 @@ const constraints = {
 
 class Microphone
 {
+  async start()
+  {
+    this.stream = await mediaDevices.getUserMedia(constraints);
+  }
+
+  stop()
+  {
+    const [track] = this.stream.getAudioTracks();
+    track.stop();
+  }
+
   async requestPermission()
   {
     const { state } = await permissions.query({ name: 'microphone' });
@@ -29,9 +37,8 @@ class Microphone
       try
       {
         // Start and stop stream to request microphone permissions
-        const stream = await mediaDevices.getUserMedia(constraints);
-        const [track] = stream.getAudioTracks();
-        track.stop();
+        await this.start();
+        this.stop();
 
         return 'granted';
       }
@@ -49,10 +56,8 @@ class Microphone
     return state;
   }
 
-  async start()
+  init()
   {
-    this.stream = await mediaDevices.getUserMedia(constraints);
-
     const audioSource = audioContext.createMediaStreamSource(this.stream);
     const stereoSplitter = audioContext.createChannelSplitter(2);
     audioSource.connect(stereoSplitter);
@@ -64,35 +69,9 @@ class Microphone
     stereoSplitter.connect(this.rightAnalyser, 0);
   }
 
-  stop()
+  getLeft()
   {
-    this.stream.stop();
-  }
-
-  updates()
-  {
-    return readable({}, (set) =>
-    {
-      const update = () =>
-      {
-        const left = this.leftAnalyser.getPitch();
-        const right = this.rightAnalyser.getPitch();
-
-        console.debug('updatePitch leftPitch', left);
-        console.debug('updatePitch rightPitch', right);
-
-        if (left || right)
-        {
-          set({ left, right });
-        }
-
-        AnimationFrames.add(this.constructor.name, update);
-      };
-
-      update();
-
-    	return () => { AnimationFrames.remove(this.constructor.name) };
-    });
+    return this.leftAnalyser.getPitch();
   }
 }
 
