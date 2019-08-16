@@ -21,7 +21,7 @@
 
   export let song, time, playing;
 
-  let sungLeft = {};
+  let sungLeft = {}, score = 0;
 
   $: {
     const line = song.find(line => line.end > time && time > line.start);
@@ -33,59 +33,94 @@
       if (currentSyllable)
       {
         sungLeft = checkMic(sungLeft, currentSyllable, Microphone.getLeft());
+        score = getScore(sungLeft);
       }
     }
   };
 
   function checkMic(sungData, syllable, input)
   {
-    const sung = sungData[syllable.start] = sungData[syllable.start] || [];
-    const lastSung = sung[sung.length - 1];
-    const start = (time - syllable.start) * (100 / syllable.length);
-    const match = getMatchingClass(syllable, input);
+    if (input !== null)
+    {
+      const sung = sungData[syllable.start] = sungData[syllable.start] || [];
+      const lastSung = sung[sung.length - 1];
+      const start = (time - syllable.start) * (100 / syllable.length);
+      const match = getMatchingClass(syllable, input);
+      const points = getMatchingPoints(syllable, input);
 
-    if (lastSung)
-    {
-      lastSung.end = 100 - start;
-    }
-    if (!lastSung || lastSung.match !== match)
-    {
-      sung.push({ start, match });
+      if (lastSung)
+      {
+        lastSung.end = 100 - start;
+      }
+      if (!lastSung || lastSung.match !== match)
+      {
+        sung.push({ start, match, points });
+      }
     }
 
     return sungData;
   }
 
-  function getMatchingClass(syllable, input)
+  function getMatchingPoints(syllable, input)
   {
-    if (input !== null)
+    // match golden note            = p * 2.5
+    // match regular                = p * 1.5
+    // match freestyle              = p * 1
+    // too low/high / unknown pitch = p * 0.5
+
+    if (syllable.type === 0)
     {
-      if (syllable.type === 0)
-      {
-        return 'match';
-      }
+      return 1;
+    }
 
-      if (input.note)
-      {
-        const note = new Note(syllable.pitch);
-        const diff = input.note - note;
+    if (input.note)
+    {
+      const note = new Note(syllable.pitch);
+      const diff = input.note - note;
 
-        if (Math.abs(diff) < 2) // allow half-note tolerance
-        {
-          return 'match' + (syllable.type === 2 ? ' golden' : '');
-        }
-        else if (diff < 0)
-        {
-          return 'too-low';
-        }
-        else
-        {
-          return 'too-high';
-        }
+      if (Math.abs(diff) < 2) // allow half-note tolerance
+      {
+        return syllable.type + 0.5;
       }
     }
 
-    return '';
+    return 0.5;
+  }
+
+  function getMatchingClass(syllable, input)
+  {
+    if (syllable.type === 0)
+    {
+      return 'match';
+    }
+
+    if (input.note)
+    {
+      const note = new Note(syllable.pitch);
+      const diff = input.note - note;
+
+      if (Math.abs(diff) < 2) // allow half-note tolerance
+      {
+        return 'match';
+      }
+      else if (diff < 0)
+      {
+        return 'too-low';
+      }
+      else
+      {
+        return 'too-high';
+      }
+    }
+  }
+
+  function getScore(sungData)
+  {
+    return parseInt(Object
+      .values(sungData)
+      .reduce((sumA, syllable) =>
+        syllable.reduce((sumB, item) =>
+          sumB + ((100 - item.end - item.start) * item.points || 0), sumA), 0), 10);
   }
 
   function notePosition({ attributeStyleMap }, { line, syllable })
@@ -199,6 +234,16 @@
     1% { opacity: 1; }
     to { opacity: 1; width: 100%; } /* TODO animating width is bad for performence */
   }
+
+  .score
+  {
+    position: absolute;
+    top: 20%;
+    right: 0;
+    width: 15%;
+    font-size: 40px;
+    color: #fff;
+  }
 </style>
 
 <div class="notes" class:inactive={!playing}>
@@ -227,3 +272,5 @@
     {/if}
   {/each}
 </div>
+
+<div class="score">{score}</div>
