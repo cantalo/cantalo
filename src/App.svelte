@@ -7,6 +7,7 @@
   import Microphone from './services/Microphone';
   import SystemRequirements from './services/SystemRequirements';
 
+  import Browse from './components/Browse.svelte';
   import Play from './components/Play.svelte';
 
   SystemRequirements.addJS('fetch', () => !!fetch);
@@ -44,93 +45,10 @@
       100%{ background-position: 34% 0% }
     }
   }
-
-  .songs
-  {
-    display: flex;
-    align-items: center;
-    height: 100vh;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 10vw;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    padding: 0 10%;
-  }
-
-  .song
-  {
-    position: relative;
-    display: flex;
-    align-items: center;
-    min-width: 70%;
-    scroll-snap-align: center;
-    margin: 0 10%;
-    background-color: rgba(0,0,0,.3);
-    cursor: pointer;
-
-    &:not([lang="undefined"])::before
-    {
-      content: attr(lang);
-
-      position: absolute;
-      right: 4px;
-      top: 4px;
-      font-size: 12px;
-      text-transform: uppercase;
-      padding: 3px;
-      border-radius: 3px;
-      border: 1px solid rgba(255,255,255, .5);
-      color: rgba(255,255,255, .8);
-    }
-
-    &:focus
-    {
-      outline: 0;
-      box-shadow: 0 0 40px #fff;
-    }
-
-    .cover
-    {
-      max-height: 50vh;
-      max-width: 50vh;
-      overflow: hidden;
-    }
-
-    img
-    {
-      max-height: 50vh;
-      margin-left: -25%;
-    }
-
-    dl
-    {
-      font-weight: bold;
-      color: #fff;
-      font-size: 2.5em;
-    }
-  }
-
-  .artist
-  {
-    font-size: .5em;
-  }
 </style>
 
 {#if selectedSong}
   <Play meta={selectedSong} />
 {:else if songs}
-  <div class="songs">
-    {#each songs as song, i}
-      <div class="song" on:click={() => selectedSong = song} lang={song.language} tabindex={i}>
-        <div class="cover">
-          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover">
-        </div>
-        <dl>
-          <dd>{song.title}</dd>
-          <dd class="artist">{song.artist}</dd>
-        </dl>
-      </div>
-    {/each}
-  </div>
+  <Browse {songs} on:select={({ detail }) => selectedSong = detail} />
 {/if}
