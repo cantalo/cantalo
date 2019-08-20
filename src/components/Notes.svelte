@@ -127,7 +127,7 @@
   {
     const factor = 100 / (line.end - line.start);
 
-    attributeStyleMap.set('top', CSS.percent(((syllable.pitch % 12) / 12) * 100));
+    attributeStyleMap.set('top', CSS.percent(((syllable.pitch - line.minPitch || 1) * 100) / (line.maxPitch - line.minPitch || 2)));
     attributeStyleMap.set('left', CSS.percent((syllable.start - line.start) * factor));
     attributeStyleMap.set('width', CSS.percent(syllable.length * factor));
   }
