@@ -20,7 +20,8 @@
       song.artist.toLowerCase().startsWith(searchTerm) ||
       (song.genre && song.genre.toLowerCase().includes(searchTerm)) ||
       (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
-      searchTerm === `lang:${song.language}`
+      (song.language && searchTerm === `lang:${song.language}`) ||
+      (song.year && searchTerm === `year:${song.year}`)
     ) : songs;
 </script>
 
