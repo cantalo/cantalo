@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import shuffle from 'lodash.shuffle';
 
   const dispatch = createEventDispatcher();
   export let songs;
@@ -22,7 +23,7 @@
       (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
       (song.language && searchTerm === `lang:${song.language}`) ||
       (song.year && searchTerm === `year:${song.year}`)
-    ) : songs;
+    ) : shuffle(songs);
 </script>
 
 <svelte:window on:keypress={keypress} />
