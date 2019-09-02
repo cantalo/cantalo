@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import AnimationFrames from '../services/AnimationFrames';
 
   import YouTube from './YouTube.svelte';
@@ -8,7 +8,8 @@
 
   export let meta;
 
-  let player, time, playing;
+  const dispatch = createEventDispatcher();
+  let player, time, playing, ended = false;
   let song;
 
   onMount(async () =>
@@ -27,7 +28,7 @@
 
   function playerStateChange(event)
   {
-    if (event.detail == YT.PlayerState.PLAYING)
+    if (event.detail === YT.PlayerState.PLAYING)
     {
       updatePlayTime();
       playing = true;
@@ -36,6 +37,7 @@
     {
       AnimationFrames.remove('PlayTime');
       playing = false;
+      ended = event.detail === YT.PlayerState.ENDED;
     }
   }
 
@@ -46,9 +48,52 @@
   }
 </script>
 
-<YouTube on:ready={playerReady} on:stateChange={playerStateChange} />
+<style>
+  .overlay
+  {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 
-{#if song && time}
-  <Notes {song} {time} {playing} />
-  <Lyrics {song} {time} {playing} />
-{/if}
+    display: flex;
+    flex-direction: column;
+
+    pointer-events: none;
+
+    .notes
+    {
+      flex: 1;
+    }
+  }
+
+  .game-over
+  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 60px;
+    text-transform: uppercase;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
+
+<span>
+  {#if ended}
+    <div class="game-over" on:click={() => dispatch('exit')}>
+      Game over
+    </div>
+  {:else}
+    <YouTube on:ready={playerReady} on:stateChange={playerStateChange} />
+
+    {#if song && time}
+      <div class="overlay">
+        <Notes {song} {time} {playing} />
+        <Lyrics {song} {time} {playing} />
+      </div>
+    {/if}
+  {/if}
+</span>

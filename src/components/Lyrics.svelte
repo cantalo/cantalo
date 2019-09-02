@@ -5,12 +5,9 @@
 </script>
 
 <style>
-  .song
+  .lyrics
   {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: relative;
     display: flex;
     height: 25%;
     background-color: rgba(0,0,0,.5);
@@ -37,7 +34,7 @@
   }
 </style>
 
-<div class="song" class:paused={!playing}>
+<div class="lyrics" class:paused={!playing}>
   <div class="text">
     {#each song as line}
       {#if line.end > time && time > (line.start - 2000)}

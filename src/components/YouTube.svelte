@@ -1,14 +1,15 @@
 <svelte:head>
-  <script src="https://www.youtube.com/iframe_api"></script>
+  {#if !win.YT}<script src="https://www.youtube.com/iframe_api"></script>{/if}
 </svelte:head>
 
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { onDestroy, onMount, createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
+  const win = window;
   let player, playerElement;
 
-  window.onYouTubeIframeAPIReady = () =>
+  function init()
   {
     player = new YT.Player(playerElement,
     {
@@ -36,6 +37,25 @@
       }
     });
   }
+
+  if (win.YT)
+  {
+    onMount(init);
+  }
+  else
+  {
+    win.onYouTubeIframeAPIReady = init;
+  }
+
+  onDestroy(() =>
+  {
+    if (player)
+    {
+      player.destroy();
+    }
+  });
 </script>
 
-<div bind:this={playerElement}></div>
+<span>
+  <div bind:this={playerElement}></div>
+</span>

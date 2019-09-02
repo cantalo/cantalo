@@ -127,7 +127,7 @@
   {
     const factor = 100 / (line.end - line.start);
 
-    attributeStyleMap.set('top', CSS.percent(((syllable.pitch - line.minPitch || 1) * 100) / (line.maxPitch - line.minPitch || 2)));
+    attributeStyleMap.set('top', CSS.percent(((syllable.pitch - line.minPitch || 1) * 90) / (line.maxPitch - line.minPitch || 2)));
     attributeStyleMap.set('left', CSS.percent((syllable.start - line.start) * factor));
     attributeStyleMap.set('width', CSS.percent(syllable.length * factor));
   }
@@ -136,12 +136,10 @@
 <style>
   .notes
   {
-    position: absolute;
-    top: 10%;
-    right: 15%;
-    bottom: 30%;
-    left: 15%;
-    pointer-events: none;
+    position: relative;
+    height: 100%;
+    margin: 0 15%;
+    flex: 1;
   }
 
   .note
@@ -238,9 +236,10 @@
   .score
   {
     position: absolute;
-    top: 20%;
-    right: 0;
+    top: 50%;
+    left: 100%;
     width: 15%;
+    transform: translateY(-50%);
     font-size: 40px;
     color: #fff;
   }
@@ -271,6 +270,5 @@
       {/each}
     {/if}
   {/each}
+  <div class="score">{score}</div>
 </div>
-
-<div class="score">{score}</div>

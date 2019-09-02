@@ -48,7 +48,7 @@
 </style>
 
 {#if selectedSong}
-  <Play meta={selectedSong} />
+  <Play meta={selectedSong} on:exit={() => selectedSong = undefined} />
 {:else if songs}
   <Browse {songs} on:select={({ detail }) => selectedSong = detail} />
 {/if}
