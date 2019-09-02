@@ -5,23 +5,9 @@
 
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import Microphone from '../services/Microphone';
   import Note from '../services/Note';
 
-  onMount(async () =>
-  {
-    await Microphone.start();
-    Microphone.init();
-  });
-
-  onDestroy(() =>
-  {
-    Microphone.stop();
-  });
-
-  export let song, time, playing;
-
-  let sungLeft = {}, score = 0;
+  export let song, time, playing, mic;
 
   $: {
     const line = song.find(line => line.end > time && time > line.start);
@@ -32,8 +18,8 @@
 
       if (currentSyllable)
       {
-        sungLeft = checkMic(sungLeft, currentSyllable, Microphone.getLeft());
-        score = getScore(sungLeft);
+        mic.sung = checkMic(mic.sung, currentSyllable, mic.getPitch());
+        mic.score = getScore(mic.sung);
       }
     }
   };
@@ -142,6 +128,16 @@
     flex: 1;
   }
 
+  :global(.notes.red)
+  {
+    color: red;
+  }
+
+  :global(.notes.blue)
+  {
+    color: deepskyblue;
+  }
+
   .note
   {
     position: absolute;
@@ -151,7 +147,8 @@
 
   .note.golden
   {
-    box-shadow: 0 0 15px goldenrod;
+    box-shadow: 0 0 15px 5px goldenrod;
+    border-radius: 6px;
   }
 
   .note > div
@@ -197,7 +194,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    background: red;
+    background: currentColor;
   }
 
   .note .sung .too-high,
@@ -205,7 +202,7 @@
   {
     position: absolute;
     height: 10px;
-    background: red;
+    background: currentColor;
     border-radius: 3px;
     z-index: 1;
     opacity: .5;
@@ -242,10 +239,11 @@
     transform: translateY(-50%);
     font-size: 40px;
     color: #fff;
+    text-shadow: 0 0 7px #000;
   }
 </style>
 
-<div class="notes" class:inactive={!playing}>
+<div class="notes {mic.color}" class:inactive={!playing}>
   {#each song as line}
     {#if line.end > time && time > line.start}
       {#each line.syllables as syllable}
@@ -253,8 +251,8 @@
           <div class="note" use:notePosition={{line, syllable}} class:golden={syllable.type === 2}>
             <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - line.start}ms"></div>
             <div class="sung">
-              {#if sungLeft[syllable.start]}
-                {#each sungLeft[syllable.start] as sung}
+              {#if mic.sung[syllable.start]}
+                {#each mic.sung[syllable.start] as sung}
                   {#if sung.end && sung.match}
                     <div class={sung.match}
                          class:running={syllable.start + syllable.length > time}
@@ -270,5 +268,7 @@
       {/each}
     {/if}
   {/each}
-  <div class="score">{score}</div>
+  {#if mic.score}
+    <div class="score">{mic.score}</div>
+  {/if}
 </div>

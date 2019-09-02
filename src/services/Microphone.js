@@ -73,6 +73,11 @@ class Microphone
   {
     return this.leftAnalyser.getPitch();
   }
+
+  getRight()
+  {
+    return this.rightAnalyser.getPitch();
+  }
 }
 
 export default new Microphone();

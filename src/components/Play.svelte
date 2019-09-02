@@ -1,6 +1,7 @@
 <script>
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import AnimationFrames from '../services/AnimationFrames';
+  import Microphone from '../services/Microphone';
 
   import YouTube from './YouTube.svelte';
   import Notes from './Notes.svelte';
@@ -11,18 +12,40 @@
   const dispatch = createEventDispatcher();
   let player, time, playing, ended = false;
   let song;
+  let mic = {
+    left:
+    {
+      color: 'red',
+      getPitch: Microphone.getLeft.bind(Microphone),
+      score: 0,
+      sung: {},
+    },
+    right:
+    {
+      color: 'blue',
+      getPitch: Microphone.getRight.bind(Microphone),
+      score: 0,
+      sung: {},
+    },
+  };
 
   onMount(async () =>
   {
     const response = await fetch(`api/songs/${meta.id}.json`);
     song = await response.json();
+    await Microphone.start();
+    Microphone.init();
+  });
+
+  onDestroy(() =>
+  {
+    Microphone.stop();
   });
 
   async function playerReady(event)
   {
     player = event.detail;
 
-    // player.setPlaybackRate(0.1);
     player.loadVideoById(meta.id, meta.videogap || 0);
   }
 
@@ -38,6 +61,11 @@
       AnimationFrames.remove('PlayTime');
       playing = false;
       ended = event.detail === YT.PlayerState.ENDED;
+
+      if (ended)
+      {
+        Microphone.stop();
+      }
     }
   }
 
@@ -72,7 +100,7 @@
   {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     height: 100%;
     font-size: 60px;
     text-transform: uppercase;
@@ -84,14 +112,22 @@
 <span>
   {#if ended}
     <div class="game-over" on:click={() => dispatch('exit')}>
-      Game over
+      <div class="result">
+        Player {mic.left.color}:<br>
+        {mic.left.score}
+      </div>
+        <div class="result">
+          Player {mic.right.color}:<br>
+          {mic.right.score}
+        </div>
     </div>
   {:else}
     <YouTube on:ready={playerReady} on:stateChange={playerStateChange} />
 
     {#if song && time}
       <div class="overlay">
-        <Notes {song} {time} {playing} />
+        <Notes {song} {time} {playing} mic={mic.left} />
+        <Notes {song} {time} {playing} mic={mic.right} />
         <Lyrics {song} {time} {playing} />
       </div>
     {/if}
