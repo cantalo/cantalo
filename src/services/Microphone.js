@@ -9,9 +9,9 @@ const audioContext = new AudioContext();
 const constraints = {
   audio:
   {
-    echoCancellation: true,
-    autoGainControl: true,
-    noiseSuppression: true,
+    echoCancellation: false,
+    autoGainControl: false,
+    noiseSuppression: false,
   }
 };
 
