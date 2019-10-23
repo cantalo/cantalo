@@ -1,29 +1,45 @@
+<script context="module">
+  export async function preload({ params })
+  {
+    const res = await this.fetch(`sing/${params.vid}.json`);
+    const data = await res.json();
+
+    if (res.status === 200)
+    {
+      return data;
+    }
+
+    this.error(res.status, data.message);
+  }
+</script>
+
 <script>
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-  import AnimationFrames from '../services/AnimationFrames';
-  import Microphone from '../services/Microphone';
 
-  import YouTube from './YouTube.svelte';
-  import Notes from './Notes.svelte';
-  import Lyrics from './Lyrics.svelte';
+  import YouTube from '../../components/YouTube.svelte';
+  import Notes from '../../components/Notes.svelte';
+  import Lyrics from '../../components/Lyrics.svelte';
+
+  import AnimationFrames from "../../services/AnimationFrames";
+  import Microphone from '../../services/Microphone';
+
+  let animationFrames, microphone;
 
   export let meta;
+  export let song;
 
   const dispatch = createEventDispatcher();
   let player, time, playing, ended = false;
-  let song;
   let mic = {
     left:
     {
       color: 'red',
-      getPitch: Microphone.getLeft.bind(Microphone),
       score: 0,
       sung: {},
     },
     right:
     {
       color: 'blue',
-      getPitch: Microphone.getRight.bind(Microphone),
       score: 0,
       sung: {},
     },
@@ -31,15 +47,22 @@
 
   onMount(async () =>
   {
-    const response = await fetch(`api/songs/${meta.id}.json`);
-    song = await response.json();
-    await Microphone.start();
-    Microphone.init();
+    animationFrames = new AnimationFrames();
+    microphone = new Microphone();
+
+    await microphone.start();
+    microphone.init();
+
+    mic.left.getPitch = microphone.getLeft.bind(microphone);
+    mic.right.getPitch = microphone.getRight.bind(microphone);
   });
 
   onDestroy(() =>
   {
-    Microphone.stop();
+    if (process.browser)
+    {
+      microphone.stop();
+    }
   });
 
   async function playerReady(event)
@@ -58,13 +81,13 @@
     }
     else
     {
-      AnimationFrames.remove('PlayTime');
+      animationFrames.remove('PlayTime');
       playing = false;
       ended = event.detail === YT.PlayerState.ENDED;
 
       if (ended)
       {
-        Microphone.stop();
+        microphone.stop();
       }
     }
   }
@@ -72,12 +95,16 @@
   function updatePlayTime()
   {
     time = player.getCurrentTime() * 1000;
-    AnimationFrames.add('PlayTime', updatePlayTime);
+    animationFrames.add('PlayTime', updatePlayTime);
   }
 </script>
 
-<style>
-  .overlay
+<svelte:head>
+  <title>Cantalo - Sing {meta.title} from {meta.artist}</title>
+</svelte:head>
+
+<style type="text/scss">
+  :global(.overlay)
   {
     position: absolute;
     top: 0;

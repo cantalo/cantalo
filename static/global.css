@@ -1,0 +1,20 @@
+html,
+body
+{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    font-family: Nunito, sans-serif;
+    background: linear-gradient(258deg, #473B7B, #3584A7, #30D2BE);
+    background-size: 600% 600%;
+
+    animation: bg-move 60s ease infinite;
+}
+
+@keyframes bg-move
+{
+    0%  { background-position: 34% 0 }
+    50% { background-position: 67% 100% }
+    100%{ background-position: 34% 0 }
+}

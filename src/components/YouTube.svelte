@@ -6,7 +6,7 @@
   import { onDestroy, onMount, createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
-  const win = window;
+  const win = process.browser ? window : {};
   let player, playerElement;
 
   function init()
@@ -38,14 +38,17 @@
     });
   }
 
-  if (win.YT)
+  onMount(() =>
   {
-    onMount(init);
-  }
-  else
-  {
-    win.onYouTubeIframeAPIReady = init;
-  }
+    if (win.YT)
+    {
+      init();
+    }
+    else
+    {
+      win.onYouTubeIframeAPIReady = init;
+    }
+  });
 
   onDestroy(() =>
   {

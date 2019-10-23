@@ -1,10 +1,34 @@
-<script>
-  import { createEventDispatcher } from 'svelte';
-  import shuffle from 'lodash.shuffle';
+<script context="module">
+  export async function preload()
+  {
+    const res = await this.fetch(`index.json`);
+    const data = await res.json();
 
-  const dispatch = createEventDispatcher();
+    if (res.status === 200)
+    {
+      return { songs: data };
+    }
+
+    this.error(res.status, data.message);
+  }
+</script>
+
+<script>
+  import shuffle from 'lodash.shuffle';
+  import { onMount } from 'svelte';
+  import SystemRequirements from '../services/SystemRequirements';
+  import Microphone from '../services/Microphone';
+
+  SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
+
   export let songs;
   let searchbar, search = '';
+
+  onMount(async () =>
+  {
+    const permission = await Microphone.requestPermission();
+    console.log('Microphone permission:', permission);
+  });
 
   function keypress()
   {
@@ -25,12 +49,16 @@
       (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
       (song.language && searchTerm === `lang:${song.language}`) ||
       (song.year && searchTerm === `year:${song.year}`)
-    ) : shuffle(songs.filter(song => !song.beta));
+    ) : shuffle(songs.filter(song => !song.beta)); // FIXME shuffles twice probably due to hydration
 </script>
+
+<svelte:head>
+  <title>Cantalo</title>
+</svelte:head>
 
 <svelte:window on:keypress={keypress} />
 
-<style>
+<style type="text/scss">
   .browse
   {
     display: flex;
@@ -61,6 +89,7 @@
     margin: 0 10%;
     background-color: rgba(0,0,0,.3);
     cursor: pointer;
+    text-decoration: none;
 
     &:not([lang="undefined"])::before
     {
@@ -147,7 +176,7 @@
 
   <div class="songs">
     {#each songsView as song, i}
-      <div class="song" on:click={() => dispatch('select', song)} lang={song.language} tabindex={i}>
+      <a class="song" href={"sing/" + song.id} lang={song.language} tabindex={i}>
         <div class="cover">
           <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover">
         </div>
@@ -155,7 +184,7 @@
           <dd>{song.title}</dd>
           <dd class="artist">{song.artist}</dd>
         </dl>
-      </div>
+      </a>
     {/each}
   </div>
 </div>

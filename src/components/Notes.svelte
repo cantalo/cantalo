@@ -178,7 +178,7 @@
   .note .time
   {
     background-color: #fff;
-    width: 0%;
+    width: 0;
     opacity: 0;
     animation: grow var(--duration) linear var(--offset) forwards;
     animation-play-state: inherit;

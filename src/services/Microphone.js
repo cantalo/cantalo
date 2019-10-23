@@ -1,11 +1,8 @@
-import PitchDetection from './PitchDetection';
 import SystemRequirements from './SystemRequirements';
 SystemRequirements.addJS('Permissions', () => navigator.permissions instanceof Permissions);
 SystemRequirements.addJS('MediaDevices', () => navigator.mediaDevices instanceof MediaDevices);
 SystemRequirements.addJS('AudioContext', () => !!AudioContext);
 
-const { permissions, mediaDevices } = navigator;
-const audioContext = new AudioContext();
 const constraints = {
   audio:
   {
@@ -15,11 +12,17 @@ const constraints = {
   }
 };
 
-class Microphone
+export default class Microphone
 {
   async start()
   {
-    this.stream = await mediaDevices.getUserMedia(constraints);
+    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+    if (!this.PitchDetection)
+    {
+      const PitchDetection = await import('./PitchDetection');
+      this.PitchDetection = PitchDetection.default;
+    }
   }
 
   stop()
@@ -28,9 +31,9 @@ class Microphone
     track.stop();
   }
 
-  async requestPermission()
+  static async requestPermission()
   {
-    const { state } = await permissions.query({ name: 'microphone' });
+    const { state } = await navigator.permissions.query({ name: 'microphone' });
 
     if (state === 'prompt')
     {
@@ -58,14 +61,15 @@ class Microphone
 
   init()
   {
+    const audioContext = new AudioContext();
     const audioSource = audioContext.createMediaStreamSource(this.stream);
     const stereoSplitter = audioContext.createChannelSplitter(2);
     audioSource.connect(stereoSplitter);
 
-    this.leftAnalyser = new PitchDetection(audioContext);
+    this.leftAnalyser = new this.PitchDetection(audioContext);
     stereoSplitter.connect(this.leftAnalyser, 1);
 
-    this.rightAnalyser = new PitchDetection(audioContext);
+    this.rightAnalyser = new this.PitchDetection(audioContext);
     stereoSplitter.connect(this.rightAnalyser, 0);
   }
 
@@ -79,5 +83,3 @@ class Microphone
     return this.rightAnalyser.getPitch();
   }
 }
-
-export default new Microphone();
