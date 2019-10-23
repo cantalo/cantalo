@@ -14,16 +14,18 @@
     }
   }
 
-  $: searchTerm = search.toLowerCase();
+  $: searchTerm = search.replace(/beta:\s?/, '').toLowerCase();
   $: songsView = search ?
-    songs.filter(song =>
+    songs
+    .filter(song => search.startsWith('beta:') === !!song.beta)
+    .filter(song =>
       song.title.toLowerCase().startsWith(searchTerm) ||
       song.artist.toLowerCase().startsWith(searchTerm) ||
       (song.genre && song.genre.toLowerCase().includes(searchTerm)) ||
       (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
       (song.language && searchTerm === `lang:${song.language}`) ||
       (song.year && searchTerm === `year:${song.year}`)
-    ) : shuffle(songs);
+    ) : shuffle(songs.filter(song => !song.beta));
 </script>
 
 <svelte:window on:keypress={keypress} />
