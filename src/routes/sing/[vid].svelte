@@ -22,6 +22,7 @@
 
   import AnimationFrames from "../../services/AnimationFrames";
   import Microphone from '../../services/Microphone';
+  import { title } from '../../config';
 
   let animationFrames, microphone;
 
@@ -100,7 +101,7 @@
 </script>
 
 <svelte:head>
-  <title>Cantalo - Sing {meta.title} from {meta.artist}</title>
+  <title>Sing {meta.title} from {meta.artist} at {title}</title>
 </svelte:head>
 
 <style type="text/scss">

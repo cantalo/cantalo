@@ -18,6 +18,7 @@
   import { onMount } from 'svelte';
   import SystemRequirements from '../services/SystemRequirements';
   import Microphone from '../services/Microphone';
+  import { title } from '../config';
 
   SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
 
@@ -53,7 +54,7 @@
 </script>
 
 <svelte:head>
-  <title>Cantalo</title>
+  <title>{title}</title>
 </svelte:head>
 
 <svelte:window on:keypress={keypress} />
