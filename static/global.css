@@ -1,8 +1,22 @@
+*, *::before, *::after
+{
+    box-sizing: border-box;
+}
+
+*
+{
+    animation-play-state: inherit;
+}
+
 html,
 body
 {
     height: 100%;
     width: 100%;
+}
+
+body
+{
     margin: 0;
     overflow: hidden;
     font-family: Nunito, sans-serif;
@@ -10,6 +24,7 @@ body
     background-size: 600% 600%;
 
     animation: bg-move 60s ease infinite;
+    animation-play-state: running;
 }
 
 @keyframes bg-move

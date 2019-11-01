@@ -142,7 +142,6 @@
   {
     position: absolute;
     height: 20px;
-    animation-play-state: inherit;
   }
 
   .note.golden

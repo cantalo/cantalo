@@ -20,6 +20,7 @@
       background: radial-gradient(at right, currentColor, transparent 35%) no-repeat 0;
       background-size: 0;
       animation: move var(--indicator-duration) linear var(--indicator-delay);
+      animation-play-state: inherit;
     }
   }
 
