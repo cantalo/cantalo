@@ -1,24 +1,12 @@
-<script context="module">
-  export async function preload()
-  {
-    const res = await this.fetch(`index.json`);
-    const data = await res.json();
-
-    if (res.status === 200)
-    {
-      return { songs: data };
-    }
-
-    this.error(res.status, data.message);
-  }
-</script>
-
 <script>
   import shuffle from 'lodash.shuffle';
   import { onMount } from 'svelte';
+
   import SystemRequirements from '../services/SystemRequirements';
   import Microphone from '../services/Microphone';
   import { title } from '../config';
+
+  import CoverFlow from "../components/CoverFlow.svelte";
 
   SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
 
@@ -53,11 +41,26 @@
     ) : shuffle(songs.filter(song => !song.beta)); // FIXME shuffles twice probably due to hydration
 </script>
 
+<script context="module">
+  export async function preload()
+  {
+    const res = await this.fetch(`index.json`);
+    const data = await res.json();
+
+    if (res.status === 200)
+    {
+      return { songs: data };
+    }
+
+    this.error(res.status, data.message);
+  }
+</script>
+
+<svelte:window on:keypress={keypress} />
+
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
-
-<svelte:window on:keypress={keypress} />
 
 <style type="text/scss">
   .browse
@@ -67,31 +70,7 @@
     height: 100vh;
   }
 
-  .songs
-  {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 10vw;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    padding: 0 10%;
-  }
-
-  .song
-  {
-    position: relative;
-    display: flex;
-    align-items: center;
-    min-width: 70%;
-    scroll-snap-align: center;
-    margin: 0 10%;
-    background-color: rgba(0,0,0,.3);
-    cursor: pointer;
-    text-decoration: none;
-
+/*
     &:not([lang="undefined"])::before
     {
       content: attr(lang);
@@ -137,7 +116,7 @@
   .artist
   {
     font-size: .5em;
-  }
+  }*/
 
   input.search
   {
@@ -175,17 +154,5 @@
          required spellcheck="false"
          bind:this={searchbar} bind:value={search}>
 
-  <div class="songs">
-    {#each songsView as song, i}
-      <a class="song" href={"sing/" + song.id} lang={song.language} tabindex={i}>
-        <div class="cover">
-          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover">
-        </div>
-        <dl>
-          <dd>{song.title}</dd>
-          <dd class="artist">{song.artist}</dd>
-        </dl>
-      </a>
-    {/each}
-  </div>
+  <CoverFlow items={songsView} />
 </div>
