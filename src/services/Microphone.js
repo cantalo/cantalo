@@ -3,7 +3,7 @@ SystemRequirements.addJS('Permissions', () => navigator.permissions instanceof P
 SystemRequirements.addJS('MediaDevices', () => navigator.mediaDevices instanceof MediaDevices);
 SystemRequirements.addJS('AudioContext', () => !!AudioContext);
 
-const constraints = {
+export const constraints = {
   audio:
   {
     echoCancellation: false,
@@ -31,34 +31,6 @@ export default class Microphone
     track.stop();
   }
 
-  static async requestPermission()
-  {
-    const { state } = await navigator.permissions.query({ name: 'microphone' });
-
-    if (state === 'prompt')
-    {
-      try
-      {
-        // Start and stop stream to request microphone permissions
-        await this.start();
-        this.stop();
-
-        return 'granted';
-      }
-      catch (error)
-      {
-        if (error instanceof DOMException && /permission denied/i.test(error.message))
-        {
-          return 'denied';
-        }
-
-        throw error;
-      }
-    }
-
-    return state;
-  }
-
   init()
   {
     const audioContext = new AudioContext();
@@ -81,5 +53,15 @@ export default class Microphone
   getRight()
   {
     return this.rightAnalyser.getPitch();
+  }
+
+  getLeftVolume()
+  {
+    return this.leftAnalyser.getVolume();
+  }
+
+  getRightVolume()
+  {
+    return this.rightAnalyser.getVolume();
   }
 }

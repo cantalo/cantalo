@@ -111,4 +111,15 @@ export default class PitchDetection extends AnalyserNode
 
     return { unknown: true };
   }
+
+  getVolume()
+  {
+    this.getFloatTimeDomainData(this.audioBuffer);
+    const total = this.audioBuffer.reduce((acc, cur) => acc + (cur ** 2), 0);
+    const rms = Math.sqrt(total / this.audioBuffer.length);
+    let db = 20 * Math.log10(rms);
+    // sanity check
+    db = Math.max(-48, Math.min(db, 0));
+    return 100 + (db * 2.083);
+  }
 }

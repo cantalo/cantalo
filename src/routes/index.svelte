@@ -15,21 +15,13 @@
 
 <script>
   import shuffle from 'lodash.shuffle';
-  import { onMount } from 'svelte';
   import SystemRequirements from '../services/SystemRequirements';
-  import Microphone from '../services/Microphone';
   import { title } from '../config';
 
   SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
 
   export let songs;
   let searchbar, search = '';
-
-  onMount(async () =>
-  {
-    const permission = await Microphone.requestPermission();
-    console.log('Microphone permission:', permission);
-  });
 
   function keypress()
   {

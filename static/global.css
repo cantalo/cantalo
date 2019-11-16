@@ -33,3 +33,8 @@ body
     50% { background-position: 67% 100% }
     100%{ background-position: 34% 0 }
 }
+
+[role="button"]
+{
+    cursor: pointer;
+}

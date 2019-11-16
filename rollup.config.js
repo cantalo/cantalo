@@ -19,6 +19,7 @@ const stylePreprocessor = sveltePreprocessPostcss
 	plugins:
 	[
 		require('postcss-nested'),
+		require('postcss-hexrgba'),
 		require('autoprefixer'),
 	],
 });
