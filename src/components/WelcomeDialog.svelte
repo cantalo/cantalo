@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { _ } from '../services/Translations';
   import AnimationFrames from "../services/AnimationFrames";
   import Microphone, { constraints } from "../services/Microphone";
   import Dialog from './Dialog.svelte';
@@ -163,18 +164,18 @@
 </style>
 
 <Dialog size="md" bind:this={firstDialog}>
-  <h1>Willkommen bei Cantalo!</h1>
+  <h1>{$_('welcome.title')}</h1>
 
-  <h2><span class="icon">{'\u{1F3A4}'}</span> Mikrofone einrichten</h2>
+  <h2><span class="icon">{'\u{1F3A4}'}</span> {$_('welcome.setup.title')}</h2>
 
   <details use:open={microphonePermissions !== 'granted'}>
     <summary>
       <h3>
-        Zugriff auf das Mikrofon
+        {$_('welcome.setup.permissions')}
         <span class="icon">{resolveIcon(microphonePermissions)}</span>
       </h3>
     </summary>
-    <p>Damit du Cantalo spielen kannst benötigen wir die Berechtigung auf dein Mikrofone zuzugreifen. Klicke auf den "erteilen" Button und bestätige dann mit "Immer zulassen"</p>
+    <p>{$_('welcome.setup.permissions_desc')}</p>
     <div class="actions">
       {#if microphonePermissions !== 'granted'}
       <button on:click={requestMicrophonePermissions}>erteilen</button>
@@ -186,7 +187,7 @@
     <summary>
       <h3>
         <span>
-          Externes Microphone angeschlossen
+          {$_('welcome.setup.connect')}
           {#if detectedMicrophone}
           <small>({detectedMicrophone.label})</small>
           {/if}
@@ -194,17 +195,17 @@
         <span class="icon">{resolveIcon(externalMicrophone)}</span>
       </h3>
     </summary>
-    <p>Um deine Stimme bestmöglich zu erkennen empfiehlt es sich ein externes Mikrofone, anstelle eines im Gerät verbauten, anzuschließen. Am Besten funktioniert es mit den Original SingStar Mikrofonen.</p>
+    <p>{$_('welcome.setup.connect_desc')}</p>
   </details>
 
   <details use:open={!detectedInput}>
     <summary>
       <h3>
-        Mikrofon-Signal testen
+        {$_('welcome.setup.signal')}
         <span class="icon">{resolveIcon(detectedInput)}</span>
       </h3>
     </summary>
-    <p>Es wurden {channels.length} Mikrofon Kanäle erkannt. Bitte spreche kurz in jedes Mikrofon um zu testen ob alles einwandfrei funktioniert.</p>
+    <p>{$_('welcome.setup.signal_desc', { channels: channels.length })}</p>
     {#each channels as channel}
     <div>
       {channel.label} <progress value={channel.volume}></progress>
@@ -215,5 +216,5 @@
     {/each}
   </details>
 
-  <button on:click={next}>weiter</button>
+  <button on:click={next}>{$_('welcome.continue')}</button>
 </Dialog>
