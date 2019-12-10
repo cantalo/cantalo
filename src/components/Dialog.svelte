@@ -40,24 +40,55 @@
   dialog
   {
     top: 50%;
+
+    display: flex;
+    flex-direction: column;
     min-width: 400px;
     min-height: 200px;
-    padding: 15px;
-    overflow: auto;
+    padding: 0;
     border: 0;
     border-radius: 2px;
     transform: translateY(-50%);
 
+    &:not([open])
+    {
+      display: none;
+    }
+
+    &.sm
+    {
+      width: 40vw;
+      height: 40vh;
+    }
+
     &.md
     {
-      width: 60vw;
-      height: 60vh;
+      width: 50vw;
+      height: 50vh;
     }
 
     &.lg
     {
       width: 80vw;
       height: 80vh;
+    }
+
+    header
+    {
+      padding: 15px 15px 0;
+    }
+
+    footer
+    {
+      padding: 15px;
+      text-align: center;
+    }
+
+    main
+    {
+      flex: 1;
+      padding: 0 15px;
+      overflow: auto;
     }
   }
 
@@ -76,5 +107,13 @@
   {#if closable}
   <div on:click={close} role="button" class="close">&times;</div>
   {/if}
-  <slot></slot>
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
 </dialog>

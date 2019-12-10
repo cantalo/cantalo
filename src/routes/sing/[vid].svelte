@@ -70,7 +70,7 @@
   {
     player = event.detail;
 
-    player.loadVideoById(meta.id, meta.videogap || 0);
+    player[sessionStorage.initialized ? 'loadVideoById' : 'cueVideoById'](meta.id, meta.videogap || 0);
   }
 
   function playerStateChange(event)

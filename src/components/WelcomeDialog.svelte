@@ -4,6 +4,7 @@
   import AnimationFrames from "../services/AnimationFrames";
   import Microphone, { constraints } from "../services/Microphone";
   import Dialog from './Dialog.svelte';
+  import open from '../actions/open';
 
   let firstDialog;
   let microphonePermissions;
@@ -26,17 +27,30 @@
 
   onMount(async () =>
   {
-    await checkMicrophonePermissions();
-    await checkDevices();
+    if (sessionStorage.initialized) return;
+
+    firstDialog.open();
+
+    await stepOneMicrophonePermissions();
+    await stepTwoCheckDevices();
     await checkInputSignals();
-    navigator.mediaDevices.addEventListener('devicechange', checkDevices);
   });
 
-  async function checkDevices()
+  async function stepOneMicrophonePermissions()
   {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    detectedMicrophone = devices.find(device => /singstar/i.test(device.label));
-    externalMicrophone = detectedMicrophone ? true : undefined;
+    await checkMicrophonePermissions();
+
+    if (microphonePermissions === 'prompt')
+    {
+      await requestMicrophonePermissions();
+    }
+
+    if (microphonePermissions === 'granted')
+    {
+      return Promise.resolve()
+    }
+
+    return Promise.reject();
   }
 
   async function checkMicrophonePermissions()
@@ -51,6 +65,19 @@
     const [track] = stream.getAudioTracks();
     track.stop();
     await checkMicrophonePermissions();
+  }
+
+  async function stepTwoCheckDevices()
+  {
+    await checkDevices();
+    navigator.mediaDevices.addEventListener('devicechange', checkDevices);
+  }
+
+  async function checkDevices()
+  {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    detectedMicrophone = devices.find(device => /singstar/i.test(device.label));
+    externalMicrophone = detectedMicrophone ? true : undefined;
   }
 
   async function checkInputSignals()
@@ -94,30 +121,10 @@
     return '☹️';
   }
 
-  function open(node, initValue)
-  {
-    if (initValue)
-    {
-      node.setAttribute('open', '');
-    }
-
-    return {
-      update(updateValue)
-      {
-        if (updateValue)
-        {
-          node.setAttribute('open', '');
-        }
-        else
-        {
-          node.removeAttribute('open');
-        }
-      }
-    }
-  }
-
   function next()
   {
+    navigator.mediaDevices.removeEventListener('devicechange', checkDevices);
+    sessionStorage.initialized = true;
     firstDialog.close();
   }
 </script>
@@ -163,10 +170,12 @@
   }
 </style>
 
-<Dialog size="md" bind:this={firstDialog}>
-  <h1>{$_('welcome.title')}</h1>
+<Dialog size="md" autoopen={false} bind:this={firstDialog}>
+  <div slot="header">
+    <h1>{$_('welcome.title')}</h1>
 
-  <h2><span class="icon">{'\u{1F3A4}'}</span> {$_('welcome.setup.title')}</h2>
+    <h2><span class="icon">{'\u{1F3A4}'}</span> {$_('welcome.setup.title')}</h2>
+  </div>
 
   <details use:open={microphonePermissions !== 'granted'}>
     <summary>
@@ -176,11 +185,6 @@
       </h3>
     </summary>
     <p>{$_('welcome.setup.permissions_desc')}</p>
-    <div class="actions">
-      {#if microphonePermissions !== 'granted'}
-      <button on:click={requestMicrophonePermissions}>erteilen</button>
-      {/if}
-    </div>
   </details>
 
   <details use:open={!externalMicrophone}>
@@ -216,5 +220,7 @@
     {/each}
   </details>
 
-  <button on:click={next}>{$_('welcome.continue')}</button>
+  <div slot="footer">
+    <button on:click={next}>{$_('welcome.continue')}</button>
+  </div>
 </Dialog>
