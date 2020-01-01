@@ -58,19 +58,19 @@
     &.sm
     {
       width: 40vw;
-      height: 40vh;
+      height: 60vh;
     }
 
     &.md
     {
       width: 50vw;
-      height: 50vh;
+      height: 60vh;
     }
 
     &.lg
     {
       width: 80vw;
-      height: 80vh;
+      height: 90vh;
     }
 
     header
