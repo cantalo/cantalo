@@ -26,6 +26,12 @@
       startSeconds,
       endSeconds,
     });
+
+    if (!play)
+    {
+      const { duration } = await fetch('add/search/video.json?id=' + videoId).then(r => r.json());
+      setDuration(duration);
+    }
   }
 
   export function resetVideo()
@@ -98,6 +104,11 @@
   let playerElement;
   let animationFrames, videoUnsubscriber;
   let size = 100;
+
+  if (isReady.resolved)
+  {
+    isReady = defer();
+  }
 
   if (isReady.resolved)
   {

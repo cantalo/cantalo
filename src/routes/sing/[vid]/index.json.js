@@ -10,32 +10,40 @@ export async function get(req, res)
     .find({ id: vid })
     .value();
 
-  const played = getPlayedFromCookies(req);
-  played.add(vid);
-
-  const suggestions = db.get('songs').filter(it => !played.has(it.id));
-
-  let [suggestion] = suggestions
-    .filter(it => it.meta.genre === data.meta.genre && it.meta.language === data.meta.language)
-    .shuffle()
-    .value();
-
-  if (!suggestion)
+  if (data)
   {
-    [suggestion] = suggestions
-      .filter(it => it.meta.language === data.meta.language)
+    const played = getPlayedFromCookies(req);
+    played.add(vid);
+
+    const suggestions = db.get('songs').filter(it => !played.has(it.id));
+
+    let [suggestion] = suggestions
+      .filter(it => it.meta.genre === data.meta.genre && it.meta.language === data.meta.language)
       .shuffle()
-      .value()
-  }
+      .value();
 
-  if (suggestion)
+    if (!suggestion)
+    {
+      [suggestion] = suggestions
+        .filter(it => it.meta.language === data.meta.language)
+        .shuffle()
+        .value()
+    }
+
+    if (suggestion)
+    {
+      data.suggestion = suggestion.meta;
+    }
+
+    res.writeHead(200, {
+      'Content-Type': 'application/json',
+      'Set-Cookie': `played=${Array.from(played).join()}; Path=/; Max-Age=${6 * 60 * 60}`,
+    });
+    res.end(JSON.stringify(data));
+  }
+  else
   {
-    data.suggestion = suggestion.meta;
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end('{ "message": "Song not found." }');
   }
-
-  res.writeHead(200, {
-    'Content-Type': 'application/json',
-    'Set-Cookie': `played=${Array.from(played).join()}; Path=/; Max-Age=${6 * 60 * 60}`,
-  });
-  res.end(JSON.stringify(data));
 }

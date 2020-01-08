@@ -9,6 +9,9 @@
     {
       case 'Space': dispatch('space', event); break;
       case 'Escape': dispatch('escape', event); break;
+      case 'KeyX': if (event.ctrlKey) dispatch('cut', event); break;
+      case 'KeyC': if (event.ctrlKey) dispatch('copy', event); break;
+      case 'KeyV': if (event.ctrlKey) dispatch('paste', event); break;
       default: console.debug(event);
     }
   }

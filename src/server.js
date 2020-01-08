@@ -2,6 +2,7 @@ import sirv from 'sirv';
 import polka from 'polka';
 import compression from 'compression';
 import acceptLanguage from 'accept-language';
+import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
 import * as sapper from '@sapper/server';
 import { getPlayedFromCookies } from './utils';
@@ -15,6 +16,7 @@ acceptLanguage.languages(['en', 'de']);
 
 polka()
 	.use(
+		json(),
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
 		cookieParser(),
