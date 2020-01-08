@@ -14,7 +14,7 @@
   let step = 1;
 
   $: externalMicrophone = selectedMicrophone && selectedMicrophone.label &&
-      !/(eingebautes|build-?in)/i.test(selectedMicrophone.label) || undefined;
+      !/(eingebautes|built-?in)/i.test(selectedMicrophone.label) || undefined;
   $: channels = Array.apply(null, Array(channelCount)).map((item, i) =>
       ({
         label: String.fromCharCode(65 + i),
