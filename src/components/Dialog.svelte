@@ -1,3 +1,8 @@
+<script context="module">
+  import SystemRequirements from '../services/SystemRequirements';
+  SystemRequirements.addJS('HTMLDialogElement', () => typeof HTMLDialogElement === 'function');
+</script>
+
 <script>
   import { onMount } from 'svelte';
 
@@ -24,11 +29,6 @@
   {
     dialog.close();
   }
-</script>
-
-<script context="module">
-  import SystemRequirements from '../services/SystemRequirements.js';
-  SystemRequirements.addJS('HTMLDialogElement', () => typeof HTMLDialogElement === 'function');
 </script>
 
 <style type="text/scss">

@@ -1,9 +1,12 @@
 <script>
+  import { getContext } from "svelte";
   import { fade } from 'svelte/transition';
   import Syllable from './Syllable.svelte';
   import StartIndicator from "./StartIndicator.svelte";
 
-  export let song, time, playing;
+  const song = getContext('song');
+
+  export let time, playing;
 
   const warmUpTime = 2000;
 

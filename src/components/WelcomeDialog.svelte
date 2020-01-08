@@ -1,9 +1,15 @@
+<script context="module">
+  import SystemRequirements from '../services/SystemRequirements';
+  SystemRequirements.addCSS('grid', () => CSS.supports('display', 'grid'));
+</script>
+
 <script>
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
   import AnimationFrames from "../services/AnimationFrames";
   import Microphone, { constraints } from "../services/Microphone";
   import Dialog from './Dialog.svelte';
+  import { players } from '../stores/players';
 
   let dialog;
   let microphonePermissions;
@@ -30,6 +36,7 @@
 
       if (devices.find(device => device.deviceId === sessionStorage.microphoneDeviceId))
       {
+        initPlayers(sessionStorage.microphoneDeviceId, sessionStorage.microphoneCount);
         return;
       }
     }
@@ -158,7 +165,18 @@
     navigator.mediaDevices.removeEventListener('devicechange', checkDevices);
     sessionStorage.microphoneDeviceId = selectedMicrophone.deviceId;
     sessionStorage.microphoneCount = channelCount;
+    initPlayers(selectedMicrophone.deviceId, channelCount);
     dialog.close();
+  }
+
+  function initPlayers(deviceId, channels)
+  {
+    players.reset();
+
+    for (let i = channels; i > 0; i--)
+    {
+      players.add(deviceId, i);
+    }
   }
 </script>
 

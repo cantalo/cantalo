@@ -1,11 +1,11 @@
-import api from '../_api';
+import api from '../../_api';
 
 export async function get(req, res)
 {
   const { vid } = req.params;
 
   const songsJson = await api('songs.json');
-  const song = await api(`songs/${vid}.json`);
+  const song = await api(`songs/${vid}.json`); // TODO include meta data
 
   const songs = JSON.parse(songsJson);
 
