@@ -84,7 +84,7 @@
     cursor: pointer;
     text-decoration: none;
 
-    &:not([lang="undefined"])::before
+    &[lang]::before
     {
       content: attr(lang);
 
@@ -107,15 +107,9 @@
 
     .cover
     {
-      max-height: 50vh;
-      max-width: 50vh;
-      overflow: hidden;
-    }
-
-    img
-    {
-      max-height: 50vh;
-      margin-left: -25%;
+      min-height: 50vh;
+      min-width: 50vh;
+      background: #000;
     }
 
     dl
@@ -162,7 +156,7 @@
   }
 </style>
 
-<div class="browse">
+<div class="browse absolute background">
   <input type="search" class="search"
          required spellcheck="false"
          bind:this={searchbar} bind:value={search}>

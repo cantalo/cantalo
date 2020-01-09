@@ -73,20 +73,9 @@
   .cover
   {
     float: left;
-    overflow: hidden;
     height: 4em;
     width: 4em;
-    position: relative;
     margin: 15px 10px 0 0;
-  }
-
-  .cover img
-  {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    max-height: 100%;
-    object-fit: cover;
   }
 
   .current-scores
@@ -104,37 +93,39 @@
   }
 </style>
 
-<section>
-  <h1>Song score</h1>
+<div class="absolute background">
+  <section>
+    <h1>Song score</h1>
 
-  <div class="song">
-    <div class="cover">
-      <img src="https://img.youtube.com/vi/{meta.id}/hqdefault.jpg" alt="Cover">
+    <div class="song">
+      <div class="cover">
+        <img src="https://img.youtube.com/vi/{meta.id}/hqdefault.jpg" alt="Cover">
+      </div>
+      <h2>{meta.title}</h2>
+      <h3>{meta.artist}</h3>
     </div>
-    <h2>{meta.title}</h2>
-    <h3>{meta.artist}</h3>
-  </div>
 
-  {#if showCurrentScore}
-  <div class="current-scores" in:fly={{ y: 30, duration: 700 }}>
-    {#each $players as player, index}
-    <ScoreTable {index} {player} />
-    {/each}
-  </div>
-  {/if}
+    {#if showCurrentScore}
+      <div class="current-scores" in:fly={{ y: 30, duration: 700 }}>
+        {#each $players as player, index}
+          <ScoreTable {index} {player} />
+        {/each}
+      </div>
+    {/if}
 
-  {#if showHighscore}
-  <div class="high-scores" in:fly={{ y: 50, duration: 2000 }}>
-    <h2>High scores</h2>
-    <table>
-    {#each highscores as score, index}
-      <tr>
-        <th>{index + 1}.</th>
-        <th>{score.player}</th>
-        <td>{score.sum}</td>
-      </tr>
-    {/each}
-    </table>
-  </div>
-  {/if}
-</section>
+    {#if showHighscore}
+      <div class="high-scores" in:fly={{ y: 50, duration: 2000 }}>
+        <h2>High scores</h2>
+        <table>
+          {#each highscores as score, index}
+            <tr>
+              <th>{index + 1}.</th>
+              <th>{score.player}</th>
+              <td>{score.sum}</td>
+            </tr>
+          {/each}
+        </table>
+      </div>
+    {/if}
+  </section>
+</div>

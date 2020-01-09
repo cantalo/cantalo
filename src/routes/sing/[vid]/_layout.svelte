@@ -16,11 +16,15 @@
 <script>
   import { setContext } from 'svelte';
 
+  import YouTube from "../../../components/YouTube.svelte";
+
   export let meta;
   export let song;
 
   setContext('meta', meta);
   setContext('song', song);
 </script>
+
+<YouTube />
 
 <slot></slot>

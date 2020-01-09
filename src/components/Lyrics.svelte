@@ -1,12 +1,11 @@
 <script>
-  import { getContext } from "svelte";
+  import { getContext } from 'svelte';
   import { fade } from 'svelte/transition';
   import Syllable from './Syllable.svelte';
-  import StartIndicator from "./StartIndicator.svelte";
+  import StartIndicator from './StartIndicator.svelte';
+  import { time, playing } from '../stores/video';
 
   const song = getContext('song');
-
-  export let time, playing;
 
   const warmUpTime = 2000;
 
@@ -48,14 +47,14 @@
   }
 </style>
 
-<div class="lyrics" class:paused={!playing}>
+<div class="lyrics" class:paused={!$playing}>
   <div class="text">
     {#each song as line}
-      {#if line.end > time && time > (line.start - warmUpTime)}
+      {#if line.end > $time && $time > (line.start - warmUpTime)}
       <div in:fade>
-        <div class:inactive={!playing}>
+        <div class:inactive={!$playing}>
           <StartIndicator duration={getIndicatorDuration(line)}
-          /><span class:inactive={line.start > time}>
+          /><span class:inactive={line.start > $time}>
             {#each line.syllables as syllable}
               <Syllable type={syllable.type} offset={syllable.start - line.start} duration={syllable.length}>{syllable.text}</Syllable>
             {/each}

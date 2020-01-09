@@ -6,23 +6,21 @@
 <script>
   import { getContext } from "svelte";
   import Note from '../services/Note';
+  import { time, playing } from '../stores/video';
 
-  const song = getContext('song');
-
-  export let time;
-  export let playing;
   export let player;
 
+  const song = getContext('song');
   const { score } = player;
 
   let sung = []; // TODO create a store in player store
 
   $: {
-    const line = song.find(line => line.end > time && time > line.start);
+    const line = song.find(line => line.end > $time && $time > line.start);
 
     if (line)
     {
-      const currentSyllable = line.syllables.find(syllable => syllable.start < time && time < syllable.start + syllable.length);
+      const currentSyllable = line.syllables.find(syllable => syllable.start < $time && $time < syllable.start + syllable.length);
 
       if (currentSyllable)
       {
@@ -38,7 +36,7 @@
     {
       const sung = sungData[syllable.start] = sungData[syllable.start] || [];
       const lastSung = sung[sung.length - 1];
-      const start = (time - syllable.start) * (100 / syllable.length);
+      const start = ($time - syllable.start) * (100 / syllable.length);
       const match = getMatchingClass(syllable, input);
       const points = getMatchingPoints(syllable, input);
 
@@ -231,9 +229,9 @@
   }
 </style>
 
-<div class="notes" class:inactive={!playing} style="color: {player.color}">
+<div class="notes" class:inactive={!$playing} style="color: {player.color}">
   {#each song as line}
-    {#if line.end > time && time > line.start}
+    {#if line.end > $time && $time > line.start}
       {#each line.syllables as syllable}
         {#if syllable.type}
           <div class="note" use:notePosition={{line, syllable}} class:golden={syllable.type === 2}>
@@ -243,7 +241,7 @@
                 {#each sung[syllable.start] as sung}
                   {#if sung.end && sung.match}
                     <div class={sung.match}
-                         class:running={syllable.start + syllable.length > time}
+                         class:running={syllable.start + syllable.length > $time}
                          style="left: {sung.start}%; right: {sung.end}%">
                     </div>
                   {/if}

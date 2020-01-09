@@ -3,11 +3,13 @@
 </svelte:head>
 
 <script>
-  import { onDestroy, onMount, createEventDispatcher } from 'svelte';
+  import { onMount } from 'svelte';
+  import AnimationFrames from '../services/AnimationFrames';
+  import { video, time, playing } from '../stores/video';
 
-  const dispatch = createEventDispatcher();
   const win = process.browser ? window : {};
   let player, playerElement;
+  let animationFrames;
 
   function init()
   {
@@ -28,18 +30,54 @@
       },
       events:
       {
-        onReady(event) { dispatch('ready', event.target); },
-        onStateChange(event) { dispatch('stateChange', event.data) },
-        onPlaybackQualityChange(event) { dispatch('qualityChange', event.data); },
-        onPlaybackRateChange(event) { dispatch('rateChange', event.data); },
-        onError(event) { dispatch('error', event.datat); },
-        onApiChange(event) { dispatch('apiChange', event.data); },
+        onReady()
+        {
+          video.subscribe(({ id, gap }) =>
+          {
+            if (id)
+            {
+              player.loadVideoById(id, gap);
+            }
+            else
+            {
+              player.stopVideo();
+              $playing = false;
+              $time = 0;
+            }
+          });
+        },
+        onStateChange({ data: playerState })
+        {
+          if (playerState === YT.PlayerState.PLAYING)
+          {
+            updatePlayTime();
+            $playing = true;
+          }
+          else
+          {
+            animationFrames.remove('PlayTime');
+            $playing = false;
+
+            if (playerState === YT.PlayerState.ENDED)
+            {
+              $playing = null;
+            }
+          }
+        },
       }
     });
   }
 
+  function updatePlayTime()
+  {
+    $time = player.getCurrentTime() * 1000;
+    animationFrames.add('PlayTime', updatePlayTime);
+  }
+
   onMount(() =>
   {
+    animationFrames = new AnimationFrames();
+
     if (win.YT)
     {
       init();
@@ -49,16 +87,15 @@
       win.onYouTubeIframeAPIReady = init;
     }
   });
-
-  onDestroy(() =>
-  {
-    if (player)
-    {
-      player.destroy();
-    }
-  });
 </script>
 
-<span>
-  <div bind:this={playerElement}></div>
-</span>
+<style>
+  div
+  {
+    z-index: 0;
+  }
+</style>
+
+<div class="absolute">
+  <span bind:this={playerElement}></span>
+</div>
