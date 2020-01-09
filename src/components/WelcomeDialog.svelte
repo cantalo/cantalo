@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { _ } from '../services/Translations';
+  import { _ } from 'svelte-i18n';
   import AnimationFrames from "../services/AnimationFrames";
   import Microphone, { constraints } from "../services/Microphone";
   import Dialog from './Dialog.svelte';
