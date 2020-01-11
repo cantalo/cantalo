@@ -5,7 +5,7 @@
 </script>
 
 <script>
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext, onDestroy } from 'svelte';
   import { get as getStore } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
@@ -25,6 +25,14 @@
   {
     setTimeout(() => showCurrentScore = true, 100);
     setTimeout(() => showHighScore = true, 1000);
+  });
+
+  onDestroy(() =>
+  {
+    for (const player of getStore(players))
+    {
+      player.score.reset();
+    }
   });
 </script>
 

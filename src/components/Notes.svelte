@@ -4,8 +4,9 @@
 </script>
 
 <script>
-  import { getContext } from "svelte";
+  import { getContext } from 'svelte';
   import Note from '../services/Note';
+  import Score from './Score.svelte';
   import { time, playing } from '../stores/video';
 
   export let player;
@@ -28,7 +29,7 @@
         score.set(sung);
       }
     }
-  };
+  }
 
   function checkMic(sungData, syllable, input)
   {
@@ -46,7 +47,11 @@
       }
       if (!lastSung || lastSung.match !== match)
       {
-        sung.push({ start, match, points });
+        sung.push({
+          start,
+          match,
+          points
+        });
       }
     }
 
@@ -221,11 +226,7 @@
     position: absolute;
     top: 50%;
     left: 100%;
-    width: 15%;
     transform: translateY(-50%);
-    font-size: 40px;
-    color: #fff;
-    text-shadow: 0 0 7px #000;
   }
 </style>
 
@@ -255,6 +256,8 @@
     {/if}
   {/each}
   {#if $score}
-    <div class="score">{$score}</div>
+    <div class="score">
+      <Score color={player.color}>{$score}</Score>
+    </div>
   {/if}
 </div>
