@@ -5,25 +5,26 @@
 </script>
 
 <script>
-  import ScoreTable from "../../../components/ScoreTable.svelte";
   import { onMount, getContext } from 'svelte';
+  import { get as getStore } from 'svelte/store';
   import { fly } from 'svelte/transition';
+
   import { players } from '../../../stores/players';
+  import { getHighScoreStore } from "../../../stores/highscores";
   import { title } from '../../../config';
 
+  import ScoreTable from '../../../components/ScoreTable.svelte';
+
   const meta = getContext('meta');
+  const highScores = getHighScoreStore(meta.id);
 
   let showCurrentScore = false;
-  let showHighscore = !process.browser;
-
-  $: highscores = $players // TODO use indexedDB
-    .map((player, index) => ({ player: player.name || `Player ${index + 1}`, sum: player.notes + player.lineBonus + player.goldenNotes }))
-    .sort((a, b) => b.sum - a.sum);
+  let showHighScore = !process.browser;
 
   onMount(() =>
   {
     setTimeout(() => showCurrentScore = true, 100);
-    setTimeout(() => showHighscore = true, 1000);
+    setTimeout(() => showHighScore = true, 1000);
   });
 </script>
 
@@ -108,20 +109,20 @@
     {#if showCurrentScore}
       <div class="current-scores" in:fly={{ y: 30, duration: 700 }}>
         {#each $players as player, index}
-          <ScoreTable {index} {player} />
+          <ScoreTable {index} {player} on:save={({ detail }) => highScores.add(detail)} />
         {/each}
       </div>
     {/if}
 
-    {#if showHighscore}
+    {#if showHighScore && $highScores && $highScores.length}
       <div class="high-scores" in:fly={{ y: 50, duration: 2000 }}>
         <h2>High scores</h2>
         <table>
-          {#each highscores as score, index}
+          {#each $highScores as entry, index}
             <tr>
               <th>{index + 1}.</th>
-              <th>{score.player}</th>
-              <td>{score.sum}</td>
+              <th>{entry.playerName}</th>
+              <td>{entry.score}</td>
             </tr>
           {/each}
         </table>

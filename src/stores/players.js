@@ -29,6 +29,10 @@ export const players = {
               syllable.reduce((sumB, item) =>
                 sumB + ((100 - item.end - item.start) * item.points || 0), sumA), 0), 10));
         },
+        reset()
+        {
+          score.set(0);
+        },
       },
     }]);
   },

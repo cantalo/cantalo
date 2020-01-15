@@ -1,8 +1,22 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
+  import { get as getStore } from 'svelte/store';
+
   export let index;
   export let player;
 
   const { score } = player;
+  const dispatchEvent = createEventDispatcher();
+
+  function save()
+  {
+    const _score = getStore(score);
+
+    if (player.name.length > 1 && _score > 0)
+    {
+      dispatchEvent('save', { playerName: player.name, score: _score });
+    }
+  }
 </script>
 
 <style>
@@ -82,7 +96,7 @@
 <div class="score">
   <div class="player">
     <div class="color" style="background-color: {player.color}"></div>
-    <input type="text" bind:value={player.name} placeholder="Player {index + 1}" spellcheck="false">
+    <input type="text" bind:value={player.name} placeholder="Player {index + 1}" spellcheck="false" on:blur={save}>
   </div>
 
   <table>
