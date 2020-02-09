@@ -1,20 +1,43 @@
-import api from '../../_api';
+import db from '../../../../../usdb/export.json';
+
+const format = str => decodeURIComponent(str)
+  .toLocaleLowerCase()
+  .replace(/\+/g, ' ')
+;
+
+const responseHeaders = { 'Content-Type': 'application/json' };
 
 export async function get(req, res)
 {
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify([
+  const { artist, title } = req.query;
+
+  if (artist || title)
+  {
+    const result = db.filter(item =>
+      (!artist || item.interpret.toLowerCase().includes(format(artist))) &&
+      (!title || item.title.toLowerCase().includes(format(title)))
+    );
+
+    res.writeHead(200, responseHeaders);
+
+    if (result.length > 0)
     {
-      artist: 'Bloodhound Gang',
-      title: 'Foxtrott Uniform Charlie Kilo',
-    },
+      res.end(JSON.stringify(result.map(item =>
+      {
+        const song = { ...item };
+        song.artist = song.interpret;
+        delete song.interpret;
+        return song;
+      })));
+    }
+    else
     {
-      artist: 'Bloodhound Gang',
-      title: 'The bad touch',
-    },
-    {
-      artist: 'Bloodhound Gang',
-      title: 'The ballad of Chasey Lane',
-    },
-  ]));
+      res.end('[]');
+    }
+  }
+  else
+  {
+    res.writeHead(400, responseHeaders);
+    res.end('[]');
+  }
 }

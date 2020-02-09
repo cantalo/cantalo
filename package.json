@@ -4,9 +4,13 @@
   "dependencies": {
     "compression": "^1.7.1",
     "polka": "next",
-    "sirv": "^0.4.0"
+    "sirv": "^0.4.0",
+    "usdb": "file:../usdb",
+    "youtube-node": "^1.3.3",
+    "youtube-v3-api": "^1.1.1"
   },
   "devDependencies": {
+    "@rollup/plugin-json": "^4.0.1",
     "autoprefixer": "^9.7.3",
     "lodash.shuffle": "^4.2.0",
     "postcss-hexrgba": "^2.0.0",

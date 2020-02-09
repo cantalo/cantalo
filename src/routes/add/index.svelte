@@ -1,33 +1,64 @@
 <script>
-  import { getMetaData } from '../../../../usd-parser';
-
+  import { tick } from 'svelte';
+  import { getMetaData, getSongData } from '../../../../parser';
   import * as config from '../../config';
+
   import MetaDefinition from '../../components/MetaDefinition.svelte';
+  import SearchResults from '../../components/SearchResults.svelte';
 
-  let artist;
-  let title;
-  let request;
-  let videoUrl;
+  const section = {};
+  const songSearch = { artist: '', title: '' };
+  const videoSearch = { term: '' };
 
-  let selectedSong;
-  let selectedVideo = '';
+  let songContent;
 
-  function searchSong() {
+  function searchSong()
+  {
     const queryString = new URLSearchParams();
-    if (artist) queryString.set('artist', artist);
-    if (title) queryString.set('title', title);
+    if (songSearch.artist) queryString.set('artist', songSearch.artist);
+    if (songSearch.title) queryString.set('title', songSearch.title);
 
-    if (artist || title)
-      request = fetch('add/search/song.json?' + queryString.toString()).then(response => response.json());
+    if (songSearch.artist || songSearch.title)
+      songSearch.request = fetch('add/search/song.json?' + queryString).then(response => response.json());
   }
 
-  async function selectSong(song) {
-    const response = await fetch('add/import.json');
-    const {file} = await response.json();
-    selectedSong = file;
+  async function importSong(song)
+  {
+    const queryString = new URLSearchParams();
+    queryString.set('id', song.id);
+    const response = await fetch('add/import.json?' + queryString);
+    const { file } = await response.json();
+    songContent = file;
   }
 
-  $: meta = selectedSong && getMetaData(selectedSong);
+  async function searchVideo()
+  {
+    const queryString = new URLSearchParams();
+    queryString.set('search', videoSearch.term);
+
+    if (videoSearch.term)
+    {
+      videoSearch.request = await fetch('add/search/video.json?' + queryString).then(response => response.json());
+    }
+  }
+
+  $: meta = songContent && getMetaData(songContent);
+  $: song = songContent && meta && getSongData(meta, songContent);
+  $: if (songSearch.selected)
+  {
+    videoSearch.term = `${songSearch.selected.artist} ${songSearch.selected.title}`;
+  }
+  $: if (songContent)
+  {
+    section.video.scrollIntoView({ behavior: 'smooth' });
+  }
+  $: if (videoSearch.selected)
+  {
+    tick().then(() =>
+    {
+      section.editing.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
 </script>
 
 <style>
@@ -37,6 +68,12 @@
     overflow: auto;
     padding: 50px 100px;
     color: #fff;
+  }
+
+  section
+  {
+    min-height: 50vh;
+    margin-bottom: 100px;
   }
 
   dl
@@ -76,39 +113,42 @@
     <h2>1. Import song data</h2>
     <dl>
       <MetaDefinition group="search" label="artist">
-        <input type="search" bind:value={artist}>
+        <input type="search" bind:value={songSearch.artist}>
       </MetaDefinition>
       <MetaDefinition group="search" label="title">
-        <input type="search" bind:value={title}>
+        <input type="search" bind:value={songSearch.title}>
       </MetaDefinition>
     </dl>
     <button on:click={searchSong}>Search</button>
-    {#if request}
-    {#await request}
-      <i>Searching ...</i>
-      {:then results}
-      <ul>
-        {#each results as result}
-        <li on:click={() => selectSong(result)}>{result.artist} - {result.title}</li>
-        {/each}
-      </ul>
-      {:catch err}
-      <i>Something went wrong: {err.message}</i>
-    {/await}
-    {/if}
+    <SearchResults let:result bind:value={songSearch.selected} request={songSearch.request}>
+      <div>{result.artist}</div>
+      <div>{result.title}</div>
+    </SearchResults>
+    <div>
+      <button on:click={() => importSong(songSearch.selected)} disabled={!songSearch.selected}>Import</button>
+    </div>
   </section>
 
-  <section id="video">
+  <section id="video" bind:this={section.video}>
     <h2>2. Find video</h2>
     <dl>
-      <MetaDefinition group="search" label="video URL">
-        <input type="url" required bind:value={selectedVideo}>
+      <MetaDefinition group="search" label="video search">
+        <input type="search" required bind:value={videoSearch.term} style="width:630px">
       </MetaDefinition>
     </dl>
+    <button on:click={searchVideo}>Search</button>
+    <SearchResults let:result bind:value={videoSearch.selected} request={videoSearch.request}>
+      <img src={result.thumbnails.default.url}
+           width={result.thumbnails.default.width * 0.5}
+           height={result.thumbnails.default.height * 0.5}
+           alt={result.title}>
+      <div>{result.title}</div>
+      <div>{result.channel}</div>
+    </SearchResults>
   </section>
 
-  {#if selectedSong && selectedVideo}
-  <section id="editing">
+  {#if songSearch.selected && videoSearch.selected && songContent}
+  <section id="editing" bind:this={section.editing}>
     <h2>3. Editing</h2>
     <dl>
       <MetaDefinition label="artist">
@@ -160,6 +200,9 @@
     </dl>
     <pre>
       {JSON.stringify(meta, null, 2)}
+    </pre>
+    <pre>
+      {JSON.stringify(song, null, 2)}
     </pre>
   </section>
   {/if}
