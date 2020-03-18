@@ -1,8 +1,3 @@
-<script context="module">
-  import SystemRequirements from '../services/SystemRequirements';
-  SystemRequirements.addJS('CSS Typed OM', () => !!(CSS && CSS.number));
-</script>
-
 <script>
   export let color;
 
@@ -15,7 +10,7 @@
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  export function randomShape() // TODO call this for every finished line
+  export function randomShape()
   {
     const min = 15, max = 40;
     const top = getRandomInt(min, max);
@@ -24,17 +19,6 @@
     const left = getRandomInt(min, max);
 
     shapeValues = { top, right, bottom, left };
-  }
-
-  function shape({ attributeStyleMap }, { top, right, bottom, left })
-  {
-    attributeStyleMap.set('border-radius', `
-      ${top}% ${100-top}%
-      ${bottom}% ${100-bottom}%
-      /
-      ${left}% ${right}%
-      ${100-right}% ${100-left}%
-    `);
   }
 
   randomShape();
@@ -47,6 +31,7 @@
     font-size: 40px;
     color: #fff;
     border-radius: 49% 51% 52% 48% / 43% 34% 66% 57%;
+    transition: border-radius 100ms ease;
   }
 
   :global(.red)
@@ -60,6 +45,11 @@
   }
 </style>
 
-<div class={color} use:shape={shapeValues}>
+<div class={color} style="border-radius:
+      {shapeValues.top}% {100-shapeValues.top}%
+      {shapeValues.bottom}% {100-shapeValues.bottom}%
+      /
+      {shapeValues.left}% {shapeValues.right}%
+      {100-shapeValues.right}% {100-shapeValues.left}%">
   <slot></slot>
 </div>

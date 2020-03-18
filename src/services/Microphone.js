@@ -12,16 +12,61 @@ export const constraints = {
   }
 };
 
+let PitchDetection;
+const devices = new Map();
+
 export default class Microphone
 {
-  async start()
+  constructor(deviceId, channel)
   {
-    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+    this.deviceId = deviceId;
+    this.channel = channel;
+  }
 
-    if (!this.PitchDetection)
+  async init()
+  {
+    if (!PitchDetection)
     {
-      const PitchDetection = await import('./PitchDetection');
-      this.PitchDetection = PitchDetection.default;
+      PitchDetection = (await import('./PitchDetection')).default;
+    }
+
+    if (!devices.has(this.deviceId))
+    {
+      const init = async () =>
+      {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: {
+          deviceId: this.deviceId,
+          ...constraints.audio,
+        } });
+
+        const audioContext = new AudioContext();
+        const audioSource = audioContext.createMediaStreamSource(stream);
+
+        let stereoSplitter;
+
+        if (typeof this.channel === 'number')
+        {
+          stereoSplitter = audioContext.createChannelSplitter(2);
+          audioSource.connect(stereoSplitter);
+        }
+
+        return { stream, audioContext, audioSource, stereoSplitter };
+      };
+
+      devices.set(this.deviceId, init());
+    }
+
+    const { stream, audioContext, audioSource, stereoSplitter } = await devices.get(this.deviceId);
+    this.stream = stream;
+    this.analyser = new PitchDetection(audioContext);
+
+    if (stereoSplitter)
+    {
+      stereoSplitter.connect(this.analyser, this.channel);
+    }
+    else
+    {
+      audioSource.connect(this.analyser);
     }
   }
 
@@ -31,37 +76,13 @@ export default class Microphone
     track.stop();
   }
 
-  init()
+  getPitch()
   {
-    const audioContext = new AudioContext();
-    const audioSource = audioContext.createMediaStreamSource(this.stream);
-    const stereoSplitter = audioContext.createChannelSplitter(2);
-    audioSource.connect(stereoSplitter);
-
-    this.leftAnalyser = new this.PitchDetection(audioContext);
-    stereoSplitter.connect(this.leftAnalyser, 1);
-
-    this.rightAnalyser = new this.PitchDetection(audioContext);
-    stereoSplitter.connect(this.rightAnalyser, 0);
+    return this.analyser.getPitch();
   }
 
-  getLeft()
+  getVolume()
   {
-    return this.leftAnalyser.getPitch();
-  }
-
-  getRight()
-  {
-    return this.rightAnalyser.getPitch();
-  }
-
-  getLeftVolume()
-  {
-    return this.leftAnalyser.getVolume();
-  }
-
-  getRightVolume()
-  {
-    return this.rightAnalyser.getVolume();
+    return this.analyser.getVolume();
   }
 }

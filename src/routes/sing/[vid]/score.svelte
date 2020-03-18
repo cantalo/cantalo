@@ -31,7 +31,7 @@
   {
     for (const player of getStore(players))
     {
-      player.score.reset();
+      // player.score.reset(); // TODO
     }
   });
 </script>

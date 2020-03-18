@@ -36,7 +36,7 @@
 
       if (devices.find(device => device.deviceId === sessionStorage.microphoneDeviceId))
       {
-        initPlayers(sessionStorage.microphoneDeviceId, sessionStorage.microphoneCount);
+        await initPlayers(sessionStorage.microphoneDeviceId, sessionStorage.microphoneCount);
         return;
       }
     }
@@ -103,28 +103,29 @@
 
   async function checkInputSignals()
   {
-    const mic = new Microphone();
-    await mic.start();
-    mic.init();
-
     const animationFrames = new AnimationFrames();
+
+    await Promise.all(channels.map(async (channel, i) =>
+    {
+      channel.mic = new Microphone('default', i); // TODO deviceId
+      await channel.mic.init();
+    }));
 
     return new Promise(resolve =>
     {
       const check = () =>
       {
-        channels[0].volume = mic.getLeftVolume();
-        channels[0].hadSignal = channels[0].hadSignal || channels[0].volume > 50;
-
-        if (channels[1])
+        for (const channel of channels)
         {
-          channels[1].volume = mic.getRightVolume();
-          channels[1].hadSignal = channels[1].hadSignal || channels[1].volume > 50;
+          channel.volume = channel.mic.getVolume();
+          channel.hadSignal = channel.hadSignal || channel.volume > 50;
         }
+
+        channels = channels; // TODO hack
 
         if (channels.every(channel => channel.hadSignal))
         {
-          mic.stop();
+          channels[0].mic.stop(); // TODO
           detectedInput = true;
           resolve();
         }
@@ -169,13 +170,13 @@
     dialog.close();
   }
 
-  function initPlayers(deviceId, channels)
+  async function initPlayers(deviceId, channels)
   {
     players.reset();
 
     for (let i = channels; i > 0; i--)
     {
-      players.add(deviceId, i);
+      await players.add(deviceId, i - 1);
     }
   }
 </script>

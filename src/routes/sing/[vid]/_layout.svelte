@@ -14,7 +14,8 @@
 </script>
 
 <script>
-  import { setContext } from 'svelte';
+  import { onDestroy, setContext } from 'svelte';
+  import { song as songStore } from '../../../stores/song';
 
   import YouTube from "../../../components/YouTube.svelte";
 
@@ -22,7 +23,12 @@
   export let song;
 
   setContext('meta', meta);
-  setContext('song', song);
+  songStore.set(song);
+
+  onDestroy(() =>
+  {
+    songStore.set(null);
+  });
 </script>
 
 <YouTube />

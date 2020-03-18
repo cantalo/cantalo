@@ -4,112 +4,22 @@
 </script>
 
 <script>
-  import { getContext } from 'svelte';
-  import Note from '../services/Note';
   import Score from './Score.svelte';
+  import { currentLine } from '../stores/song';
   import { time, playing } from '../stores/video';
 
   export let player;
+  const { sung, score } = player;
 
-  const song = getContext('song');
-  const { score } = player;
+  let scoreElm;
 
-  let sung = []; // TODO create a store in player store
-
-  $: {
-    const line = song.find(line => line.end > $time && $time > line.start);
-
-    if (line)
-    {
-      const currentSyllable = line.syllables.find(syllable => syllable.start < $time && $time < syllable.start + syllable.length);
-
-      if (currentSyllable)
-      {
-        sung = checkMic(sung, currentSyllable, player.mic.getPitch());
-        score.set(sung);
-      }
-    }
-  }
-
-  function checkMic(sungData, syllable, input)
+  currentLine.subscribe(() =>
   {
-    if (input !== null)
+    if (scoreElm)
     {
-      const sung = sungData[syllable.start] = sungData[syllable.start] || [];
-      const lastSung = sung[sung.length - 1];
-      const start = ($time - syllable.start) * (100 / syllable.length);
-      const match = getMatchingClass(syllable, input);
-      const points = getMatchingPoints(syllable, input);
-
-      if (lastSung)
-      {
-        lastSung.end = 100 - start;
-      }
-      if (!lastSung || lastSung.match !== match)
-      {
-        sung.push({
-          start,
-          match,
-          points
-        });
-      }
+      scoreElm.randomShape();
     }
-
-    return sungData;
-  }
-
-  function getMatchingPoints(syllable, input)
-  {
-    // match golden note            = p * 2.5
-    // match regular                = p * 1.5
-    // match freestyle              = p * 1
-    // too low/high / unknown pitch = p * 0.5
-
-    if (syllable.type === 0)
-    {
-      return 1;
-    }
-
-    if (input.note)
-    {
-      const note = new Note(syllable.pitch);
-      const diff = input.note - note;
-
-      if (Math.abs(diff) < 2) // allow half-note tolerance
-      {
-        return syllable.type + 0.5;
-      }
-    }
-
-    return 0.5;
-  }
-
-  function getMatchingClass(syllable, input)
-  {
-    if (syllable.type === 0)
-    {
-      return 'match';
-    }
-
-    if (input.note)
-    {
-      const note = new Note(syllable.pitch);
-      const diff = input.note - note;
-
-      if (Math.abs(diff) < 2) // allow half-note tolerance
-      {
-        return 'match';
-      }
-      else if (diff < 0)
-      {
-        return 'too-low';
-      }
-      else
-      {
-        return 'too-high';
-      }
-    }
-  }
+  });
 
   function notePosition({ attributeStyleMap }, { line, syllable })
   {
@@ -231,33 +141,31 @@
 </style>
 
 <div class="notes" class:inactive={!$playing} style="color: {player.color}">
-  {#each song as line}
-    {#if line.end > $time && $time > line.start}
-      {#each line.syllables as syllable}
-        {#if syllable.type}
-          <div class="note" use:notePosition={{line, syllable}} class:golden={syllable.type === 2}>
-            <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - line.start}ms"></div>
-            <div class="sung">
-              {#if sung[syllable.start]}
-                {#each sung[syllable.start] as sung}
-                  {#if sung.end && sung.match}
-                    <div class={sung.match}
-                         class:running={syllable.start + syllable.length > $time}
-                         style="left: {sung.start}%; right: {sung.end}%">
-                    </div>
-                  {/if}
-                {/each}
-              {/if}
-            </div>
-            <div class="pill"></div>
+  {#if $currentLine}
+    {#each $currentLine.syllables as syllable, i (syllable.start)}
+      {#if syllable.type}
+        <div class="note" use:notePosition={{line: $currentLine, syllable}} class:golden={syllable.type === 2}>
+          <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - $currentLine.start}ms"></div>
+          <div class="sung">
+            {#if $sung[syllable.start]}
+              {#each $sung[syllable.start] as sungPart}
+                {#if sungPart.end && sungPart.match}
+                  <div class={sungPart.match}
+                       class:running={syllable.start + syllable.length > $time}
+                       style="left: {sungPart.start}%; right: {sungPart.end}%">
+                  </div>
+                {/if}
+              {/each}
+            {/if}
           </div>
-        {/if}
-      {/each}
-    {/if}
-  {/each}
+          <div class="pill"></div>
+        </div>
+      {/if}
+    {/each}
+  {/if}
   {#if $score}
     <div class="score">
-      <Score color={player.color}>{$score}</Score>
+      <Score bind:this={scoreElm} color={player.color}>{$score}</Score>
     </div>
   {/if}
 </div>

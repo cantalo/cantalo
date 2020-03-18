@@ -3,7 +3,7 @@
 </svelte:head>
 
 <script>
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import AnimationFrames from '../services/AnimationFrames';
   import { video, time, playing } from '../stores/video';
 
@@ -86,6 +86,12 @@
     {
       win.onYouTubeIframeAPIReady = init;
     }
+  });
+
+  onDestroy(() =>
+  {
+    $time = 0;
+    $playing = false;
   });
 </script>
 
