@@ -9,7 +9,7 @@
 
   const win = process.browser ? window : {};
   let player, playerElement;
-  let animationFrames;
+  let animationFrames, videoUnsubscriber;
 
   function init()
   {
@@ -32,7 +32,7 @@
       {
         onReady()
         {
-          video.subscribe(({ id, gap }) =>
+          videoUnsubscriber = video.subscribe(({ id, gap }) =>
           {
             if (id)
             {
@@ -90,6 +90,8 @@
 
   onDestroy(() =>
   {
+    if (videoUnsubscriber) videoUnsubscriber();
+    if (animationFrames) animationFrames.remove('PlayTime');
     $time = 0;
     $playing = false;
   });

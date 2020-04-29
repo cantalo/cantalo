@@ -34,9 +34,20 @@ export default function (microphone)
 
       set(sungData);
     }
+
+    if ($time === 0)
+    {
+      set(sungData);
+    }
   };
 
-  return derived([currentSyllable, time], storeUpdate, sungData);
+  return {
+    ...derived([currentSyllable, time], storeUpdate, sungData),
+    reset()
+    {
+      sungData = {};
+    },
+  };
 }
 
 function getMatchingPoints(syllable, input)
