@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy, getContext } from 'svelte';
+  import { get as getStore } from 'svelte/store';
   import { goto } from '@sapper/app';
 
   import Notes from '../../../components/Notes.svelte';
@@ -13,16 +14,18 @@
 
   onMount(async () =>
   {
+    await players.initialized;
+    await Promise.all(getStore(players).map(player => player.mic.init()));
     video.play(meta.id, meta.videogap);
   });
 
-  // onDestroy(() =>
-  // {
-  //   if (process.browser)
-  //   {
-  //     microphone.stop(); // TODO
-  //   }
-  // });
+  onDestroy(() =>
+  {
+    getStore(players).forEach(player =>
+    {
+      player.mic.stop();
+    });
+  });
 
   $: {
     if ($playing === null || meta.videoend && $time > meta.videoend * 1000)

@@ -6,13 +6,20 @@ import scoreStore from './players/score';
 const playerColors = ['red', 'deepskyblue'];
 const playersStore = writable([]);
 
+function deferredPromise()
+{
+  let _resolve;
+  const promise = new Promise(resolve => _resolve = resolve);
+  promise.resolve = _resolve;
+  return promise;
+}
+
 export const players = {
   subscribe: playersStore.subscribe,
-  async add(deviceId, channel)
+  initialized: deferredPromise(),
+  add(deviceId, channel)
   {
     const mic = new Microphone(deviceId, channel);
-    await mic.init();
-
     const sung = sungStore(mic);
     const score = scoreStore(sung);
 

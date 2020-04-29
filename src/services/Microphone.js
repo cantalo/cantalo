@@ -72,12 +72,21 @@ export default class Microphone
 
   stop()
   {
-    const [track] = this.stream.getAudioTracks();
-    track.stop();
+    if (this.stream)
+    {
+      const [track] = this.stream.getAudioTracks();
+      track.stop();
+
+      delete this.stream;
+      delete this.analyser;
+
+      devices.delete(this.deviceId);
+    }
   }
 
   getPitch()
   {
+    if (!this.analyser) return null;
     return this.analyser.getPitch();
   }
 

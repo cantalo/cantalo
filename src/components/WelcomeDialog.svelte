@@ -170,14 +170,16 @@
     dialog.close();
   }
 
-  async function initPlayers(deviceId, channels)
+  function initPlayers(deviceId, channels)
   {
     players.reset();
 
     for (let i = channels; i > 0; i--)
     {
-      await players.add(deviceId, i - 1);
+      players.add(deviceId, i - 1);
     }
+
+    players.initialized.resolve();
   }
 </script>
 
