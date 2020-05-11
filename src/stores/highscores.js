@@ -48,6 +48,7 @@ export function getHighScoreStore(songId)
       subscribe,
       async add(data)
       {
+        // TODO prevent duplicate entries
         const db = await dbPromise;
         const newKey = await db.add(dbStoreName,
         {

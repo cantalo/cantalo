@@ -163,9 +163,9 @@
       {/if}
     {/each}
   {/if}
-  {#if $score}
+  {#if $score.total}
     <div class="score">
-      <Score bind:this={scoreElm} color={player.color}>{$score}</Score>
+      <Score bind:this={scoreElm} color={player.color}>{$score.total}</Score>
     </div>
   {/if}
 </div>

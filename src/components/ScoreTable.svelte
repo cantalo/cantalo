@@ -12,9 +12,9 @@
   {
     const _score = getStore(score);
 
-    if (player.name.length > 1 && _score > 0)
+    if (player.name.length > 1 && _score.total > 0)
     {
-      dispatchEvent('save', { playerName: player.name, score: _score });
+      dispatchEvent('save', { playerName: player.name, score: _score.total });
     }
   }
 </script>
@@ -92,7 +92,7 @@
   }
 </style>
 
-{#if $score}
+{#if $score.total}
 <div class="score">
   <div class="player">
     <div class="color" style="background-color: {player.color}"></div>
@@ -103,11 +103,11 @@
     <tbody>
     <tr>
       <th>notes</th>
-      <td>{$score}</td>
+      <td>{$score.notes}</td>
     </tr>
     <tr>
       <th>line bonus</th>
-      <td>{$score.lineBonus}</td>
+      <td>{$score.lineBonus}</td> <!-- TODO -->
     </tr>
     <tr>
       <th>golden notes</th>
@@ -117,7 +117,7 @@
     <tfoot>
     <tr>
       <th>total</th>
-      <td>{$score}</td>
+      <td>{$score.total}</td>
     </tr>
     </tfoot>
   </table>

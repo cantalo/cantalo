@@ -28,7 +28,8 @@ export default function (microphone)
         sung.push({
           start,
           match,
-          points
+          points,
+          golden: $currentSyllable.type === 2,
         });
       }
 
