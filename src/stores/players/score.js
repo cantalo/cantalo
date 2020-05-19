@@ -12,20 +12,38 @@ export default function(sung)
       lineBonus: 0,
     };
 
-    return sungLines.reduce((line, syllable) =>
+    return sungLines.reduce((lineResult, line) =>
     {
-      return syllable.reduce((sum, item) =>
-      {
-        if (item.end)
-        {
-          const value = parseInt((100 - item.end - item.start) * item.points || 0, 10);
-          sum.notes += value;
-          if (item.golden) sum.goldenNotes += value;
-          sum.total = sum.notes + sum.goldenNotes;
-        }
+      const syllables = Object.values(line);
+      let linePercentage = 0;
 
-        return sum;
-      }, line);
+      lineResult = syllables.reduce((syllableResult, syllable) =>
+      {
+        return syllable.reduce((sum, item) =>
+        {
+          if (item.end)
+          {
+            const percentage = 100 - item.end - item.start;
+            const value = parseInt(percentage * item.points || 0, 10);
+
+            if (item.match) linePercentage += percentage;
+            if (item.golden) sum.goldenNotes += value;
+            else sum.notes += value;
+          }
+
+          return sum;
+        }, syllableResult);
+      }, lineResult);
+
+      const lastSyllable = syllables[syllables.length - 1];
+      if (lastSyllable.length && lastSyllable[lastSyllable.length - 1].end)
+      {
+        lineResult.lineBonus += parseInt(Math.max((linePercentage / syllables.length) - 70, 0) * 2, 10);
+      }
+
+      lineResult.total = lineResult.notes + lineResult.goldenNotes + lineResult.lineBonus;
+
+      return lineResult;
     }, result);
   });
 }

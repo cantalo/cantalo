@@ -128,7 +128,7 @@
   @keyframes grow
   {
     1% { opacity: 1; }
-    to { opacity: 1; width: 100%; } /* TODO animating width is bad for performence */
+    to { opacity: 1; width: 100%; } /* TODO animating width is bad for performance */
   }
 
   .score
@@ -147,8 +147,8 @@
         <div class="note" use:notePosition={{line: $currentLine, syllable}} class:golden={syllable.type === 2}>
           <div class="time" style="--duration: {syllable.length}ms; --offset: {syllable.start - $currentLine.start}ms"></div>
           <div class="sung">
-            {#if $sung[syllable.start]}
-              {#each $sung[syllable.start] as sungPart}
+            {#if $sung.at($currentLine, syllable)}
+              {#each $sung.at($currentLine, syllable) as sungPart}
                 {#if sungPart.end && sungPart.match}
                   <div class={sungPart.match}
                        class:running={syllable.start + syllable.length > $time}

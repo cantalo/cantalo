@@ -107,7 +107,7 @@
     </tr>
     <tr>
       <th>line bonus</th>
-      <td>{$score.lineBonus}</td> <!-- TODO -->
+      <td>{$score.lineBonus}</td>
     </tr>
     <tr>
       <th>golden notes</th>

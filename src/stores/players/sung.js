@@ -1,19 +1,36 @@
 import { derived } from 'svelte/store';
 import Note from '../../services/Note';
-import { currentSyllable } from '../song';
+import { currentLine, currentSyllable } from '../song';
 import { time } from '../video';
+
+class SungData extends Object
+{
+  at(line, syllable)
+  {
+    if (!this[line.id])
+    {
+      this[line.id] = { [syllable.id]: [] };
+    }
+    else if (!this[line.id][syllable.id])
+    {
+      this[line.id][syllable.id] = [];
+    }
+
+    return this[line.id][syllable.id];
+  }
+}
 
 export default function (microphone)
 {
-  let sungData = {};
+  let sungData = new SungData();
 
-  const storeUpdate = ([$currentSyllable, $time], set) =>
+  const storeUpdate = ([$currentLine, $currentSyllable, $time], set) =>
   {
     const currentPitch = microphone.getPitch();
 
-    if ($currentSyllable && currentPitch !== null)
+    if ($currentLine && $currentSyllable)
     {
-      const sung = sungData[$currentSyllable.start] = sungData[$currentSyllable.start] || [];
+      const sung = sungData.at($currentLine, $currentSyllable);
       const lastSung = sung[sung.length - 1];
       const start = ($time - $currentSyllable.start) * (100 / $currentSyllable.length);
       const match = getMatchingClass($currentSyllable, currentPitch);
@@ -43,10 +60,10 @@ export default function (microphone)
   };
 
   return {
-    ...derived([currentSyllable, time], storeUpdate, sungData),
+    ...derived([currentLine, currentSyllable, time], storeUpdate, sungData),
     reset()
     {
-      sungData = {};
+      sungData = new SungData();
     },
   };
 }
@@ -57,6 +74,11 @@ function getMatchingPoints(syllable, input)
   // match regular                = p * 1.5
   // match freestyle              = p * 1
   // too low/high / unknown pitch = p * 0.5
+
+  if (!input)
+  {
+    return 0;
+  }
 
   if (syllable.type === 0)
   {
@@ -79,6 +101,11 @@ function getMatchingPoints(syllable, input)
 
 function getMatchingClass(syllable, input)
 {
+  if (!input)
+  {
+    return null;
+  }
+
   if (syllable.type === 0)
   {
     return 'match';

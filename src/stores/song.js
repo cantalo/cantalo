@@ -1,7 +1,27 @@
 import { writable, derived } from 'svelte/store';
 import { time } from './video';
 
-export const song = writable([]);
+export const song = (() =>
+{
+  const { set, ...rest } = writable([]);
+  return {
+    ...rest,
+    set(lines)
+    {
+      set(lines && lines.map((line, i) =>
+      {
+        line.id = i;
+        line.syllables = line.syllables.map((syllable, j) =>
+        {
+          syllable.id = j;
+          return syllable;
+        });
+
+        return line;
+      }));
+    }
+  }
+})();
 
 let $currentLine;
 export const currentLine = derived([song, time], ([$song, $time], set) =>
