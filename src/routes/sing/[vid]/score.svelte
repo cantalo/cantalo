@@ -104,6 +104,16 @@
     margin-top: 4em;
     border-top: 1px solid rgba(255, 255, 255, .3);
   }
+
+  .empty
+  {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    font-style: italic;
+    font-size: 1.2em;
+  }
 </style>
 
 <div class="absolute background scrollable">
@@ -126,19 +136,25 @@
       </div>
     {/if}
 
-    {#if showHighScore && $highScores && $highScores.length}
-      <div class="high-scores" in:fly={{ y: 50, duration: 2000 }}>
-        <h2>High scores</h2>
-        <table>
-          {#each $highScores as entry, index}
-            <tr>
-              <th>{index + 1}.</th>
-              <th>{entry.playerName}</th>
-              <td>{entry.score}</td>
-            </tr>
-          {/each}
-        </table>
-      </div>
+    {#if showHighScore}
+      {#if $highScores && $highScores.length}
+        <div class="high-scores" in:fly={{ y: 50, duration: 2000 }}>
+          <h2>High scores</h2>
+          <table>
+            {#each $highScores as entry, index}
+              <tr>
+                <th>{index + 1}.</th>
+                <th>{entry.playerName}</th>
+                <td>{entry.score}</td>
+              </tr>
+            {/each}
+          </table>
+        </div>
+      {:else}
+        <div class="empty">
+          No high score stored yet
+        </div>
+      {/if}
     {/if}
   </section>
 </div>
