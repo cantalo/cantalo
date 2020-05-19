@@ -16,6 +16,7 @@
 
   const meta = getContext('meta');
   const highScores = getHighScoreStore(meta.id);
+  const highScoreKeys = new Map();
 
   let showCurrentScore = false;
   let showHighScore = !process.browser;
@@ -25,6 +26,18 @@
     setTimeout(() => showCurrentScore = true, 100);
     setTimeout(() => showHighScore = true, 1000);
   });
+
+  async function save(playerIndex, data)
+  {
+    if (highScoreKeys.has(playerIndex))
+    {
+      await highScores.update(highScoreKeys.get(playerIndex), data.playerName);
+    }
+    else
+    {
+      highScoreKeys.set(playerIndex, await highScores.add(data));
+    }
+  }
 </script>
 
 <svelte:head>
@@ -93,7 +106,7 @@
   }
 </style>
 
-<div class="absolute background">
+<div class="absolute background scrollable">
   <section>
     <h1>Song score</h1>
 
@@ -108,7 +121,7 @@
     {#if showCurrentScore}
       <div class="current-scores" in:fly={{ y: 30, duration: 700 }}>
         {#each $players as player, index}
-          <ScoreTable {index} {player} on:save={({ detail }) => highScores.add(detail)} />
+          <ScoreTable {index} {player} on:save={({ detail }) => save(index, detail)} />
         {/each}
       </div>
     {/if}

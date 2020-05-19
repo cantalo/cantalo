@@ -1,5 +1,5 @@
 import { openDB } from 'idb';
-import { writable } from 'svelte/store';
+import { writable, get as getStore } from 'svelte/store';
 
 const dbStoreName = 'highscores';
 const storeMap = new Map();
@@ -48,7 +48,6 @@ export function getHighScoreStore(songId)
       subscribe,
       async add(data)
       {
-        // TODO prevent duplicate entries
         const db = await dbPromise;
         const newKey = await db.add(dbStoreName,
         {
@@ -61,6 +60,16 @@ export function getHighScoreStore(songId)
 
         return newKey;
       },
+      async update(key, playerName)
+      {
+        const entry = getStore(this).find(it => it.id === key);
+        entry.playerName = playerName;
+
+        const db = await dbPromise;
+        await db.put(dbStoreName, entry);
+
+        set(await db.getAllFromIndex(dbStoreName, 'songId', songId));
+      }
     });
   }
 

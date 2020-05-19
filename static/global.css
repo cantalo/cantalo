@@ -41,6 +41,11 @@ body
     animation-play-state: running;
 }
 
+.scrollable
+{
+    overflow: auto;
+}
+
 .cover
 {
     overflow: hidden;
