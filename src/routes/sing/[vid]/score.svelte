@@ -7,6 +7,8 @@
 <script>
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { _ } from 'svelte-i18n';
+  import Icon from 'svelte-icon'
 
   import { players } from '../../../stores/players';
   import { getHighScoreStore } from "../../../stores/highscores";
@@ -14,12 +16,17 @@
 
   import ScoreTable from '../../../components/ScoreTable.svelte';
 
+  import backIcon from './back-icon.svg';
+  import winIcon from './win-icon.svg';
+
   const meta = getContext('meta');
   const highScores = getHighScoreStore(meta.id);
   const highScoreKeys = new Map();
 
   let showCurrentScore = false;
   let showHighScore = !process.browser;
+
+  $: highScoresView = $highScores.sort((a, b) => b.score - a.score).slice(0, 10);
 
   onMount(() =>
   {
@@ -41,15 +48,56 @@
 </script>
 
 <svelte:head>
-  <title>Song score for {meta.title} from {meta.artist} at {title}</title>
+  <title>{$_('score.title', { values: { song: meta.title, artist: meta.artist, title }})}</title>
 </svelte:head>
 
 <style>
+  main
+  {
+    display: flex;
+    color: #fff;
+  }
+
+  nav
+  {
+    padding: 30px 15px;
+    font-size: 1.2em;
+
+    a
+    {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(#fff, .5);
+      border-radius: 8px;
+      padding: 4px 10px;
+    }
+
+    a span
+    {
+      margin-left: 10px;
+    }
+
+    a:link,
+    a:visited
+    {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
   section
   {
-    color: #fff;
+    position: relative;
     width: 60vw;
-    margin: auto;
+    margin: 0 auto;
+  }
+
+  .icon
+  {
+    position: absolute;
+    bottom: 0;
+    right: 40px;
+    opacity: .25;
   }
 
   h1
@@ -105,6 +153,41 @@
     border-top: 1px solid rgba(255, 255, 255, .3);
   }
 
+  .high-scores table
+  {
+    width: 60%;
+    border-collapse: collapse;
+    font-size: 1.1em;
+  }
+
+  .high-scores tr
+  {
+    counter-increment: high-scores;
+
+    &:nth-child(even)
+    {
+      background: rgba(#fff, .05);
+    }
+  }
+
+  .high-scores th
+  {
+    padding: 4px;
+    text-align: left;
+
+    &::before
+    {
+      content: counter(high-scores) '.';
+      margin-right: 10px;
+    }
+  }
+
+  .high-scores td
+  {
+    padding: 4px;
+    text-align: right;
+  }
+
   .empty
   {
     display: flex;
@@ -116,9 +199,20 @@
   }
 </style>
 
-<div class="absolute background scrollable">
+<main class="absolute background scrollable">
+  <nav>
+    <a href="/">
+      <Icon data={backIcon} viewBox="0 0 512 512" size="1em" />
+      <span>{$_('score.back')}</span>
+    </a>
+  </nav>
+  <div class="icon">
+    <Icon data={winIcon} viewBox="0 0 512 512" size="35vh" />
+  </div>
   <section>
-    <h1>Song score</h1>
+    <h1>
+      {$_('score.headline')}
+    </h1>
 
     <div class="song">
       <div class="cover">
@@ -139,11 +233,10 @@
     {#if showHighScore}
       {#if $highScores && $highScores.length}
         <div class="high-scores" in:fly={{ y: 50, duration: 2000 }}>
-          <h2>High scores</h2>
+          <h2>{$_('score.highscores.headline')}</h2>
           <table>
-            {#each $highScores as entry, index}
+            {#each highScoresView as entry}
               <tr>
-                <th>{index + 1}.</th>
                 <th>{entry.playerName}</th>
                 <td>{entry.score}</td>
               </tr>
@@ -151,10 +244,8 @@
           </table>
         </div>
       {:else}
-        <div class="empty">
-          No high score stored yet
-        </div>
+        <div class="empty">{$_('score.highscores.empty')}</div>
       {/if}
     {/if}
   </section>
-</div>
+</main>

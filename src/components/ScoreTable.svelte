@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { get as getStore } from 'svelte/store';
+  import { _ } from 'svelte-i18n';
 
   export let index;
   export let player;
@@ -72,6 +73,7 @@
 
   th
   {
+    padding: 4px 0;
     text-align: left;
   }
 
@@ -102,21 +104,21 @@
   <table>
     <tbody>
     <tr>
-      <th>notes</th>
+      <th>{$_('score.table.notes')}</th>
       <td>{$score.notes}</td>
     </tr>
     <tr>
-      <th>line bonus</th>
+      <th>{$_('score.table.lineBonus')}</th>
       <td>{$score.lineBonus}</td>
     </tr>
     <tr>
-      <th>golden notes</th>
+      <th>{$_('score.table.goldenNotes')}</th>
       <td>{$score.goldenNotes}</td>
     </tr>
     </tbody>
     <tfoot>
     <tr>
-      <th>total</th>
+      <th>{$_('score.table.total')}</th>
       <td>{$score.total}</td>
     </tr>
     </tfoot>

@@ -19,6 +19,28 @@ register('en', () => Promise.resolve({
     },
     continue: 'Continue',
   },
+  sing:
+  {
+    title: 'Sing {song} from {artist} at {title}',
+  },
+  score:
+  {
+    title: 'Song score for {song} from {artist} at {title}',
+    headline: 'Song score',
+    back: 'Song overview',
+    table:
+    {
+      notes: 'notes',
+      lineBonus: 'line bonus',
+      goldenNotes: 'golden notes',
+      total: 'total',
+    },
+    highscores:
+    {
+      headline: 'High scores',
+      empty: 'No high score stored yet',
+    }
+  },
 }));
 
 register('de', () => Promise.resolve({
@@ -39,6 +61,28 @@ register('de', () => Promise.resolve({
       signal_desc: 'Bitte spreche kurz in jedes Mikrofon um zu testen ob alles einwandfrei funktioniert.',
     },
     continue: 'Weiter',
+  },
+  sing:
+  {
+    title: 'Singe {song} von {artist} auf {title}',
+  },
+  score:
+  {
+    title: 'Punkte für {song} von {artist} auf {title}',
+    headline: 'Punkte',
+    back: 'Zur Übersicht',
+    table:
+    {
+      notes: 'Noten',
+      lineBonus: 'Zeilenbonus',
+      goldenNotes: 'Goldene Noten',
+      total: 'Gesamt',
+    },
+    highscores:
+    {
+      headline: 'Bestenliste',
+      empty: 'Bisher noch kein Eintrag',
+    }
   },
 }));
 

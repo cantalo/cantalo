@@ -1,6 +1,7 @@
 <script>
   import { onMount, onDestroy, getContext } from 'svelte';
   import { get as getStore } from 'svelte/store';
+  import { _ } from 'svelte-i18n';
   import { goto } from '@sapper/app';
 
   import Notes from '../../../components/Notes.svelte';
@@ -37,7 +38,7 @@
 </script>
 
 <svelte:head>
-  <title>Sing {meta.title} from {meta.artist} at {title}</title>
+  <title>{$_('sing.title', { values: { song: meta.title, artist: meta.artist, title }})}</title>
 </svelte:head>
 
 <style type="text/scss">
