@@ -9,7 +9,6 @@
 
   import { players } from '../../../stores/players';
   import { video, playing, time } from '../../../stores/video';
-  import { title } from '../../../config';
 
   const meta = getContext('meta');
 
@@ -38,7 +37,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_('sing.title', { values: { song: meta.title, artist: meta.artist, title }})}</title>
+  <title>{$_('sing.title', { values: { song: meta.title, artist: meta.artist, title: $_('app.title') }})}</title>
 </svelte:head>
 
 <style type="text/scss">

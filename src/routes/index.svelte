@@ -14,9 +14,10 @@
 </script>
 
 <script>
+  import { _ } from 'svelte-i18n';
   import shuffle from 'lodash.shuffle';
+
   import SystemRequirements from '../services/SystemRequirements';
-  import { title } from '../config';
 
   SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
 
@@ -46,7 +47,8 @@
 </script>
 
 <svelte:head>
-  <title>{title}</title>
+  <title>{$_('app.title')}</title>
+  <meta name="robots" content="index,nofollow">
 </svelte:head>
 
 <svelte:window on:keypress={keypress} />

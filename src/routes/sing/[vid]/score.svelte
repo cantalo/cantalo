@@ -12,7 +12,6 @@
 
   import { players } from '../../../stores/players';
   import { getHighScoreStore } from "../../../stores/highscores";
-  import { title } from '../../../config';
 
   import ScoreTable from '../../../components/ScoreTable.svelte';
 
@@ -48,7 +47,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_('score.title', { values: { song: meta.title, artist: meta.artist, title }})}</title>
+  <title>{$_('score.title', { values: { song: meta.title, artist: meta.artist, title: $_('app.title') }})}</title>
 </svelte:head>
 
 <style>

@@ -103,7 +103,7 @@
   }
 </style>
 
-<dialog bind:this={dialog} on:close class={size}>
+<dialog bind:this={dialog} on:close class={size} data-nosnippet>
   {#if closable}
   <div on:click={close} role="button" class="close">&times;</div>
   {/if}

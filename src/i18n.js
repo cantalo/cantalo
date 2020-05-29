@@ -1,6 +1,14 @@
 import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
 
+const appName = '¡\u202FCantalo\u202F!'
+
 register('en', () => Promise.resolve({
+  app:
+  {
+    name: appName,
+    title: `${appName} (beta)`,
+    description: 'Sing your favorite songs online on Cantalo!',
+  },
   welcome:
   {
     title: 'Welcome to Cantalo!',
@@ -44,6 +52,10 @@ register('en', () => Promise.resolve({
 }));
 
 register('de', () => Promise.resolve({
+  app:
+  {
+    description: 'Singe auf Cantalo online deine lieblings Songs!',
+  },
   welcome:
   {
     title: 'Willkommen bei Cantalo!',

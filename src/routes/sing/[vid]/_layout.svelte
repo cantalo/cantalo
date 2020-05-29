@@ -36,6 +36,10 @@
   });
 </script>
 
+<svelte:head>
+  <meta name="robots" content="none">
+</svelte:head>
+
 <YouTube />
 
 <slot></slot>
