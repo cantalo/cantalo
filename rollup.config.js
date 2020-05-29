@@ -4,6 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import svelte from 'rollup-plugin-svelte';
 import sveltePreprocessPostcss from 'svelte-preprocess-postcss';
 import { terser } from 'rollup-plugin-terser';
+import { string } from 'rollup-plugin-string';
 import config from 'sapper/config/rollup.js';
 import pkg from './package.json';
 
@@ -60,6 +61,9 @@ export default {
 				browser: true,
 				dedupe
 			}),
+			string({
+				include: '**/*-icon.svg',
+			}),
 			commonjs(),
 			!dev && terser({
 				module: true
@@ -87,6 +91,9 @@ export default {
 			}),
 			resolve({
 				dedupe
+			}),
+			string({
+				include: '**/*-icon.svg',
 			}),
 			commonjs()
 		],
