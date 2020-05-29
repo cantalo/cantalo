@@ -1,17 +1,14 @@
-import api from '../../_api';
+import DB from '../../_db';
 
 export async function get(req, res)
 {
   const { vid } = req.params;
+  const db = await DB();
 
-  const songsJson = await api('songs.json');
-  const song = await api(`songs/${vid}.json`); // TODO include meta data
-
-  const songs = JSON.parse(songsJson);
+  const data = db.get('songs')
+    .find({ id: vid })
+    .value();
 
   res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({
-    meta: songs.find(song => song.id === vid),
-    song: JSON.parse(song),
-  }));
+  res.end(JSON.stringify(data));
 }
