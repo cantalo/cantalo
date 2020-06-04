@@ -15,7 +15,6 @@
 
 <script>
   import { _ } from 'svelte-i18n';
-  import shuffle from 'lodash.shuffle';
 
   import SystemRequirements from '../services/SystemRequirements';
 
@@ -43,7 +42,7 @@
       (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
       (song.language && searchTerm === `lang:${song.language}`) ||
       (song.year && searchTerm === `year:${song.year}`)
-    ) : shuffle(songs.filter(song => !song.beta)); // FIXME shuffles twice probably due to hydration
+    ) : songs.filter(song => !song.beta);
 </script>
 
 <svelte:head>
@@ -164,10 +163,10 @@
          bind:this={searchbar} bind:value={search}>
 
   <div class="songs">
-    {#each songsView as song, i}
-      <a class="song" href={"sing/" + song.id} lang={song.language} tabindex={i}>
+    {#each songsView as song}
+      <a class="song" href={"sing/" + song.id} lang={song.language}>
         <div class="cover">
-          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover">
+          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover" loading="lazy">
         </div>
         <dl>
           <dd>{song.title}</dd>
