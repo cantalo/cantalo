@@ -11,8 +11,9 @@
   import Icon from 'svelte-icon'
 
   import { players } from '../../../stores/players';
-  import { getHighScoreStore } from "../../../stores/highscores";
+  import { getHighScoreStore } from '../../../stores/highscores';
 
+  import IconButton from '../../../components/IconButton.svelte';
   import ScoreTable from '../../../components/ScoreTable.svelte';
 
   import backIcon from './back-icon.svg';
@@ -60,28 +61,6 @@
   nav
   {
     padding: 30px 15px;
-    font-size: 1.2em;
-
-    a
-    {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid rgba(#fff, .5);
-      border-radius: 8px;
-      padding: 4px 10px;
-    }
-
-    a span
-    {
-      margin-left: 10px;
-    }
-
-    a:link,
-    a:visited
-    {
-      color: inherit;
-      text-decoration: none;
-    }
   }
 
   section
@@ -200,13 +179,12 @@
 
 <main class="absolute background scrollable">
   <nav>
-    <a href="/">
-      <Icon data={backIcon} viewBox="0 0 512 512" size="1em" />
-      <span>{$_('score.back')}</span>
-    </a>
+    <IconButton icon={backIcon} href="/">
+      {$_('score.back')}
+    </IconButton>
   </nav>
   <div class="icon">
-    <Icon data={winIcon} viewBox="0 0 512 512" size="35vh" />
+    <Icon data={winIcon} size="35vh" />
   </div>
   <section>
     <h1>

@@ -5,7 +5,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
   import AnimationFrames from '../services/AnimationFrames';
-  import { video, time, playing } from '../stores/video';
+  import { video, time, playing, playerApi } from '../stores/video';
 
   const win = process.browser ? window : {};
   let player, playerElement;
@@ -32,6 +32,8 @@
       {
         onReady()
         {
+          $playerApi = player;
+
           videoUnsubscriber = video.subscribe(({ id, gap }) =>
           {
             if (id)
@@ -94,6 +96,7 @@
     if (animationFrames) animationFrames.remove('PlayTime');
     $time = 0;
     $playing = false;
+    $playerApi = {};
   });
 </script>
 

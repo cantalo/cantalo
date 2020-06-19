@@ -4,6 +4,7 @@ const { set, subscribe } = writable({});
 
 export const time = writable(0);
 export const playing = writable(false);
+export const playerApi = writable({});
 
 export const video = {
   subscribe,

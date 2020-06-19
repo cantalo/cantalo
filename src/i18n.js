@@ -30,6 +30,14 @@ register('en', () => Promise.resolve({
   sing:
   {
     title: 'Sing {song} from {artist} at {title}',
+    pause:
+    {
+      headline: 'Paused',
+      continue: 'Continue playing',
+      restart: 'Start from beginning',
+      back: 'Back to overview',
+      open_youtube: 'Open video on YouTube',
+    },
   },
   score:
   {
@@ -77,6 +85,14 @@ register('de', () => Promise.resolve({
   sing:
   {
     title: 'Singe {song} von {artist} auf {title}',
+    pause:
+    {
+      headline: 'Pausiert',
+      continue: 'Weiter spielen',
+      restart: 'Von vorne anfangen',
+      back: 'Zurück zur Übersicht',
+      open_youtube: 'Video auf YouTube öffnen',
+    },
   },
   score:
   {

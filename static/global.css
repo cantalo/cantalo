@@ -1,3 +1,8 @@
+:root
+{
+    --background-opacity: 1;
+}
+
 *, *::before, *::after
 {
     box-sizing: border-box;
@@ -34,10 +39,14 @@ body
 
 .background
 {
-    background: linear-gradient(258deg, #473B7B, #3584A7, #30D2BE);
+    background: linear-gradient(258deg,
+        rgba(71, 59, 123, var(--background-opacity)),
+        rgba(53, 132, 167, var(--background-opacity)),
+        rgba(48, 210, 190, var(--background-opacity))
+    );
     background-size: 600% 600%;
 
-    animation: bg-move 60s ease infinite;
+    animation: bg-move 30s ease infinite;
     animation-play-state: running;
 }
 
