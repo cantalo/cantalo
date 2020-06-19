@@ -21,7 +21,8 @@
 <svelte:head>
   <meta name="application-name" content={$_('app.name')}>
   <meta name="description" content={$_('app.description')}>
-  <meta name="keywords" lang="en" content="sing, karaoke, game, singstar, youtube">
+  <meta name="keywords" lang="en" content="sing, karaoke, game, singstar, youtube, webaudio">
+  <link rel="manifest" href="manifest.json">
 </svelte:head>
 
 <WelcomeDialog />
