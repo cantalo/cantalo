@@ -36,6 +36,7 @@ Sentry.init({
 	},
 });
 
-sapper.start({
-	target: document.querySelector('cantalo')
-});
+const cantalo = document.querySelector('cantalo');
+cantalo.setAttribute('version', process.env.VERSION);
+
+sapper.start({ target: cantalo });
