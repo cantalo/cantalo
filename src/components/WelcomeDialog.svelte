@@ -125,7 +125,6 @@
 
         if (channels.every(channel => channel.hadSignal))
         {
-          channels[0].mic.stop(); // TODO
           detectedInput = true;
           resolve();
         }

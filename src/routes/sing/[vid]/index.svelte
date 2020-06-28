@@ -4,6 +4,7 @@
   import { _ } from 'svelte-i18n';
   import { goto } from '@sapper/app';
 
+  import WelcomeDialog from '../../../components/WelcomeDialog.svelte';
   import Icon from '../../../components/Icon.svelte';
   import Notes from '../../../components/Notes.svelte';
   import Lyrics from '../../../components/Lyrics.svelte';
@@ -91,6 +92,8 @@
 </style>
 
 <Keyboard on:space={togglePause} on:escape={togglePause} />
+
+<WelcomeDialog />
 
 <div class="absolute overlay" on:click={togglePause}>
   {#each $players as player}
