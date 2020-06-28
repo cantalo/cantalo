@@ -1,5 +1,5 @@
 <script>
-  import Icon from 'svelte-icon';
+  import Icon from './Icon.svelte';
 
   export let icon;
   export let href = undefined;

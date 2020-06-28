@@ -3,8 +3,8 @@
   import { get as getStore } from 'svelte/store';
   import { _ } from 'svelte-i18n';
   import { goto } from '@sapper/app';
-  import Icon from 'svelte-icon'
 
+  import Icon from '../../../components/Icon.svelte';
   import Notes from '../../../components/Notes.svelte';
   import Lyrics from '../../../components/Lyrics.svelte';
   import Keyboard from '../../../components/hardware/Keyboard.svelte';

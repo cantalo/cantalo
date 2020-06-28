@@ -26,7 +26,6 @@
     "sirv-cli": "^0.4.6",
     "svelte": "^3.23.0",
     "svelte-i18n": "^3.0.3",
-    "svelte-icon": "github:bbuhler/svelte-icon#v1.1.0",
     "svelte-preprocess-postcss": "^1.1.1"
   },
   "scripts": {

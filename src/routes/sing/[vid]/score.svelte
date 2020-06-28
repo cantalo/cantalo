@@ -8,11 +8,11 @@
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
-  import Icon from 'svelte-icon'
 
   import { players } from '../../../stores/players';
   import { getHighScoreStore } from '../../../stores/highscores';
 
+  import Icon from '../../../components/Icon.svelte';
   import IconButton from '../../../components/IconButton.svelte';
   import ScoreTable from '../../../components/ScoreTable.svelte';
 
