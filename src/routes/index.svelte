@@ -14,6 +14,7 @@
 </script>
 
 <script>
+  import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
 
   import SystemRequirements from '../services/SystemRequirements';
@@ -22,6 +23,8 @@
 
   export let songs;
   let searchbar, search = '';
+  let songsElm, viewHeight;
+  const angle = 360 -25;
 
   function keypress()
   {
@@ -43,6 +46,29 @@
       (song.language && searchTerm === `lang:${song.language}`) ||
       (song.year && searchTerm === `year:${song.year}`)
     ) : songs.filter(song => !song.beta);
+
+  $: songsViewHeight = songsElm && Math.ceil((songsElm.clientWidth * Math.sin(angle) + viewHeight) / Math.sin(180 - angle)) - 500;
+  // $: songsViewHeight = viewHeight + 500;
+
+  function intersecting(entries)
+  {
+    entries.forEach(({ target, isIntersecting }) =>
+    {
+      target.classList.toggle('active', isIntersecting);
+    });
+  }
+
+  let observer;
+
+  function observe(node)
+  {
+    if (!observer)
+    {
+      observer = new IntersectionObserver(intersecting, { root: songsElm, rootMargin: '-60% 0% -30% 0%' });
+    }
+
+    observer.observe(node);
+  }
 </script>
 
 <svelte:head>
@@ -50,129 +76,85 @@
   <meta name="robots" content="index,nofollow">
 </svelte:head>
 
-<svelte:window on:keypress={keypress} />
+<svelte:window on:keypress={keypress} bind:innerHeight={viewHeight} />
 
 <style type="text/scss">
-  .browse
-  {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
   .songs
   {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 10vw;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    padding: 0 10%;
+    --thumbnail-bar-width: 500px;
+
+    position: absolute;
+    bottom: 0;
+    right: -50px;
+    height: 100%;
+    padding-top: 80vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-snap-type: y proximity;
+    transform: rotate(var(--angle));
+    transform-origin: bottom right;
+    background: linear-gradient(to left, rgba(0, 0, 0, .25) var(--thumbnail-bar-width), transparent calc(var(--thumbnail-bar-width) + 1px));
   }
 
   .song
   {
     position: relative;
     display: flex;
-    align-items: center;
-    min-width: 70%;
-    scroll-snap-align: center;
-    margin: 0 10%;
-    background-color: rgba(0,0,0,.3);
-    cursor: pointer;
+    flex-direction: row-reverse;
+    transform: rotate(calc(var(--angle) * -1));
+    margin: 10% 0;
+    scroll-snap-align: start;
+  }
+
+  .song .thumbnail
+  {
+    width: calc(var(--thumbnail-bar-width) + 100px);
+    height: 250px;
+    margin-right: -100px;
+    overflow: hidden;
+    clip-path: polygon(0% 0%, 75% 0%, 100% 120%, 20% 100%);
     text-decoration: none;
 
-    &[lang]::before
+    img
     {
-      content: attr(lang);
-
-      position: absolute;
-      right: 4px;
-      top: 4px;
-      font-size: 12px;
-      text-transform: uppercase;
-      padding: 3px;
-      border-radius: 3px;
-      border: 1px solid rgba(255,255,255, .5);
-      color: rgba(255,255,255, .8);
-    }
-
-    &:focus
-    {
-      outline: 0;
-      box-shadow: 0 0 40px #fff;
-    }
-
-    .cover
-    {
-      min-height: 50vh;
-      min-width: 50vh;
-      background: #000;
-    }
-
-    dl
-    {
-      font-weight: bold;
-      color: #fff;
-      font-size: 2.5em;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
     }
   }
 
-  .artist
+  .song dl
   {
-    font-size: .5em;
-  }
-
-  input.search
-  {
-    background: none transparent;
-    border: 0 none;
-    border-bottom: 1px solid transparent;
-    font-family: inherit;
-    font-size: 3rem;
+    flex: 1;
     color: #fff;
-    text-align: center;
-    max-height: 0;
-    overflow: hidden;
-    width: 80%;
-    height: 100%;
-    margin: 0 10%;
+    font-size: 30px;
+    border-top: 2px solid #fff;
+    padding-right: 10%;
+    transition: opacity .3s ease-out;
+  }
 
-    transition: max-height .5s ease-in-out, border-bottom-color .5s ease-in-out;
-
-    &:focus
-    {
-      outline: none;
-    }
-
-    &:focus,
-    &:valid
-    {
-      max-height: 100px;
-      border-bottom-color: currentColor;
-    }
+  .song:not(.active) dl
+  {
+    opacity: 0;
   }
 </style>
 
 <div class="browse absolute background">
-  <input type="search" class="search"
-         required spellcheck="false"
-         bind:this={searchbar} bind:value={search}>
+<!--  <input type="search" class="search"-->
+<!--         required spellcheck="false"-->
+<!--         bind:this={searchbar} bind:value={search}>-->
 
-  <div class="songs">
+  <div class="songs" bind:this={songsElm} style="--angle: {angle}deg; height: {songsViewHeight}px">
     {#each songsView as song}
-      <a class="song" href={"sing/" + song.id} lang={song.language}>
-        <div class="cover">
-          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover" loading="lazy">
-        </div>
+      <div class="song" lang={song.language} use:observe>
+        <a class="thumbnail" href={"sing/" + song.id}>
+          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover">
+        </a>
         <dl>
           <dd>{song.title}</dd>
           <dd class="artist">{song.artist}</dd>
         </dl>
-      </a>
+      </div>
     {/each}
   </div>
 </div>
