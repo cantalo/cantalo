@@ -23,6 +23,12 @@ export default class Microphone
     this.channel = channel;
   }
 
+  static async getInputDevices()
+  {
+    return (await navigator.mediaDevices.enumerateDevices())
+      .filter(device => device.kind === 'audioinput' && device.deviceId !== 'default');
+  }
+
   async init()
   {
     if (!PitchDetection)

@@ -4,7 +4,7 @@
   import { _ } from 'svelte-i18n';
   import { goto } from '@sapper/app';
 
-  import WelcomeDialog from '../../../components/WelcomeDialog.svelte';
+  import MicSetup from '../../../components/MicSetup.svelte';
   import Icon from '../../../components/Icon.svelte';
   import Notes from '../../../components/Notes.svelte';
   import Lyrics from '../../../components/Lyrics.svelte';
@@ -93,35 +93,35 @@
 
 <Keyboard on:space={togglePause} on:escape={togglePause} />
 
-<WelcomeDialog />
-
-<div class="absolute overlay" on:click={togglePause}>
-  {#each $players as player}
-  <Notes {player} />
-  {/each}
-  <Lyrics />
-</div>
-
-{#if !$playing && $time > 0}
-  <div class="absolute background pause">
-    <div class="headline">
-      <Icon data={pauseIcon} size="5em" />
-      <h1>{$_('sing.pause.headline')}</h1>
-    </div>
-
-    <nav>
-      <IconButton icon={backIcon} href="/">
-        {$_('sing.pause.back')}
-      </IconButton>
-      <IconButton icon={playIcon} on:click={togglePause}>
-        {$_('sing.pause.continue')}
-      </IconButton>
-      <IconButton icon={restartIcon} on:click={() => location.reload()}>
-        {$_('sing.pause.restart')}
-      </IconButton>
-      <IconButton icon={videoIcon} href={'http://youtu.be/' + meta.id}>
-        {$_('sing.pause.open_youtube')}
-      </IconButton>
-    </nav>
+<MicSetup>
+  <div class="absolute overlay" on:click={togglePause}>
+    {#each $players as player}
+      <Notes {player} />
+    {/each}
+    <Lyrics />
   </div>
-{/if}
+
+  {#if !$playing && $time > 0}
+    <div class="absolute background pause">
+      <div class="headline">
+        <Icon data={pauseIcon} size="5em" />
+        <h1>{$_('sing.pause.headline')}</h1>
+      </div>
+
+      <nav>
+        <IconButton icon={backIcon} href="/">
+          {$_('sing.pause.back')}
+        </IconButton>
+        <IconButton icon={playIcon} on:click={togglePause}>
+          {$_('sing.pause.continue')}
+        </IconButton>
+        <IconButton icon={restartIcon} on:click={() => location.reload()}>
+          {$_('sing.pause.restart')}
+        </IconButton>
+        <IconButton icon={videoIcon} href={'http://youtu.be/' + meta.id}>
+          {$_('sing.pause.open_youtube')}
+        </IconButton>
+      </nav>
+    </div>
+  {/if}
+</MicSetup>
