@@ -1,8 +1,3 @@
-<script context="module">
-  import SystemRequirements from '../services/SystemRequirements';
-  SystemRequirements.addJS('CSS Typed OM', () => !!(CSS && CSS.number));
-</script>
-
 <script>
   import Score from './Score.svelte';
   import { currentLine } from '../stores/song';
@@ -21,13 +16,13 @@
     }
   });
 
-  function notePosition({ attributeStyleMap }, { line, syllable })
+  function notePosition({ style }, { line, syllable })
   {
     const factor = 100 / (line.end - line.start);
 
-    attributeStyleMap.set('top', CSS.percent(((syllable.pitch - line.minPitch || 1) * 90) / (line.maxPitch - line.minPitch || 2)));
-    attributeStyleMap.set('left', CSS.percent((syllable.start - line.start) * factor));
-    attributeStyleMap.set('width', CSS.percent(syllable.length * factor));
+    style.top = (((syllable.pitch - line.minPitch || 1) * 90) / (line.maxPitch - line.minPitch || 2)) + '%';
+    style.left = ((syllable.start - line.start) * factor) + '%';
+    style.width = (syllable.length * factor) + '%';
   }
 </script>
 
