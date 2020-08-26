@@ -93,7 +93,21 @@
     background: transparent;
   }
 
-  progress[value]::-webkit-progress-value,
+  progress[value]::-webkit-progress-value /* can not me merged with firefox pseudo selector */
+  {
+    background-image:
+        linear-gradient(-45deg,
+        transparent 33%, rgba(0, 0, 0, .1) 33%,
+        rgba(0,0, 0, .1) 66%, transparent 66%),
+        linear-gradient(to top,
+        rgba(255, 255, 255, .25),
+        rgba(0, 0, 0, .25)),
+        linear-gradient(to right, #25cc00, #f44);
+
+    border-radius: 4px;
+    background-size: 35px 20px, 100% 100%, 200px 100%;
+  }
+
   progress[value]::-moz-progress-bar
   {
     background-image:
