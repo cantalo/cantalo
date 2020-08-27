@@ -17,14 +17,20 @@
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
 
+  import Icon from '../components/Icon.svelte';
+
+  import searchIcon from './search-icon.svg';
+
   import SystemRequirements from '../services/SystemRequirements';
 
   SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
 
-  export let songs;
+  export let songs = [];
+
   let searchbar, search = '';
   let songsElm, viewHeight;
-  const angle = 360 -25;
+
+  const angle = 360 - 25;
 
   function keypress()
   {
@@ -48,7 +54,6 @@
     ) : songs.filter(song => !song.beta);
 
   $: songsViewHeight = songsElm && Math.ceil((songsElm.clientWidth * Math.sin(angle) + viewHeight) / Math.sin(180 - angle)) - 500;
-  // $: songsViewHeight = viewHeight + 500;
 
   function intersecting(entries)
   {
@@ -96,6 +101,11 @@
     background: linear-gradient(to left, rgba(0, 0, 0, .25) var(--thumbnail-bar-width), transparent calc(var(--thumbnail-bar-width) + 1px));
   }
 
+  .songs.hidden
+  {
+    visibility: hidden;
+  }
+
   .song
   {
     position: relative;
@@ -137,14 +147,55 @@
   {
     opacity: 0;
   }
+
+  .search
+  {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .search label
+  {
+    position: absolute;
+    bottom: 4px;
+    left: 8px;
+    cursor: pointer;
+  }
+
+  .search input
+  {
+    appearance: none;
+    height: 100%;
+    width: 100%;
+    padding: 4px 0 4px 50px;
+    background-color: rgba(#000, 0);
+    border: 0 none;
+    border-top: 1px solid rgba(#fff, 0);
+    color: #fff;
+    font-size: 24px;
+    transition: border-color .3s linear, background-color .3s linear;
+  }
+
+  .search input:not(:focus)
+  {
+    width: 0;
+  }
+
+  .search input:focus
+  {
+    outline: 0 none;
+    border-top: 1px solid #fff;
+    background-color: rgba(#000, .2);
+  }
 </style>
 
 <div class="browse absolute background">
-<!--  <input type="search" class="search"-->
-<!--         required spellcheck="false"-->
-<!--         bind:this={searchbar} bind:value={search}>-->
-
-  <div class="songs" bind:this={songsElm} style="--angle: {angle}deg; height: {songsViewHeight}px">
+  <div class="songs" class:hidden={!songsViewHeight} bind:this={songsElm} style="--angle: {angle}deg; height: {songsViewHeight}px">
     {#each songsView as song}
       <div class="song" lang={song.language} use:observe>
         <a class="thumbnail" href={"sing/" + song.id}>
@@ -156,5 +207,13 @@
         </dl>
       </div>
     {/each}
+  </div>
+
+  <div class="search">
+    <input type="search" id="search" required spellcheck="false" autocomplete="off" bind:this={searchbar} bind:value={search}>
+
+    <label for="search">
+      <Icon data={searchIcon} size="32" />
+    </label>
   </div>
 </div>
