@@ -21,6 +21,11 @@
 
   onMount(async () =>
   {
+    if (players.initialized.resolved)
+    {
+      return;
+    }
+
     if (sessionStorage.microphoneDeviceId)
     {
       const devices = await Microphone.getInputDevices();
@@ -53,8 +58,6 @@
 
   function initPlayers(deviceId, channels)
   {
-    players.reset();
-
     for (let i = channels; i > 0; i--)
     {
       players.add(deviceId, i - 1);
