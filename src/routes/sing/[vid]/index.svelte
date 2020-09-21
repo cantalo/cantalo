@@ -26,7 +26,7 @@
   {
     await players.initialized;
     await Promise.all(getStore(players).map(player => player.mic.init()));
-    video.play(meta.id, meta.videogap);
+    video.play(meta.id, meta.videogap, meta.videoend);
   });
 
   onDestroy(() =>
@@ -43,7 +43,7 @@
   }
 
   $: {
-    if ($playing === null || meta.videoend && $time > meta.videoend * 1000)
+    if ($playing === null || meta.end && $time > meta.end)
     {
       goto(`/sing/${meta.id}/score`, { replaceState: true });
     }

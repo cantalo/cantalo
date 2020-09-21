@@ -8,5 +8,5 @@ export const playerApi = writable({});
 
 export const video = {
   subscribe,
-  play: (id, gap = 0) => set({ id, gap }),
+  play: (id, gap = 0, end) => set({ id, gap, end }),
 };

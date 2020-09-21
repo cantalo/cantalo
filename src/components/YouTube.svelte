@@ -34,11 +34,11 @@
         {
           $playerApi = player;
 
-          videoUnsubscriber = video.subscribe(({ id, gap }) =>
+          videoUnsubscriber = video.subscribe(({ id, gap, end }) =>
           {
             if (id)
             {
-              player.loadVideoById(id, gap);
+              player.loadVideoById(id, gap, end);
             }
             else
             {
