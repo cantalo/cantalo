@@ -50,6 +50,7 @@ body
 
     background: linear-gradient(var(--bg-angle), #32988a, #32a6ff, #3f6fff, #8d54ff, #000e3c);
     background-size: 500%;
+    color: #fff;
 
     animation: bg-move 30s ease-in-out infinite alternate;
     animation-play-state: running;

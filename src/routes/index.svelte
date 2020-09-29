@@ -17,6 +17,7 @@
   import { onMount } from 'svelte';
   import { _ } from 'svelte-i18n';
 
+  import Logo from '../components/Logo.svelte';
   import Icon from '../components/Icon.svelte';
 
   import searchIcon from './search-icon.svg';
@@ -66,7 +67,7 @@
   {
     if (!observer)
     {
-      observer = new IntersectionObserver(intersecting, { root: songsElm, rootMargin: '-55% 0% -40% 0%' });
+      observer = new IntersectionObserver(intersecting, { root: songsElm, rootMargin: '-60% 0% -40% 0%' });
     }
 
     observer.observe(node);
@@ -81,6 +82,32 @@
 <svelte:window on:keypress={keypress} />
 
 <style type="text/scss">
+  header
+  {
+    display: flex;
+    height: 100px;
+    padding: 20px;
+  }
+
+  .menu
+  {
+    position: relative;
+    align-self: stretch;
+    width: 60px;
+    margin-left: auto;
+  }
+
+  .menu::before
+  {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    right: 10px;
+    border-top: 2px solid #fff;
+    box-shadow: 0 10px #fff, 0 20px #fff;
+  }
+
   .songs
   {
     --thumbnail-bar-width: 500px;
@@ -101,9 +128,9 @@
     padding-top: 25vh;
     overflow-y: auto;
     overflow-x: hidden;
-    scroll-snap-type: y proximity;
+    scroll-snap-type: y mandatory;
     scroll-padding-top: 45vh;
-    scroll-padding-bottom: 15vh;
+    scroll-padding-bottom: 10vh;
     transform: skew(var(--angle-deg));
     transform-origin: top left;
     background: linear-gradient(to left, rgba(0, 0, 0, .25) var(--thumbnail-bar-width), transparent calc(var(--thumbnail-bar-width) + 1px));
@@ -271,6 +298,11 @@
 </style>
 
 <div class="browse absolute background">
+  <header>
+    <Logo />
+
+    <div class="menu"></div>
+  </header>
   <div class="songs" bind:this={songsElm}>
     {#each songsView as song}
       <a class="song" href={"sing/" + song.id} lang={song.language} use:observe>
