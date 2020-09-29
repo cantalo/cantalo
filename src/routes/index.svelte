@@ -82,6 +82,19 @@
 <svelte:window on:keypress={keypress} />
 
 <style type="text/scss">
+  :root
+  {
+    --thumbnail-bar-width: 500px;
+    --angle: 25;
+    --angle-deg: calc(1deg * var(--angle));
+    --angle-rad: calc(0.017453292519943295 * var(--angle));
+    --tan-term1: var(--angle-rad);
+    --tan-term2: calc((1/3) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
+    --tan-term3: calc((2 / 15) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
+    --tan-term4: calc((17/315) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
+    --tan: calc(var(--tan-term1) + var(--tan-term2) + var(--tan-term3) + var(--tan-term4));
+  }
+
   header
   {
     display: flex;
@@ -110,16 +123,6 @@
 
   .songs
   {
-    --thumbnail-bar-width: 500px;
-    --angle: 25;
-    --angle-deg: calc(1deg * var(--angle));
-    --angle-rad: calc(0.017453292519943295 * var(--angle));
-    --tan-term1: var(--angle-rad);
-    --tan-term2: calc((1/3) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
-    --tan-term3: calc((2 / 15) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
-    --tan-term4: calc((17/315) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
-    --tan: calc(var(--tan-term1) + var(--tan-term2) + var(--tan-term3) + var(--tan-term4));
-
     position: absolute;
     top: 0;
     right: calc(100vh * var(--tan));
@@ -253,11 +256,11 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    right: 500px;
+    right: calc(var(--thumbnail-bar-width) + 0.5px);
     height: 50px;
     color: #fff;
     overflow: hidden;
-    clip-path: polygon(0 0, 0 100%, 100% 100%, 97.9% 0); /* TODO replace magic number with calc */
+    clip-path: polygon(0 0, 0 100%, 100% 100%, calc(100% - calc(50px * var(--tan))) 0);
   }
 
   .search label
@@ -273,7 +276,7 @@
     appearance: none;
     height: 100%;
     width: 100%;
-    padding: 4px 0 4px 50px;
+    padding: 4px 20px 4px 50px;
     background-color: rgba(#000, 0);
     border: 0 none;
     border-top: 1px solid rgba(#fff, 0);
@@ -293,7 +296,15 @@
   {
     outline: 0 none;
     border-top: 1px solid #fff;
-    background-color: rgba(#000, .2);
+    background-color: rgba(#000, .35);
+  }
+
+  .search input::-webkit-search-cancel-button
+  {
+    appearance: none;
+    height: 25px;
+    width: 25px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 500'%3E%3Cpath fill='%23fff' d='M285 250l108-107a25 25 0 00-36-36L250 215 143 107a25 25 0 00-36 36l108 107-108 107a25 25 0 0036 36l107-108 107 108a25 25 0 1036-36z'/%3E%3C/svg%3E");
   }
 </style>
 
