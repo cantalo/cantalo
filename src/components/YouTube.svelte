@@ -60,11 +60,20 @@
             animationFrames.remove('PlayTime');
             $playing = false;
 
+            if (playerState === YT.PlayerState.BUFFERING)
+            {
+              console.debug('Buffering... Current playback quality:', player.getPlaybackQuality())
+            }
+
             if (playerState === YT.PlayerState.ENDED)
             {
               $playing = null;
             }
           }
+        },
+        onPlaybackQualityChange({ data: playbackQuality })
+        {
+          console.debug('Playback quality has changed:', playbackQuality);
         },
       }
     });
