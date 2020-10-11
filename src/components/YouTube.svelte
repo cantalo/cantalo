@@ -38,7 +38,11 @@
           {
             if (id)
             {
-              player.loadVideoById(id, gap, end);
+              player.loadVideoById({
+                videoId: id,
+                startSeconds: gap,
+                endSeconds: end,
+              });
             }
             else
             {
