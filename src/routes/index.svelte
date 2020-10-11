@@ -50,32 +50,11 @@
     height: 100px;
     padding: 20px;
   }
-
-  .menu
-  {
-    position: relative;
-    align-self: stretch;
-    width: 60px;
-    margin-left: auto;
-  }
-
-  .menu::before
-  {
-    content: '';
-    position: absolute;
-    top: 15px;
-    left: 10px;
-    right: 10px;
-    border-top: 2px solid #fff;
-    box-shadow: 0 10px #fff, 0 20px #fff;
-  }
 </style>
 
 <div class="browse absolute background">
   <header>
     <Logo />
-
-    <div class="menu"></div>
   </header>
 
   <BrowseSongs {songs} {search} />
