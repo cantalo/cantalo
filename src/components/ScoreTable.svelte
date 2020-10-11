@@ -3,6 +3,8 @@
   import { get as getStore } from 'svelte/store';
   import { _ } from 'svelte-i18n';
 
+  import PlayerColor from './PlayerColor.svelte';
+
   export let index;
   export let player;
 
@@ -15,7 +17,10 @@
 
     if (player.name.length > 1 && _score.total > 0)
     {
-      dispatchEvent('save', { playerName: player.name, score: _score.total });
+      dispatchEvent('save', {
+        playerName: player.name,
+        score: _score.total,
+      });
     }
   }
 </script>
@@ -28,7 +33,7 @@
     background: transparent;
     color: inherit;
     border: 0 none;
-    padding: 0 0 2px;
+    padding: 2px 0;
     margin: 0;
     font-size: inherit;
     width: 100%;
@@ -49,20 +54,8 @@
 
   .player
   {
-    display: flex;
     margin: 1em 0 .5em;
     font-size: 2em;
-  }
-
-  .player .color
-  {
-    width: calc(1em + 4px);
-    height: 1em;
-    border-radius: 6px;
-    border: 1px solid rgba(0,0,0, .3);
-    margin: 2px 10px 0 0;
-    box-shadow: inset 0 5px 20px rgba(255,255,255, .5);
-    opacity: .8;
   }
 
   table
@@ -97,8 +90,9 @@
 {#if $score.total}
 <div class="score">
   <div class="player">
-    <div class="color" style="background-color: {player.color}"></div>
-    <input type="text" bind:value={player.name} placeholder="Player {index + 1}" spellcheck="false" on:blur={save}>
+    <PlayerColor color={player.color}>
+      <input type="text" bind:value={player.name} placeholder="Player {index + 1}" spellcheck="false" on:blur={save}>
+    </PlayerColor>
   </div>
 
   <table>

@@ -5,6 +5,7 @@
 </script>
 
 <script>
+  import PlayerColor from '../../../components/PlayerColor.svelte';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
@@ -21,7 +22,8 @@
 
   const meta = getContext('meta');
   const highScores = getHighScoreStore(meta.id);
-  const highScoreKeys = new Map();
+  const highScoreIdByPlayer = new Map();
+  const playerColorByHighScoreId = {};
 
   let showCurrentScore = false;
   let showHighScore = !process.browser;
@@ -34,15 +36,17 @@
     setTimeout(() => showHighScore = true, 1000);
   });
 
-  async function save(playerIndex, data)
+  async function save(playerIndex, playerColor, data)
   {
-    if (highScoreKeys.has(playerIndex))
+    if (highScoreIdByPlayer.has(playerIndex))
     {
-      await highScores.update(highScoreKeys.get(playerIndex), data.playerName);
+      await highScores.update(highScoreIdByPlayer.get(playerIndex), data.playerName);
     }
     else
     {
-      highScoreKeys.set(playerIndex, await highScores.add(data));
+      const id = await highScores.add(data);
+      highScoreIdByPlayer.set(playerIndex, id);
+      playerColorByHighScoreId[id] = playerColor;
     }
   }
 </script>
@@ -127,7 +131,7 @@
 
   .current-scores:not(:empty) + .high-scores
   {
-    margin-top: 4em;
+    margin: 4em 0 2rem;
     border-top: 1px solid rgba(255, 255, 255, .3);
   }
 
@@ -202,7 +206,7 @@
     {#if showCurrentScore}
       <div class="current-scores" in:fly={{ y: 30, duration: 700 }}>
         {#each $players as player, index}
-          <ScoreTable {index} {player} on:save={({ detail }) => save(index, detail)} />
+          <ScoreTable {index} {player} on:save={({ detail }) => save(index, player.color, detail)} />
         {/each}
       </div>
     {/if}
@@ -214,7 +218,15 @@
           <table>
             {#each highScoresView as entry}
               <tr>
-                <th>{entry.playerName}</th>
+                <th>
+                  {#if playerColorByHighScoreId[entry.id]}
+                    <PlayerColor inline color={playerColorByHighScoreId[entry.id]}>
+                      {entry.playerName}
+                    </PlayerColor>
+                  {:else}
+                    {entry.playerName}
+                  {/if}
+                </th>
                 <td>{entry.score}</td>
               </tr>
             {/each}
