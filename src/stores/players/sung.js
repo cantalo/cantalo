@@ -23,9 +23,11 @@ class SungData extends Object
 export default function (microphone)
 {
   let sungData = new SungData();
+  let setStore;
 
   const storeUpdate = ([$currentLine, $currentSyllable, $time], set) =>
   {
+    setStore = set;
     const currentPitch = microphone.getPitch();
 
     if ($currentLine && $currentSyllable)
@@ -64,6 +66,7 @@ export default function (microphone)
     reset()
     {
       sungData = new SungData();
+      setStore(sungData);
     },
   };
 }

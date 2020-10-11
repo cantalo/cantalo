@@ -2,9 +2,11 @@
   import Score from './Score.svelte';
   import { currentLine } from '../stores/song';
   import { time, playing } from '../stores/video';
+  import isAhead from '../stores/players/ahead';
 
   export let player;
   const { sung, score } = player;
+  const ahead = isAhead(player);
 
   let scoreElm;
 
@@ -160,7 +162,7 @@
   {/if}
   {#if $score.total}
     <div class="score">
-      <Score bind:this={scoreElm} color={player.color}>{$score.total}</Score>
+      <Score bind:this={scoreElm} color={player.color} ahead={$ahead}>{$score.total}</Score>
     </div>
   {/if}
 </div>

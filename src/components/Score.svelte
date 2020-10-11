@@ -1,5 +1,6 @@
 <script>
   export let color;
+  export let ahead;
 
   let shapeValues = {};
 
@@ -31,7 +32,7 @@
     font-size: 40px;
     color: #fff;
     border-radius: 49% 51% 52% 48% / 43% 34% 66% 57%;
-    transition: border-radius 100ms ease;
+    transition: border-radius 100ms ease, transform .5s ease-in-out;
   }
 
   :global(.red)
@@ -43,9 +44,23 @@
   {
     background: linear-gradient(to top right, #373b44, #4286f4);
   }
+
+  div.ahead
+  {
+    transform: scale(1.3);
+    animation: grow 200ms ease-in-out 2 alternate;
+  }
+
+  @keyframes grow
+  {
+    to
+    {
+      transform: scale(2);
+    }
+  }
 </style>
 
-<div class={color} style="border-radius:
+<div class:ahead class={color} style="border-radius:
       {shapeValues.top}% {100-shapeValues.top}%
       {shapeValues.bottom}% {100-shapeValues.bottom}%
       /
