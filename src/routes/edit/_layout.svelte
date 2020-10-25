@@ -15,23 +15,26 @@
 
 <script>
   import Menu from '@smui/menu';
-  import List, { Item, Text } from '@smui/list';
+  import List, { Item, Text, Separator } from '@smui/list';
   import TextField from '@smui/textfield';
   import IconButton, { Icon } from '@smui/icon-button';
   import LinearProgress from '@smui/linear-progress';
   import Slider from '@smui/slider';
   import FormField from '@smui/form-field';
+  import Snackbar, { Label } from '@smui/snackbar';
+
   import ImportSearch from '../../components/editor/ImportSearch.svelte';
   import Marker from '../../components/editor/Marker.svelte';
 
   import { playing, time, duration, speed, buffer, seekTo } from '../../components/YouTube.svelte';
-  import { meta, videoInBackground, zoom, parseUsdFile } from './_editor';
+  import { meta, lines, videoInBackground, zoom, parseUsdFile } from './_editor';
 
   export let availableGenres;
   export let availableLanguages;
 
   let importSearch;
   let importExportMenu;
+  let savedSnackbar;
 
   $: disabled = !$meta.id;
   $: progress = $time / $duration;
@@ -42,6 +45,33 @@
       minute: 'numeric',
     })
     .replace(/^0(.+)$/, '$1');
+
+  async function save()
+  {
+    try
+    {
+      const response = await fetch(`api/song/${$meta.id}.json`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            meta: $meta,
+            lines: $lines,
+          }),
+        });
+
+      if (!response.ok)
+      {
+        throw response;
+      }
+
+      savedSnackbar.open();
+    }
+    catch (err)
+    {
+      console.error(err);
+    }
+  }
 </script>
 
 <style>
@@ -88,7 +118,17 @@
   {
     visibility: hidden;
   }
+
+  .editor :global(.mdc-snackbar)
+  {
+    top: 80px;
+    bottom: auto;
+  }
 </style>
+
+<svelte:head>
+  <meta name="robots" content="none">
+</svelte:head>
 
 <datalist id="meta-genres">
   {#each availableGenres as genre}
@@ -120,11 +160,12 @@
         <List>
           <Item on:SMUI:action={() => importSearch.open()}><Text>Import from USDB</Text></Item>
 <!--          <Item><Text>Import from USD txt file</Text></Item>-->
+<!--          <Separator />-->
 <!--          <Item><Text>Export as USD txt file</Text></Item>-->
         </List>
       </Menu>
 
-      <IconButton class="material-icons" {disabled}>save</IconButton>
+      <IconButton class="material-icons" {disabled} on:click={save}>save</IconButton>
       <IconButton class="material-icons" {disabled}>cloud_upload</IconButton>
     </div>
   </header>
@@ -150,6 +191,10 @@
     {/if}
     <LinearProgress {progress} buffer={$buffer} />
   </div>
+
+  <Snackbar bind:this={savedSnackbar}>
+    <Label>Saved.</Label>
+  </Snackbar>
 
   <footer>
     <TextField type="number" class="field shaped-outlined" variant="outlined"

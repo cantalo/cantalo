@@ -13,9 +13,10 @@ const fields = ({ id, snippet }) => ({
 
 function parseDuration(durationString)
 {
-  const [ , minutes, seconds] = durationString.match(/PT([0-9]+)M([0-9]+)S/);
+  const { hours, minutes, seconds } = durationString.match(/PT(((?<hours>[0-9]+)H)?(?<minutes>[0-9]+)M)?(?<seconds>[0-9]+)S/).groups;
   const date = new Date(0);
-  date.setMinutes(minutes);
+  if (hours) date.setHours(hours);
+  if (minutes) date.setMinutes(minutes);
   date.setSeconds(seconds);
   return date.getTime();
 }

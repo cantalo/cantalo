@@ -51,9 +51,19 @@ export async function get(req, res)
 export async function post(req, res)
 {
   const { vid } = req.params;
-  const { meta, song } = req.body;
+  const { meta, lines } = req.body;
 
   meta.id = vid;
+
+  for (let key of Object.keys(meta))
+  {
+    if (meta[key] === '')
+    {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(`{ "message": "Meta field  \\"${key}\\" is empty." }`);
+      return;
+    }
+  }
 
   const db = await DB();
 
@@ -66,16 +76,19 @@ export async function post(req, res)
   {
     await db.get('songs')
       .find({ id: vid })
-      .assign({ meta, song })
+      .assign({ meta, lines })
       .write();
+
+    res.writeHead(204); // no content
   }
   else
   {
     await db.get('songs')
-      .push({ id: vid, meta, song })
+      .push({ id: vid, v: 2, meta, lines })
       .write();
+
+    res.writeHead(201); // created
   }
 
-  res.writeHead(201);
   res.end();
 }
