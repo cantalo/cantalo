@@ -5,7 +5,7 @@
 
   function keydown(event)
   {
-    if(/input|button/i.test(document.activeElement.tagName)) return;
+    if(/input|button|textarea/i.test(document.activeElement.tagName)) return;
 
     switch(event.code)
     {
@@ -14,6 +14,7 @@
       case 'KeyX': if (event.ctrlKey) dispatch('cut', event); break;
       case 'KeyC': if (event.ctrlKey) dispatch('copy', event); break;
       case 'KeyV': if (event.ctrlKey) dispatch('paste', event); break;
+      case 'KeyA': if (event.ctrlKey) dispatch('select-all', event); break;
       default: console.debug(event);
     }
   }

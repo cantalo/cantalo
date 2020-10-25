@@ -46,14 +46,21 @@
     }
   }
 
+  function selectAll({ detail: e })
+  {
+    e.preventDefault();
+    $lines.forEach(line => selectedLines.add(line));
+    selectedLines = selectedLines;
+  }
+
   function paste()
   {
     if (selectedLines.size > 0 && cutSelectedLines && currentBeat)
     {
-      const lines = Array.from(selectedLines);
-      const diff = lines[0].start - currentBeat;
+      const _lines = Array.from(selectedLines);
+      const diff = _lines[0].start - currentBeat;
 
-      lines.forEach(line =>
+      _lines.forEach(line =>
       {
         line.start -= diff;
         line.end -= diff;
@@ -91,7 +98,9 @@
   }
 </style>
 
-<Keyboard on:cut={() => { if (selectedLines.size > 0) cutSelectedLines = true }} on:paste={paste} />
+<Keyboard on:cut={() => { if (selectedLines.size > 0) cutSelectedLines = true }}
+          on:paste={paste}
+          on:select-all={selectAll}/>
 
 <div class="grid" style="--beat-size: {100 / beats}%">
   {#each $lines as line, index}

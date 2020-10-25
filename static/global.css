@@ -89,3 +89,8 @@ body
 {
     cursor: pointer;
 }
+
+.material-icons
+{
+    user-select: none;
+}
