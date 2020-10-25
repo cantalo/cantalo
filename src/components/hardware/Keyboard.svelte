@@ -5,6 +5,8 @@
 
   function keydown(event)
   {
+    if(/input|button/i.test(document.activeElement.tagName)) return;
+
     switch(event.code)
     {
       case 'Space': dispatch('space', event); break;
