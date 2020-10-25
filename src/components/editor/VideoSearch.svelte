@@ -24,7 +24,7 @@
       const queryString = new URLSearchParams();
       queryString.set('search', searchTerm);
 
-      searchRequest = fetch('add/search/video.json?' + queryString).then(response => response.json());
+      searchRequest = fetch('api/search/video.json?' + queryString).then(response => response.json());
     }
   }
 </script>

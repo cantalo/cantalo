@@ -29,7 +29,7 @@
 
     if (!play)
     {
-      const { duration } = await fetch('add/search/video.json?id=' + videoId).then(r => r.json());
+      const { duration } = await fetch('api/search/video.json?id=' + videoId).then(r => r.json());
       setDuration(duration);
     }
   }

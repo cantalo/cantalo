@@ -3,7 +3,7 @@
   {
     const { vid } = params;
 
-    const res = await this.fetch(`sing/${vid}.json`);
+    const res = await this.fetch(`api/song/${vid}.json`);
     const data = await res.json();
 
     if (res.status === 200)

@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload({ params }, session)
   {
-    const res = await this.fetch(`sing/${params.vid}.json`);
+    const res = await this.fetch(`api/song/${params.vid}.json`);
     const data = await res.json();
 
     if (res.status === 200)

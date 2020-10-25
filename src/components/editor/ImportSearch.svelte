@@ -24,7 +24,7 @@
       if (searchTerm.artist) queryString.set('artist', searchTerm.artist);
       if (searchTerm.title) queryString.set('title', searchTerm.title);
 
-      searchRequest = fetch('add/search/song.json?' + queryString).then(response => response.json());
+      searchRequest = fetch('api/search/song.json?' + queryString).then(response => response.json());
     }
   }
 
@@ -34,7 +34,7 @@
 
     const queryString = new URLSearchParams();
     queryString.set('id', selectedItem.id);
-    const response = await fetch('add/import.json?' + queryString);
+    const response = await fetch('api/song/import.json?' + queryString);
     const { file } = await response.json();
 
     dispatch('import', file);

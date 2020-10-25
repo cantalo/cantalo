@@ -1,7 +1,7 @@
 <script context="module">
   export async function preload()
   {
-    const res = await this.fetch(`add.json`);
+    const res = await this.fetch(`api/edit.json`);
     const data = await res.json();
 
     if (res.status === 200)
