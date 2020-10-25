@@ -45,7 +45,8 @@
 
   .note.golden
   {
-    box-shadow: 0 0 15px 5px goldenrod;
+    background: rgba(218, 165, 32, .5);
+    box-shadow: 0 0 15px 5px #daa520;
     border-radius: 6px;
   }
 
@@ -62,22 +63,46 @@
   {
     border: 1px solid rgba(255,255,255, .8);
     background: linear-gradient(
-      hsla(0, 0%, 100%, 0.6),
-      hsla(0, 0%, 100%, 0) 50%,
-      hsla(0, 0%, 0%, 0.3) 50%,
-      hsla(0, 0%, 100%, 0.2)
+        rgba(255, 255, 255, .6),
+        rgba(255, 255, 255, 0) 50%,
+        rgba(0, 0, 0, .3) 50%,
+        rgba(255, 255, 255, .2)
     );
-    box-shadow: inset 0 -5px 20px hsla(0, 0%, 0%, 0.4),
-                inset 0 5px 20px hsla(0, 0%, 100%, 0.4),
-                -8px 8px 5px hsla(0, 0%, 0%, 0.15),
-                5px 18px 10px hsla(0, 0%, 0%, 0.2);
+    box-shadow: inset 0 -5px 20px rgba(0, 0, 0, 0.4),
+                inset 0 5px 20px rgba(255, 255, 255, 0.4),
+                -8px 8px 5px rgba(0, 0, 0, 0.15),
+                5px 18px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .note.golden .pill
+  {
+    border: 1px solid rgba(218, 165, 32, .8);
+    background: linear-gradient(
+        rgba(218, 165, 32, .6),
+        rgba(218, 165, 32, 0) 50%,
+        rgba(26, 19, 4, 0.3) 50%,
+        rgba(218, 165, 32, .2)
+    );
+    box-shadow: inset 0 -5px 20px rgba(26, 19, 4, 0.4),
+                inset 0 5px 20px rgba(218, 165, 32, 0.4),
+                -8px 8px 5px rgba(26, 19, 4, 0.15),
+                5px 18px 10px rgba(26, 19, 4, 0.2);
   }
 
   .note .time
   {
+    overflow: hidden;
+  }
+
+  .note .time::before
+  {
+    content: '';
+    display: block;
+    height: 100%;
     background-color: #fff;
-    width: 0;
     opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left;
     animation: grow var(--duration) linear var(--offset) forwards;
     animation-play-state: inherit;
   }
@@ -125,7 +150,7 @@
   @keyframes grow
   {
     1% { opacity: 1; }
-    to { opacity: 1; width: 100%; } /* TODO animating width is bad for performance */
+    to { opacity: 1; transform: scaleX(1); }
   }
 
   .score
