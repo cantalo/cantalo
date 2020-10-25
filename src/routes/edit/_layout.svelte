@@ -24,10 +24,11 @@
   import Snackbar, { Label } from '@smui/snackbar';
 
   import ImportSearch from '../../components/editor/ImportSearch.svelte';
+  import ImportLyrics from '../../components/editor/ImportLyrics.svelte';
   import Marker from '../../components/editor/Marker.svelte';
 
   import { playing, time, duration, speed, buffer, seekTo } from '../../components/YouTube.svelte';
-  import { meta, lines, videoInBackground, zoom, parseUsdFile } from './_editor';
+  import { meta, lines, videoInBackground, zoom, parseUsdFile, parseLyrics } from './_editor';
 
   export let availableGenres;
   export let availableLanguages;
@@ -35,6 +36,7 @@
   let importSearch;
   let importExportMenu;
   let savedSnackbar;
+  let importLyrics;
 
   $: disabled = !$meta.id;
   $: progress = $time / $duration;
@@ -159,6 +161,7 @@
       <Menu bind:this={importExportMenu}>
         <List>
           <Item on:SMUI:action={() => importSearch.open()}><Text>Import from USDB</Text></Item>
+          <Item on:SMUI:action={() => importLyrics.open()}><Text>Import Lyrics</Text></Item>
 <!--          <Item><Text>Import from USD txt file</Text></Item>-->
 <!--          <Separator />-->
 <!--          <Item><Text>Export as USD txt file</Text></Item>-->
@@ -233,3 +236,4 @@
 </div>
 
 <ImportSearch bind:this={importSearch} on:import={e => parseUsdFile(e.detail)} />
+<ImportLyrics bind:this={importLyrics} on:import={e => parseLyrics(e.detail)} />

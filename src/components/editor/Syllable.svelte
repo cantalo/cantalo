@@ -69,9 +69,9 @@
      style="left: {100 / beats * syllable.start}%;
             width: {100 / beats * syllable.length}%">
   <div class="text">{syllable.text}</div>
-  <div class="pitch" style="height: {syllable.type === 0 ? 10 : 100 / 12 * (syllable.pitch % 12)}%">
+  <div class="pitch" style="height: {syllable.pitch ? (100 / 12 * (syllable.pitch % 12)) : 10}%">
     <div class="bar">
-      {#if syllable.type > 0}
+      {#if syllable.pitch}
         {new Note(syllable.pitch).toString()}<sub>{Math.ceil(syllable.pitch / 12)}</sub>
       {/if}
     </div>

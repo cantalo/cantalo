@@ -68,7 +68,7 @@
 
 <div class="line" class:selected class:cut on:click
      style="left: {100 / beats * line.start}%;
-            width: {100 / beats * (line.end - line.start)}%">
+            width: {line.end ? 100 / beats * (line.end - line.start) : 100}%">
   <div class="actions">
     <IconButton bind:pressed={hasComment} title={line.comment} on:click={comment}>
       <Icon class="material-icons comment-no">add_comment</Icon>
@@ -81,6 +81,10 @@
     <div>
       <slot />
     </div>
-    <div>{line.end}</div>
+    <div>
+      {#if line.end}
+        {line.end}
+      {/if}
+    </div>
   </div>
 </div>

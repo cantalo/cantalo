@@ -21,13 +21,14 @@
 </script>
 
 <script>
+  import Untapped from '../../components/editor/Untapped.svelte';
   import Gap from '../../components/editor/Gap.svelte';
   import BeatGrid from '../../components/editor/BeatGrid.svelte';
   import Cue from '../../components/editor/Cue.svelte';
   import Keyboard from '../../components/hardware/Keyboard.svelte';
   import YouTube, { playing, duration, time, seekTo, loadVideo } from '../../components/YouTube.svelte';
 
-  import { getFromStorage, meta, lines, videoInBackground, zoom } from './_editor';
+  import { getFromStorage, meta, lines, videoInBackground, zoom, untapped } from './_editor';
 
   export let vid;
   export let data;
@@ -45,7 +46,8 @@
     if (_meta)
     {
       $meta = _meta;
-      $lines = getFromStorage('song_' + vid);
+      $lines = getFromStorage('song_' + vid) || [];
+      $untapped = getFromStorage('untapped_' + vid) || [];
     }
     else
     {
@@ -193,5 +195,7 @@
     <Gap outside />
   {/if}
 </div>
+
+<Untapped />
 
 <Cue {currentBeat} />
