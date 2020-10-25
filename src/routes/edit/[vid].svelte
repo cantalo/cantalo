@@ -21,7 +21,7 @@
 </script>
 
 <script>
-  import { Icon } from '@smui/icon-button';
+  import Gap from '../../components/editor/Gap.svelte';
   import BeatGrid from '../../components/editor/BeatGrid.svelte';
   import Cue from '../../components/editor/Cue.svelte';
   import Keyboard from '../../components/hardware/Keyboard.svelte';
@@ -88,6 +88,39 @@
 
     currentBeat = Math.floor((newTime - (($meta.videogap || 0) * 1000) - ($meta.gap || 0)) / (250 / $meta.bpm * 60))
   }
+
+  function gapDiff(e)
+  {
+    return $duration - ((videoTimeWidth + e.detail) * zoomFactor);
+  }
+
+  function gapSetter(field, message, factor = 1)
+  {
+    return diff =>
+    {
+      const max = $duration / factor;
+      let value;
+
+      if (diff)
+      {
+        value = ($meta[field] || max) - diff / factor;
+      }
+      else
+      {
+        value = parseInt(prompt(message, $meta[field]));
+      }
+
+      if (!isNaN(value))
+      {
+        $meta[field] = value > max ? undefined : Math.max(0, value);
+      }
+    }
+  }
+
+  const setVideoStart = gapSetter('videogap', 'Set video start time (in seconds):', 1000);
+  const setVideoEnd = gapSetter('videoend', 'Set video end time (in seconds):', 1000);
+  const setSongStart = gapSetter('gap', 'Set song start time (in milliseconds):');
+  const setSongEnd = gapSetter('end', 'Set song end time (in milliseconds):');
 </script>
 
 <style>
@@ -125,76 +158,6 @@
     height: 100%;
     background: rgba(220, 220, 220, .95);
   }
-
-  .gap
-  {
-    position: relative;
-    height: 100%;
-  }
-
-  .gap.outside
-  {
-    min-width: 50vw;
-    background: rgba(150, 150, 150, .9);
-  }
-
-  .gap.video
-  {
-    background: repeating-linear-gradient(
-        110deg,
-        rgba(255, 255, 255, .9),
-        rgba(255, 255, 255, .9) 8px,
-        transparent 8px,
-        transparent 16px
-    );
-  }
-
-  .handle
-  {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 1;
-    width: 4px;
-    color: #fff;
-    cursor: grab;
-    opacity: .8;
-  }
-
-  .handle :global(.material-icons)
-  {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: inherit;
-    transform: translate(-50%, -50%);
-    border-radius: 100%;
-  }
-
-  .gap.video .handle :global(.material-icons)
-  {
-    top: 45%;
-  }
-
-  .gap:not(.end) .handle
-  {
-    right: 0;
-  }
-
-  .video .handle
-  {
-    background: #2f4f4f;
-  }
-
-  .song .handle
-  {
-    background: orangered;
-  }
 </style>
 
 <Keyboard on:space={() => $playing = !$playing} />
@@ -205,37 +168,29 @@
 
 <div class="timeline" bind:this={timeline} on:scroll={timelineScroll}>
   {#if $duration}
-    <div class="gap outside"></div>
+    <Gap outside />
 
     <div class="video-time" style="min-width: {videoTimeWidth}px">
-      <div class="gap video" style="width: {videoStartWidth}px">
-        <div class="handle">
-          <Icon class="material-icons">movie</Icon>
-        </div>
-      </div>
+      <Gap video width={videoStartWidth}
+           on:shift={e => setVideoStart(gapDiff(e))}
+           on:set={() => setVideoStart()} />
 
-      <div class="gap song" style="width: {songStartWidth}px">
-        <div class="handle">
-          <Icon class="material-icons">music_note</Icon>
-        </div>
-      </div>
+      <Gap song width={songStartWidth}
+           on:shift={e => setSongStart(gapDiff(e))}
+           on:set={() => setSongStart()} />
 
       <BeatGrid {beats} {currentBeat} />
 
-      <div class="gap song end" style="width: {songEndWidth}px">
-        <div class="handle">
-          <Icon class="material-icons">music_note</Icon>
-        </div>
-      </div>
+      <Gap song end width={songEndWidth}
+           on:shift={e => setSongEnd(gapDiff(e))}
+           on:set={() => setSongEnd()}/>
 
-      <div class="gap video end" style="width: {videoEndWidth}px">
-        <div class="handle">
-          <Icon class="material-icons">movie</Icon>
-        </div>
-      </div>
+      <Gap video end width={videoEndWidth}
+           on:shift={e => setVideoEnd(gapDiff(e))}
+           on:set={() => setVideoEnd()}/>
     </div>
 
-    <div class="gap outside"></div>
+    <Gap outside />
   {/if}
 </div>
 
