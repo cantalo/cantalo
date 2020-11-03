@@ -1,8 +1,13 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
+
   import Note from '../../services/Note';
 
   export let syllable;
   export let beats;
+  export let selected = false;
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <style>
@@ -63,6 +68,11 @@
   {
     background: rgba(#DAA520, .5);
   }
+
+  .syllable .bar.selected::before
+  {
+    box-shadow: 0 0 10px #1e90ff;
+  }
 </style>
 
 <div class="syllable" class:freestyle={syllable.type === 0} class:golden={syllable.type === 2}
@@ -70,7 +80,8 @@
             width: {100 / beats * syllable.length}%">
   <div class="text">{syllable.text}</div>
   <div class="pitch" style="height: {syllable.pitch ? (100 / 12 * (syllable.pitch % 12)) : 10}%">
-    <div class="bar">
+    <div class="bar" class:selected on:click
+         on:contextmenu|preventDefault={e => { dispatch('menu', e.target); return false }}>
       {#if syllable.pitch}
         {new Note(syllable.pitch).toString()}<sub>{Math.ceil(syllable.pitch / 12)}</sub>
       {/if}

@@ -16,6 +16,7 @@
     background: #333;
     border-radius: 100%;
     transform: translate(-50%, -6px);
+    pointer-events: none;
   }
 
   .marker :global(.material-icons)

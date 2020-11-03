@@ -65,7 +65,7 @@
   $: videoStartWidth = (($meta.videogap * 1000) || 0) / zoomFactor;
   $: videoEndWidth = ($duration - (($meta.videoend * 1000) || $duration)) / zoomFactor;
   $: songStartWidth = ($meta.gap || 0) / zoomFactor;
-  $: songEndWidth = ($duration - ($meta.end || $duration)) / zoomFactor;
+  $: songEndWidth = (($duration - ($meta.end || $duration)) / zoomFactor) - videoEndWidth;
   $: beats = Math.floor((($duration - ($meta.gap || 0) - ($duration - ($meta.end || $duration))) / 250 / 60) * $meta.bpm);
 
   $: if (process.browser && $meta.id)
