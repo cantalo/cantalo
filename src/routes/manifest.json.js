@@ -16,9 +16,14 @@ export function get(req, res)
     orientation: 'landscape',
     icons:
     [
+      ...[16, 24, 48, 64, 128, 256, 512].map(n => ({
+        src: `assets/icons/${n}.png`,
+        sizes: `${n}x${n}`,
+        type: 'image/png',
+      })),
       {
         src: 'assets/icons/maskable.png',
-        sizes: '1024x1024',
+        sizes: '1000x1000',
         type: 'image/png',
         purpose: 'any maskable',
       },

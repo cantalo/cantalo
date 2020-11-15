@@ -16,33 +16,13 @@
 <script>
   import { _ } from 'svelte-i18n';
 
-  import SystemRequirements from '../services/SystemRequirements';
-
-  SystemRequirements.addCSS('scroll-snap', () => CSS.supports('scroll-snap-type', 'x mandatory'));
+  import Logo from '../components/Logo.svelte';
+  import BrowseSongs from '../components/browse/BrowseSongs.svelte';
+  import SearchBar from '../components/browse/SearchBar.svelte';
 
   export let songs;
-  let searchbar, search = '';
 
-  function keypress()
-  {
-    if (document.activeElement !== searchbar)
-    {
-      searchbar.focus();
-    }
-  }
-
-  $: searchTerm = search.replace(/beta:\s?/, '').toLowerCase();
-  $: songsView = search ?
-    songs
-    .filter(song => search.startsWith('beta:') === !!song.beta)
-    .filter(song =>
-      song.title.toLowerCase().startsWith(searchTerm) ||
-      song.artist.toLowerCase().startsWith(searchTerm) ||
-      (song.genre && song.genre.toLowerCase().includes(searchTerm)) ||
-      (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
-      (song.language && searchTerm === `lang:${song.language}`) ||
-      (song.year && searchTerm === `year:${song.year}`)
-    ) : songs.filter(song => !song.beta);
+  let search = '';
 </script>
 
 <svelte:head>
@@ -50,129 +30,34 @@
   <meta name="robots" content="index,nofollow">
 </svelte:head>
 
-<svelte:window on:keypress={keypress} />
-
 <style type="text/scss">
-  .browse
+  :root
+  {
+    --thumbnail-bar-width: 500px;
+    --angle: 25;
+    --angle-deg: calc(1deg * var(--angle));
+    --angle-rad: calc(0.017453292519943295 * var(--angle));
+    --tan-term1: var(--angle-rad);
+    --tan-term2: calc((1/3) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
+    --tan-term3: calc((2 / 15) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
+    --tan-term4: calc((17/315) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad) * var(--angle-rad));
+    --tan: calc(var(--tan-term1) + var(--tan-term2) + var(--tan-term3) + var(--tan-term4));
+  }
+
+  header
   {
     display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-
-  .songs
-  {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0 10vw;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    padding: 0 10%;
-  }
-
-  .song
-  {
-    position: relative;
-    display: flex;
-    align-items: center;
-    min-width: 70%;
-    scroll-snap-align: center;
-    margin: 0 10%;
-    background-color: rgba(0,0,0,.3);
-    cursor: pointer;
-    text-decoration: none;
-
-    &[lang]::before
-    {
-      content: attr(lang);
-
-      position: absolute;
-      right: 4px;
-      top: 4px;
-      font-size: 12px;
-      text-transform: uppercase;
-      padding: 3px;
-      border-radius: 3px;
-      border: 1px solid rgba(255,255,255, .5);
-      color: rgba(255,255,255, .8);
-    }
-
-    &:focus
-    {
-      outline: 0;
-      box-shadow: 0 0 40px #fff;
-    }
-
-    .cover
-    {
-      min-height: 50vh;
-      min-width: 50vh;
-      background: #000;
-    }
-
-    dl
-    {
-      font-weight: bold;
-      color: #fff;
-      font-size: 2.5em;
-    }
-  }
-
-  .artist
-  {
-    font-size: .5em;
-  }
-
-  input.search
-  {
-    background: none transparent;
-    border: 0 none;
-    border-bottom: 1px solid transparent;
-    font-family: inherit;
-    font-size: 3rem;
-    color: #fff;
-    text-align: center;
-    max-height: 0;
-    overflow: hidden;
-    width: 80%;
-    height: 100%;
-    margin: 0 10%;
-
-    transition: max-height .5s ease-in-out, border-bottom-color .5s ease-in-out;
-
-    &:focus
-    {
-      outline: none;
-    }
-
-    &:focus,
-    &:valid
-    {
-      max-height: 100px;
-      border-bottom-color: currentColor;
-    }
+    height: 100px;
+    padding: 20px;
   }
 </style>
 
 <div class="browse absolute background">
-  <input type="search" class="search"
-         required spellcheck="false"
-         bind:this={searchbar} bind:value={search}>
+  <header>
+    <Logo />
+  </header>
 
-  <div class="songs">
-    {#each songsView as song}
-      <a class="song" href={"sing/" + song.id} lang={song.language}>
-        <div class="cover">
-          <img src="https://img.youtube.com/vi/{song.id}/hqdefault.jpg" alt="Cover" loading="lazy">
-        </div>
-        <dl>
-          <dd>{song.title}</dd>
-          <dd class="artist">{song.artist}</dd>
-        </dl>
-      </a>
-    {/each}
-  </div>
+  <BrowseSongs {songs} {search} />
+
+  <SearchBar bind:value={search} />
 </div>

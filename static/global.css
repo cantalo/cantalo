@@ -37,16 +37,22 @@ body
     left: 0;
 }
 
+@property --bg-angle
+{
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: true;
+}
+
 .background
 {
-    background: linear-gradient(258deg,
-        rgba(71, 59, 123, var(--background-opacity)),
-        rgba(53, 132, 167, var(--background-opacity)),
-        rgba(48, 210, 190, var(--background-opacity))
-    );
-    background-size: 600% 600%;
+    --bg-angle: 15deg;
 
-    animation: bg-move 30s ease infinite;
+    background: linear-gradient(var(--bg-angle), #32988a, #32a6ff, #3f6fff, #8d54ff, #000e3c);
+    background-size: 500%;
+    color: #fff;
+
+    animation: bg-move 30s ease-in-out infinite alternate;
     animation-play-state: running;
 }
 
@@ -72,9 +78,11 @@ body
 
 @keyframes bg-move
 {
-    0%  { background-position: 34% 0 }
-    50% { background-position: 67% 100% }
-    100%{ background-position: 34% 0 }
+    to
+    {
+        background-position-x: 100%;
+        --bg-angle: 170deg;
+    }
 }
 
 [role="button"]

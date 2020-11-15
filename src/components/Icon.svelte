@@ -1,6 +1,4 @@
 <script>
-  const domParser = new DOMParser();
-
   export let data;
   export let viewBox = undefined;
 
@@ -15,9 +13,8 @@
   let elements, originalViewbox;
 
   $: {
-    const { firstChild: svgDom } = domParser.parseFromString(data, 'image/svg+xml');
-    originalViewbox = svgDom.getAttribute('viewBox');
-    elements = svgDom.innerHTML;
+    originalViewbox = data.match(/viewBox="([^"]+)"/)[1];
+    elements = data.replace(/<svg ([^>]*)>/, '').replace('</svg>', '');
   }
 </script>
 
