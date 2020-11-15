@@ -73,11 +73,20 @@
   {
     localStorage.setItem('editor_meta_' + $meta.id, JSON.stringify($meta));
     localStorage.setItem('editor_song_' + $meta.id, JSON.stringify($lines));
+    localStorage.setItem('editor_untapped_' + $meta.id, JSON.stringify($untapped));
+    // TODO restore scroll position
   }
 
-  $: if (timeline && $playing)
+  $: if (timeline)
   {
-    timeline.scrollLeft = $time / zoomFactor;
+    if ($playing)
+    {
+      timeline.scrollLeft = $time / zoomFactor;
+    }
+    else
+    {
+      // TODO fix scroll position on zoom change
+    }
   }
 
   function timelineScroll()
@@ -89,7 +98,7 @@
       seekTo(newTime / 1000);
     }
 
-    currentBeat = Math.floor((newTime - (($meta.videogap || 0) * 1000) - ($meta.gap || 0)) / (250 / $meta.bpm * 60))
+    currentBeat = Math.floor((newTime - (($meta.videogap || 0) * 1000) - ($meta.gap || 0)) / (250 / $meta.bpm * 60)); // FIXME wrong current beat with backstreet boys everybody
   }
 
   function gapDiff(e)
@@ -115,7 +124,7 @@
 
       if (!isNaN(value))
       {
-        $meta[field] = value > max ? undefined : Math.max(0, value);
+        $meta[field] = value > max ? undefined : Math.max(0, value); // TODO actually possible to have negative gaps
       }
     }
   }

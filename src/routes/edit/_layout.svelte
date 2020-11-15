@@ -212,7 +212,7 @@
 
     <FormField style="display: flex">
       <span slot="label" style="padding-left: 8px; width: max-content; display: block;">
-        {formatTime($time)} / {formatTime($duration)}</span>
+        <span title={$time}>{formatTime($time)}</span> / {formatTime($duration)}</span>
       <IconButton toggle bind:pressed={$playing} {disabled}>
         <Icon class="material-icons">play_arrow</Icon>
         <Icon class="material-icons" on>pause</Icon>
