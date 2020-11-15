@@ -1,4 +1,4 @@
-import { writable, derived, get } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { getMetaData, getSongData } from '../../../../parser';
 
 export function getFromStorage(name)
@@ -24,6 +24,7 @@ export let meta = writable({
 
 export let lines = writable([]);
 export let untapped = writable([]);
+export let pitches = writable([]);
 
 export function parseUsdFile(usdFile)
 {

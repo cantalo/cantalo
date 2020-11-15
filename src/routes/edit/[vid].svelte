@@ -21,6 +21,7 @@
 </script>
 
 <script>
+  import AnalizedPitch from '../../components/editor/AnalizedPitch.svelte';
   import Untapped from '../../components/editor/Untapped.svelte';
   import Gap from '../../components/editor/Gap.svelte';
   import BeatGrid from '../../components/editor/BeatGrid.svelte';
@@ -28,15 +29,15 @@
   import Keyboard from '../../components/hardware/Keyboard.svelte';
   import YouTube, { playing, duration, time, seekTo, loadVideo } from '../../components/YouTube.svelte';
 
-  import { getFromStorage, meta, lines, videoInBackground, zoom, untapped } from './_editor';
+  import { getFromStorage, meta, lines, videoInBackground, zoom, untapped, pitches } from './_editor';
 
   export let vid;
   export let data;
 
   if (data && data.meta && data.lines)
   {
-    $meta = data.meta;
-    $lines = data.lines;
+    $meta = getFromStorage('meta_' + vid) || data.meta;
+    $lines = getFromStorage('song_' + vid) || data.lines;
     loadVideo(data.meta.id, $meta.videogap, $meta.videoend);
   }
   else if (vid)
@@ -155,10 +156,21 @@
 
   .video-time
   {
-    position: relative;
     display: flex;
+    flex-direction: column;
     height: 100%;
     background: rgba(220, 220, 220, .95);
+  }
+
+  .video-time .row
+  {
+    position: relative;
+    display: flex;
+  }
+
+  .video-time .row + .row
+  {
+    border-top: 1px solid #999;
   }
 </style>
 
@@ -173,23 +185,34 @@
     <Gap outside />
 
     <div class="video-time" style="min-width: {videoTimeWidth}px">
-      <Gap video width={videoStartWidth}
-           on:shift={e => setVideoStart(gapDiff(e))}
-           on:set={() => setVideoStart()} />
+      <div class="row" style="flex: 1">
+        <Gap video width={videoStartWidth}
+             on:shift={e => setVideoStart(gapDiff(e))}
+             on:set={() => setVideoStart()} />
 
-      <Gap song width={songStartWidth}
-           on:shift={e => setSongStart(gapDiff(e))}
-           on:set={() => setSongStart()} />
+        <Gap song width={songStartWidth}
+             on:shift={e => setSongStart(gapDiff(e))}
+             on:set={() => setSongStart()} />
 
-      <BeatGrid {beats} {currentBeat} />
+        <BeatGrid {beats} {currentBeat} />
 
-      <Gap song end width={songEndWidth}
-           on:shift={e => setSongEnd(gapDiff(e))}
-           on:set={() => setSongEnd()}/>
+        <Gap song end width={songEndWidth}
+             on:shift={e => setSongEnd(gapDiff(e))}
+             on:set={() => setSongEnd()}/>
 
-      <Gap video end width={videoEndWidth}
-           on:shift={e => setVideoEnd(gapDiff(e))}
-           on:set={() => setVideoEnd()}/>
+        <Gap video end width={videoEndWidth}
+             on:shift={e => setVideoEnd(gapDiff(e))}
+             on:set={() => setVideoEnd()}/>
+      </div>
+
+      {#if $pitches.length}
+        <div class="row" style="height: 120px">
+          {#each $pitches as pitch}
+            <AnalizedPitch {pitch} style="left: {pitch.start / zoomFactor}px;
+                                          width: {(pitch.end - pitch.start) / zoomFactor}px" />
+          {/each}
+        </div>
+      {/if}
     </div>
 
     <Gap outside />

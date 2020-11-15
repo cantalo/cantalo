@@ -132,7 +132,7 @@
   let syllableMenu;
   let stylableMenuDetails;
 
-  function openSyllableMenu({ detail })
+  function openSyllableMenu(detail)
   {
     stylableMenuDetails = detail;
     const position = detail.element.getBoundingClientRect();
@@ -144,6 +144,25 @@
   function changeSyllableText({ syllable })
   {
     syllable.text = prompt('Syllable text:', syllable.text) || syllable.text;
+    $lines = $lines;
+  }
+
+  function changeSyllablePitch({ syllable })
+  {
+    syllable.pitch = parseInt(prompt('Syllable pitch:', syllable.pitch)) || syllable.pitch;
+    syllable.type = 1;
+    $lines = $lines;
+  }
+
+  function splitSyllable({ line, syllable })
+  {
+    const chunks = prompt('Split syllable with plus (+) characters:', syllable.text).split('+');
+    line.syllables.splice(line.syllables.indexOf(syllable), 1, ...chunks.map((text, i) => ({
+      ...syllable,
+      text,
+      start: syllable.start + (parseInt(syllable.length / chunks.length) * i),
+      length: parseInt(syllable.length / chunks.length),
+    })));
     $lines = $lines;
   }
 </script>
@@ -189,9 +208,9 @@
 <Menu bind:this={syllableMenu} anchor={false}>
   <List>
     <Item on:SMUI:action={() => changeSyllableText(stylableMenuDetails)}><Text>Change Text</Text></Item>
-    <Item on:SMUI:action={() => console.log('Change Note')}><Text>Change Note</Text></Item>
+    <Item on:SMUI:action={() => changeSyllablePitch(stylableMenuDetails)}><Text>Change Note</Text></Item>
     <Separator />
-    <Item on:SMUI:action={() => console.log('Split')}><Text>Split</Text></Item>
+    <Item on:SMUI:action={() => splitSyllable(stylableMenuDetails)}><Text>Split</Text></Item>
     <Item on:SMUI:action={() => console.log('Remove')}><Text>Remove</Text></Item>
   </List>
 </Menu>

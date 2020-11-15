@@ -22,13 +22,14 @@
   import Slider from '@smui/slider';
   import FormField from '@smui/form-field';
   import Snackbar, { Label } from '@smui/snackbar';
+  import AnalyseVocals from '../../components/editor/AnalyseVocals.svelte';
 
   import ImportSearch from '../../components/editor/ImportSearch.svelte';
   import ImportLyrics from '../../components/editor/ImportLyrics.svelte';
   import Marker from '../../components/editor/Marker.svelte';
 
   import { playing, time, duration, speed, buffer, seekTo } from '../../components/YouTube.svelte';
-  import { meta, lines, videoInBackground, zoom, parseUsdFile, parseLyrics } from './_editor';
+  import { meta, lines, videoInBackground, zoom, pitches, parseUsdFile, parseLyrics } from './_editor';
 
   export let availableGenres;
   export let availableLanguages;
@@ -37,6 +38,7 @@
   let importExportMenu;
   let savedSnackbar;
   let importLyrics;
+  let analyseVocals;
 
   $: disabled = !$meta.id;
   $: progress = $time / $duration;
@@ -162,6 +164,7 @@
         <List>
           <Item on:SMUI:action={() => importSearch.open()}><Text>Import from USDB</Text></Item>
           <Item on:SMUI:action={() => importLyrics.open()}><Text>Import Lyrics</Text></Item>
+          <Item on:SMUI:action={() => analyseVocals.open()}><Text>Analyse &amp; import vocals</Text></Item>
 <!--          <Item><Text>Import from USD txt file</Text></Item>-->
 <!--          <Separator />-->
 <!--          <Item><Text>Export as USD txt file</Text></Item>-->
@@ -237,3 +240,4 @@
 
 <ImportSearch bind:this={importSearch} on:import={e => parseUsdFile(e.detail)} />
 <ImportLyrics bind:this={importLyrics} on:import={e => parseLyrics(e.detail)} />
+<AnalyseVocals bind:this={analyseVocals} on:import={e => pitches.set(e.detail)} />

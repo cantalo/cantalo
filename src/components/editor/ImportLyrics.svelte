@@ -32,7 +32,7 @@
   <Content id="lyrics-dialog-content">
     <div class="lyrics-container">
       <Textfield fullwidth textarea bind:value={lyrics} label="Lyrics" input$aria-controls="helper-text-lyrics" input$aria-describedby="helper-text-lyrics" />
-      <HelperText id="helper-text-lyrics">Paste Lyrics separated in lines</HelperText>
+      <HelperText id="helper-text-lyrics">Paste Lyrics separated in lines and syllables using + character</HelperText>
     </div>
   </Content>
   <Actions>
