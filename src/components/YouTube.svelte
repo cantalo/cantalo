@@ -13,6 +13,9 @@
 
   function init()
   {
+    let bufferingCount = 0;
+    let suggestedQuality = 'default';
+
     player = new YT.Player(playerElement,
     {
       height: '100%',
@@ -66,7 +69,42 @@
 
             if (playerState === YT.PlayerState.BUFFERING)
             {
-              console.debug('Buffering... Current playback quality:', player.getPlaybackQuality())
+              const currentQuality = player.getPlaybackQuality();
+
+              if (bufferingCount > 0)
+              {
+                const qualityLevels = player.getAvailableQualityLevels();
+
+                if (/default|audto/.test(suggestedQuality))
+                {
+                  const currentQualityIndex = qualityLevels.indexOf(currentQuality);
+
+                  if (currentQualityIndex > -1)
+                  {
+                    suggestedQuality = qualityLevels[currentQualityIndex + 1];
+                  }
+                  else
+                  {
+                    suggestedQuality = qualityLevels[1];
+                  }
+                }
+                else
+                {
+                  const suggestedQualityIndex = qualityLevels.indexOf(suggestedQuality);
+                  suggestedQuality = qualityLevels[suggestedQualityIndex + 1];
+                }
+
+                if (!suggestedQuality)
+                {
+                  suggestedQuality = 'default';
+                }
+
+                player.setPlaybackQuality(suggestedQuality);
+              }
+
+              bufferingCount++;
+
+              console.debug('Buffering... Current quality:', currentQuality, '; Suggested quality:', suggestedQuality);
             }
 
             if (playerState === YT.PlayerState.ENDED)
