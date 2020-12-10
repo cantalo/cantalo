@@ -23,14 +23,14 @@
   import YouTube from "../../../components/YouTube.svelte";
 
   export let meta;
-  export let song;
+  export let lines;
 
   setContext('meta', meta);
-  songStore.set(song);
+  songStore.set(meta, lines);
 
   onDestroy(() =>
   {
-    songStore.set(null);
+    songStore.reset();
     video.play(null);
     getStore(players).forEach(player => player.sung.reset());
   });
