@@ -82,8 +82,8 @@
   <div class="pitch" style="height: {syllable.pitch ? (100 / 12 * (syllable.pitch % 12)) : 10}%">
     <div class="bar" class:selected on:click
          on:contextmenu|preventDefault={e => { dispatch('menu', e.target); return false }}>
-      {#if syllable.pitch}
-        {new Note(syllable.pitch).toString()}<sub>{Math.ceil(syllable.pitch / 12)}</sub>
+      {#if typeof syllable.pitch !== 'undefined'}
+        {new Note(syllable.pitch).toString()}<sub>{Math.ceil(new Note(syllable.pitch).pitch / 12)}</sub>
       {/if}
     </div>
   </div>
