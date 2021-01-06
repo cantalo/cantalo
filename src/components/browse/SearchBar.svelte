@@ -7,6 +7,14 @@
 
   let searchbar;
 
+  $: if (process.browser)
+  {
+    const url = new URL(location.href);
+    if (value) url.searchParams.set('q', value);
+    else url.searchParams.delete('q');
+    history.replaceState(history.state || {}, '', url.toString());
+  }
+
   function keypress()
   {
     if (document.activeElement !== searchbar)

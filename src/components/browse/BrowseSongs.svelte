@@ -6,23 +6,14 @@
 </script>
 
 <script>
+  import searchFilter from '../../services/SearchFilter';
+
   export let songs = [];
   export let search;
 
   let songsElm;
 
-  $: searchTerm = search.replace(/beta:\s?/, '').toLowerCase();
-  $: songsView = search ?
-                 songs
-                   .filter(song => search.startsWith('beta:') === !!song.beta)
-                   .filter(song =>
-                     song.title.toLowerCase().startsWith(searchTerm) ||
-                     song.artist.toLowerCase().startsWith(searchTerm) ||
-                     (song.genre && song.genre.toLowerCase().includes(searchTerm)) ||
-                     (song.edition && song.edition.toLowerCase().includes(searchTerm)) ||
-                     (song.language && searchTerm === `lang:${song.language}`) ||
-                     (song.year && searchTerm === `year:${song.year}`),
-                   ) : songs.filter(song => !song.beta);
+  $: songsView = searchFilter(songs, search);
 
   function intersecting(entries)
   {

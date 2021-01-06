@@ -14,6 +14,8 @@
 </script>
 
 <script>
+  import { get as getStore } from 'svelte/store';
+  import { stores } from '@sapper/app';
   import { _ } from 'svelte-i18n';
 
   import Logo from '../components/Logo.svelte';
@@ -22,7 +24,9 @@
 
   export let songs;
 
-  let search = '';
+  const { query } = getStore(stores().page);
+
+  let search = query.q || '';
 </script>
 
 <svelte:head>
