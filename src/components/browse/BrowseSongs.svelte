@@ -171,7 +171,7 @@
   }
 </style>
 
-<div class="songs" bind:this={songsElm}>
+<div class="songs" bind:this={songsElm} on:scroll>
   {#each songsView as song}
     <a class="song" href={"sing/" + song.id} lang={song.language} use:observe>
       <div class="thumbnail">

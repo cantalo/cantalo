@@ -27,6 +27,21 @@
   const { query } = getStore(stores().page);
 
   let search = query.q || '';
+
+  let pause = false;
+  let scrollTimeout;
+
+  function scrolling()
+  {
+    if (scrollTimeout)
+    {
+      clearTimeout(scrollTimeout);
+    }
+
+    pause = true;
+
+    scrollTimeout = setTimeout(() => pause = false, 1000);
+  }
 </script>
 
 <svelte:head>
@@ -54,14 +69,19 @@
     height: 100px;
     padding: 20px;
   }
+
+  .pause
+  {
+    animation-play-state: paused;
+  }
 </style>
 
-<div class="browse absolute background">
+<div class="browse absolute background" class:pause>
   <header>
     <Logo />
   </header>
 
-  <BrowseSongs {songs} {search} />
+  <BrowseSongs {songs} {search} on:scroll={scrolling} />
 
   <SearchBar bind:value={search} />
 </div>
