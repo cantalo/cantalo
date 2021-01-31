@@ -1,12 +1,14 @@
 <script context="module">
-  export async function preload()
+  const shiftPlayedToEnd = played => song => played.has(song.id) ? 1 : -1;
+
+  export async function preload(page, session)
   {
     const res = await this.fetch(`index.json`);
     const data = await res.json();
 
     if (res.status === 200)
     {
-      return { songs: data };
+      return { songs: data.sort(shiftPlayedToEnd(session.played)) };
     }
 
     this.error(res.status, data.message);

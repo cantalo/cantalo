@@ -1,4 +1,5 @@
 import DB from '../../_db';
+import { getPlayedFromCookies } from '../../../utils';
 
 export async function get(req, res)
 {
@@ -9,6 +10,12 @@ export async function get(req, res)
     .find({ id: vid })
     .value();
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
+  const played = getPlayedFromCookies(req);
+  played.add(vid);
+
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Set-Cookie': `played=${Array.from(played).join()}; Path=/`,
+  });
   res.end(JSON.stringify(data));
 }

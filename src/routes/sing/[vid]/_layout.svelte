@@ -1,11 +1,12 @@
 <script context="module">
-  export async function preload({ params })
+  export async function preload({ params }, session)
   {
     const res = await this.fetch(`sing/${params.vid}.json`);
     const data = await res.json();
 
     if (res.status === 200)
     {
+      session.played.add(params.vid);
       return data;
     }
 
@@ -42,4 +43,4 @@
 
 <YouTube />
 
-<slot></slot>
+<slot/>
