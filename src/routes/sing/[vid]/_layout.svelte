@@ -25,16 +25,24 @@
 
   export let meta;
   export let lines;
+  export let suggestion;
 
-  setContext('meta', meta);
-  songStore.set(meta, lines);
-
-  onDestroy(() =>
+  function reset()
   {
     songStore.reset();
     video.play(null);
-    getStore(players).forEach(player => player.sung.reset());
-  });
+    getStore(players).forEach(player => player.sung.reset())
+  }
+
+  $:
+  {
+    reset();
+    setContext('meta', meta);
+    setContext('suggestion', suggestion);
+    songStore.set(meta, lines);
+  }
+
+  onDestroy(reset);
 </script>
 
 <svelte:head>

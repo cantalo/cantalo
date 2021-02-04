@@ -9,7 +9,9 @@
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
+  import { goto } from '@sapper/app';
 
+  import { video } from '../../../stores/video';
   import { players } from '../../../stores/players';
   import { getHighScoreStore } from '../../../stores/highscores';
 
@@ -21,6 +23,7 @@
   import winIcon from './win-icon.svg';
 
   const meta = getContext('meta');
+  const suggestion = getContext('suggestion');
   const highScores = getHighScoreStore(meta.id);
   const highScoreIdByPlayer = new Map();
   const playerColorByHighScoreId = {};
@@ -48,6 +51,12 @@
       highScoreIdByPlayer.set(playerIndex, id);
       playerColorByHighScoreId[id] = playerColor;
     }
+  }
+
+  function goToSuggestion()
+  {
+    video.play(null);
+    goto(`/sing/${suggestion.id}`, { replaceState: true });
   }
 </script>
 
@@ -103,12 +112,12 @@
     overflow: hidden;
   }
 
-  .song h2
+  h2
   {
     margin-bottom: 0;
   }
 
-  .song h3
+  h3
   {
     margin-top: 0;
   }
@@ -119,6 +128,88 @@
     height: 4em;
     width: 4em;
     margin: 15px 10px 0 0;
+  }
+
+  .suggestion
+  {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    opacity: 0;
+    transform: scale(0.75);
+    animation: fade-in .5s linear 3s forwards;
+    cursor: pointer;
+  }
+
+  .suggestion > div
+  {
+    display: flex;
+    width: 250px;
+    height: 200px;
+    transition: transform .15s ease-in-out;
+  }
+
+  .suggestion:hover > div
+  {
+    transform: scale(1.1);
+  }
+
+  .suggestion > div::before
+  {
+    content: 'next';
+    position: absolute;
+    right: 100%;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    padding: 2px;
+    writing-mode: tb;
+    font-weight: bold;
+    font-size: 20px;
+    background: rgba(0,0,0,.5);
+    transform: scale(-1) translateX(-100%);
+    animation: pop-out .3s linear 3.2s forwards;
+  }
+
+  .suggestion img
+  {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .suggestion .overlay
+  {
+    position: relative;
+    width: 100%;
+    padding: 0 10px;
+    margin-top: auto;
+    background: linear-gradient(to top, black 25%, transparent);
+  }
+
+  @keyframes fade-in
+  {
+    50%
+    {
+      transform: scale(1);
+    }
+    to
+    {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pop-out
+  {
+    to
+    {
+      transform: scale(-1) translateX(0);
+    }
   }
 
   .current-scores
@@ -187,9 +278,11 @@
       {$_('score.back')}
     </IconButton>
   </nav>
+
   <div class="icon">
     <Icon data={winIcon} size="35vh" />
   </div>
+
   <section>
     <h1>
       {$_('score.headline')}
@@ -237,4 +330,17 @@
       {/if}
     {/if}
   </section>
+
+  {#if suggestion}
+    <div class="suggestion" on:click={goToSuggestion}>
+      <div>
+        <img src="https://img.youtube.com/vi/{suggestion.id}/hqdefault.jpg" alt="Cover">
+
+        <div class="overlay">
+          <h2>{suggestion.title}</h2>
+          <h3>{suggestion.artist}</h3>
+        </div>
+      </div>
+    </div>
+  {/if}
 </main>
