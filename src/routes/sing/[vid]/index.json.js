@@ -15,7 +15,7 @@ export async function get(req, res)
 
   res.writeHead(200, {
     'Content-Type': 'application/json',
-    'Set-Cookie': `played=${Array.from(played).join()}; Path=/`,
+    'Set-Cookie': `played=${Array.from(played).join()}; Path=/; Max-Age=${6 * 60 * 60}`,
   });
   res.end(JSON.stringify(data));
 }
