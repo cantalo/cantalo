@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { get as getStore } from 'svelte/store';
   import { _ } from 'svelte-i18n';
 
@@ -15,7 +15,7 @@
   {
     const _score = getStore(score);
 
-    if (player.name.length > 1 && _score.total > 0)
+    if (player.name.trim().length > 1 && _score.total > 0)
     {
       dispatchEvent('save', {
         playerName: player.name,
@@ -23,6 +23,8 @@
       });
     }
   }
+
+  onMount(save);
 </script>
 
 <style>
