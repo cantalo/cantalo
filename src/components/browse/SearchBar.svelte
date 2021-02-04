@@ -15,11 +15,19 @@
     history.replaceState(history.state || {}, '', url.toString());
   }
 
-  function keypress()
+  function keypress(e)
   {
     if (document.activeElement !== searchbar)
     {
       searchbar.focus();
+
+      setTimeout(() =>
+      {
+        if (searchbar.value === '')
+        {
+          searchbar.value = e.key;
+        }
+      })
     }
   }
 </script>
