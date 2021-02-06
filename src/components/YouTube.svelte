@@ -30,16 +30,18 @@
   const win = process.browser ? window : {};
   let player, playerElement;
   let animationFrames, videoUnsubscriber;
+  let size = 100;
+
+  $: if (player) player.setSize(size + '%', size + '%');
 
   function init()
   {
     let bufferingCount = 0;
-    let suggestedQuality = 'default';
 
     player = new YT.Player(playerElement,
     {
-      height: '100%',
-      width: '100%',
+      height: size + '%',
+      width: size + '%',
       playerVars:
       {
         controls: 0,
@@ -72,6 +74,7 @@
               player.stopVideo();
               $playing = false;
               $time = 0;
+              size = 100;
             }
           });
         },
@@ -99,41 +102,18 @@
             if (playerState === YT.PlayerState.BUFFERING)
             {
               const currentQuality = player.getPlaybackQuality();
+              const qualityLevels = player.getAvailableQualityLevels();
+              const currentQualityIndex = qualityLevels.indexOf(currentQuality);
 
-              if (bufferingCount > 0)
+              console.debug('Buffering... Current quality:', currentQuality);
+
+              if (bufferingCount > 2 && size > 50 && currentQualityIndex < 3)
               {
-                const qualityLevels = player.getAvailableQualityLevels();
-
-                if (/default|audto/.test(suggestedQuality))
-                {
-                  const currentQualityIndex = qualityLevels.indexOf(currentQuality);
-
-                  if (currentQualityIndex > -1)
-                  {
-                    suggestedQuality = qualityLevels[currentQualityIndex + 1];
-                  }
-                  else
-                  {
-                    suggestedQuality = qualityLevels[1];
-                  }
-                }
-                else
-                {
-                  const suggestedQualityIndex = qualityLevels.indexOf(suggestedQuality);
-                  suggestedQuality = qualityLevels[suggestedQualityIndex + 1];
-                }
-
-                if (!suggestedQuality)
-                {
-                  suggestedQuality = 'default';
-                }
-
-                player.setPlaybackQuality(suggestedQuality);
+                size -= 25;
+                console.debug(`Decreased player size to ${size}% to reduce buffering`);
               }
 
               bufferingCount++;
-
-              console.debug('Buffering... Current quality:', currentQuality, '; Suggested quality:', suggestedQuality);
             }
 
             if (playerState === YT.PlayerState.ENDED)
@@ -184,9 +164,17 @@
   div
   {
     z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  div :global(iframe)
+  {
+    transform: var(--video-scale);
   }
 </style>
 
-<div class="absolute">
+<div class="absolute" style="--video-scale: scale({(100 / size)})">
   <span bind:this={playerElement}></span>
 </div>
