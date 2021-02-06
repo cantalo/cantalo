@@ -43,7 +43,7 @@
       playerVars:
       {
         controls: 0,
-        disablekb: 0,
+        disablekb: 1,
         showinfo: 0,
         cc_load_policy: 0,
         fs: 0,
@@ -86,6 +86,10 @@
           {
             updatePlayTime();
             $playing = true;
+
+            player.unloadModule('captions');
+            player.unloadModule('cc');
+            player.unloadModule('iv');
           }
           else
           {
