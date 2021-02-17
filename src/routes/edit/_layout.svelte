@@ -37,6 +37,8 @@
   let importSearch;
   let importExportMenu;
   let savedSnackbar;
+  let errorSnackbar;
+  let errorMessage;
   let importLyrics;
   let analyseVocals;
 
@@ -71,9 +73,12 @@
 
       savedSnackbar.open();
     }
-    catch (err)
+    catch (errResponse)
     {
-      console.error(err);
+      const error = await errResponse.json();
+      console.error(error);
+      errorMessage = error.message;
+      errorSnackbar.open();
     }
   }
 </script>
@@ -127,6 +132,11 @@
   {
     top: 80px;
     bottom: auto;
+  }
+
+  .editor :global(.mdc-snackbar.error .mdc-snackbar__label)
+  {
+    color: #c00
   }
 </style>
 
@@ -200,6 +210,10 @@
 
   <Snackbar bind:this={savedSnackbar}>
     <Label>Saved.</Label>
+  </Snackbar>
+
+  <Snackbar bind:this={errorSnackbar} labelText={errorMessage} class="error">
+    <Label>{errorMessage}</Label>
   </Snackbar>
 
   <footer>
