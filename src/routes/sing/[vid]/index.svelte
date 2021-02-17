@@ -12,7 +12,7 @@
   import IconButton from '../../../components/IconButton.svelte';
 
   import { players } from '../../../stores/players';
-  import { video, playing, time, playerApi } from '../../../stores/video';
+  import { playing, time, loadVideo } from '../../../components/YouTube.svelte';
 
   import playIcon from './play-icon.svg';
   import pauseIcon from './pause-icon.svg';
@@ -26,7 +26,7 @@
   {
     await players.initialized;
     await Promise.all(getStore(players).map(player => player.mic.init()));
-    video.play(meta.id, meta.videogap, meta.videoend);
+    loadVideo(meta.id, meta.videogap, meta.videoend, true);
   });
 
   onDestroy(() =>
@@ -39,11 +39,11 @@
 
   function togglePause()
   {
-    $playing ? $playerApi.pauseVideo() : $playerApi.playVideo();
+    $playing = !$playing;
   }
 
   $: {
-    if ($playing === null || meta.end && $time > meta.end)
+    if ($playing === null && $time > 0 || meta.end && $time > meta.end)
     {
       goto(`/sing/${meta.id}/score`, { replaceState: true });
     }

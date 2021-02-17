@@ -1,7 +1,7 @@
 import { derived } from 'svelte/store';
 import Note from '../../services/Note';
 import { currentLine, currentSyllable } from '../song';
-import { time } from '../video';
+import { time } from '../../components/YouTube.svelte';
 
 class SungData extends Object
 {

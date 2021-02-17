@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/browser';
 import * as sapper from '@sapper/app';
 import { get as getStore } from 'svelte/store';
 
-import { time } from './stores/video';
+import { time } from './components/YouTube.svelte';
 import { currentLine, currentSyllable } from './stores/song';
 
 import './i18n.js';

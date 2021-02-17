@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import { time } from './video';
+import { time } from '../components/YouTube.svelte';
 
 export const song = (() =>
 {

@@ -2,7 +2,7 @@
   import { fade } from 'svelte/transition';
   import Syllable from './Syllable.svelte';
   import StartIndicator from './StartIndicator.svelte';
-  import { time, playing } from '../stores/video';
+  import { time, playing } from '../components/YouTube.svelte';
   import { song } from '../stores/song';
 
   const warmUpTime = 2000;
