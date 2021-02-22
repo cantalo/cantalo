@@ -6,7 +6,7 @@
 
   let isReady = defer();
 
-  let setTime;
+  let setTime = () => {};
   let setDuration = () => {};
   let setBuffer = () => {};
 
