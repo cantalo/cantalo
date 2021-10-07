@@ -5,19 +5,19 @@
 </script>
 
 <script>
-  import PlayerColor from '../../../components/PlayerColor.svelte';
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { goto } from '@sapper/app';
 
-  import { video } from '../../../stores/video';
   import { players } from '../../../stores/players';
   import { getHighScoreStore } from '../../../stores/highscores';
 
   import Icon from '../../../components/Icon.svelte';
   import IconButton from '../../../components/IconButton.svelte';
   import ScoreTable from '../../../components/ScoreTable.svelte';
+  import PlayerColor from '../../../components/PlayerColor.svelte';
+  import { resetVideo } from '../../../components/YouTube.svelte';
 
   import backIcon from './back-icon.svg';
   import winIcon from './win-icon.svg';
@@ -55,7 +55,7 @@
 
   function goToSuggestion()
   {
-    video.play(null);
+    resetVideo();
     goto(`/sing/${suggestion.id}`, { replaceState: true });
   }
 </script>

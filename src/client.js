@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/browser';
 import * as sapper from '@sapper/app';
 import { get as getStore } from 'svelte/store';
 
-import { time } from './stores/video';
+import { time } from './components/YouTube.svelte';
 import { currentLine, currentSyllable } from './stores/song';
 
 import './i18n.js';
@@ -16,16 +16,15 @@ Sentry.init({
 		try
 		{
 			event.extra = event.extra || {};
-			event.context = event.context || {};
 
 			const $time = getStore(time);
 			if ($time) event.extra.playTime = $time;
 
 			const $currentLine = getStore(currentLine);
-			if ($currentLine) event.context.currentLine = $currentLine;
+			if ($currentLine) event.extra.currentLine = $currentLine;
 
 			const $currentSyllable = getStore(currentSyllable);
-			if ($currentSyllable) event.context.currentSyllable = $currentSyllable;
+			if ($currentSyllable) event.extra.currentSyllable = $currentSyllable;
 		}
 		catch (err)
 		{

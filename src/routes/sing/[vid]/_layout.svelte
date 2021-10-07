@@ -18,10 +18,9 @@
   import { onDestroy, setContext } from 'svelte';
   import { get as getStore } from 'svelte/store';
   import { song as songStore } from '../../../stores/song';
-  import { video } from '../../../stores/video';
   import { players } from '../../../stores/players'
 
-  import YouTube from "../../../components/YouTube.svelte";
+  import YouTube, { resetVideo } from "../../../components/YouTube.svelte";
 
   export let meta;
   export let lines;
@@ -30,7 +29,7 @@
   function reset()
   {
     songStore.reset();
-    video.play(null);
+    resetVideo();
     getStore(players).forEach(player => player.sung.reset())
   }
 

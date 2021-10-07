@@ -1,4 +1,66 @@
 <script context="module">
+  import { readable, writable } from 'svelte/store';
+  import { defer } from '../services/utils';
+
+  let player;
+
+  let isReady = defer();
+
+  let setTime = () => {};
+  let setDuration = () => {};
+  let setBuffer = () => {};
+
+  export const time = readable(0, set => { setTime = set });
+  export const duration = readable(0, set => { setDuration = set });
+  export const buffer = readable(0, set => { setBuffer = set });
+
+  export const speed = writable(100);
+  export const playing = writable(null);
+
+  export async function loadVideo(videoId, startSeconds, endSeconds, play)
+  {
+    await isReady;
+
+    player[play ? 'loadVideoById' : 'cueVideoById']({
+      videoId,
+      startSeconds,
+      endSeconds,
+    });
+  }
+
+  export function resetVideo()
+  {
+    if (player)
+    {
+      player.stopVideo();
+      setTime(0);
+      setPlaying(null);
+    }
+  }
+
+  export function seekTo(seconds)
+  {
+    player.seekTo(Math.max(seconds, 0));
+    setTime(player.getCurrentTime() * 1000);
+  }
+
+  let playingInternalChange;
+  let speedInternalChange;
+
+  function setPlaying(value)
+  {
+    playingInternalChange = true;
+    playing.set(value);
+    playingInternalChange = false;
+  }
+
+  function setSpeed(value)
+  {
+    speedInternalChange = true;
+    speed.set(value * 100);
+    speedInternalChange = false;
+  }
+
   class YouTubeError extends Error
   {
     constructor(code)
@@ -22,17 +84,25 @@
 </svelte:head>
 
 <script>
+  /* global YT */
+
   import { onDestroy, onMount } from 'svelte';
   import { goto } from '@sapper/app';
   import AnimationFrames from '../services/AnimationFrames';
-  import { video, time, playing, playerApi } from '../stores/video';
+
+  export let width;
+  export let height;
+  export let controls = false;
 
   const win = process.browser ? window : {};
-  let player, playerElement;
+  let playerElement;
   let animationFrames, videoUnsubscriber;
   let size = 100;
 
-  $: if (player) player.setSize(size + '%', size + '%');
+  if (isReady.resolved)
+  {
+    isReady = defer();
+  }
 
   function init()
   {
@@ -40,11 +110,11 @@
 
     player = new YT.Player(playerElement,
     {
-      height: size + '%',
-      width: size + '%',
+      height: height || size + '%',
+      width: width || size + '%',
       playerVars:
       {
-        controls: 0,
+        controls: Number(controls),
         disablekb: 1,
         showinfo: 0,
         cc_load_policy: 0,
@@ -57,25 +127,18 @@
       {
         onReady()
         {
-          $playerApi = player;
+          isReady.resolve();
 
-          videoUnsubscriber = video.subscribe(({ id, gap, end }) =>
+          playing.subscribe(_playing =>
           {
-            if (id)
-            {
-              player.loadVideoById({
-                videoId: id,
-                startSeconds: gap,
-                endSeconds: end,
-              });
-            }
-            else
-            {
-              player.stopVideo();
-              $playing = false;
-              $time = 0;
-              size = 100;
-            }
+            if (playingInternalChange) return;
+            player[_playing ? 'playVideo' : 'pauseVideo']();
+          });
+
+          speed.subscribe(_speed =>
+          {
+            if (speedInternalChange) return;
+            player.setPlaybackRate(_speed / 100);
           });
         },
         onError({ data: error })
@@ -88,7 +151,8 @@
           if (playerState === YT.PlayerState.PLAYING)
           {
             updatePlayTime();
-            $playing = true;
+            setPlaying(true);
+            setDuration(player.getDuration() * 1000);
 
             player.unloadModule('captions');
             player.unloadModule('cc');
@@ -97,7 +161,6 @@
           else
           {
             animationFrames.remove('PlayTime');
-            $playing = false;
 
             if (playerState === YT.PlayerState.BUFFERING)
             {
@@ -116,11 +179,19 @@
               bufferingCount++;
             }
 
-            if (playerState === YT.PlayerState.ENDED)
+            if ([YT.PlayerState.PAUSED, YT.PlayerState.BUFFERING].includes(playerState))
             {
-              $playing = null;
+              setPlaying(false);
+            }
+            else
+            {
+              setPlaying(null);
             }
           }
+        },
+        onPlaybackRateChange({ data: playbackRate })
+        {
+          setSpeed(playbackRate);
         },
         onPlaybackQualityChange({ data: playbackQuality })
         {
@@ -132,7 +203,8 @@
 
   function updatePlayTime()
   {
-    $time = player.getCurrentTime() * 1000;
+    setTime(player.getCurrentTime() * 1000);
+    setBuffer(player.getVideoLoadedFraction());
     animationFrames.add('PlayTime', updatePlayTime);
   }
 
@@ -154,9 +226,8 @@
   {
     if (videoUnsubscriber) videoUnsubscriber();
     if (animationFrames) animationFrames.remove('PlayTime');
-    $time = 0;
-    $playing = false;
-    $playerApi = {};
+    setTime(0);
+    setPlaying(null);
   });
 </script>
 
@@ -175,6 +246,6 @@
   }
 </style>
 
-<div class="absolute" style="--video-scale: scale({(100 / size)})">
+<div class:absolute={!width && !height} style="--video-scale: scale({(100 / size)})">
   <span bind:this={playerElement}></span>
 </div>

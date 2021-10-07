@@ -13,6 +13,8 @@
   let observer;
   let highScores;
 
+  $: highScore = $highScores && $highScores.length && $highScores.sort((a, b) => b.score - a.score)[0];
+
   function intersecting(entries)
   {
     entries.forEach(({ isIntersecting }) =>
@@ -153,12 +155,12 @@
             <sub>year</sub>
           </div>
         {/if}
-        {#if $highScores && $highScores.length}
+        {#if highScore}
           <div title="Highscore">
-            {$highScores[0].score}
+            {highScore.score}
             <sub>
               <Icon data={highScoreIcon} size="1em" />
-              {$highScores[0].playerName}
+              {highScore.playerName}
             </sub>
           </div>
         {/if}

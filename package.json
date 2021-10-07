@@ -10,7 +10,7 @@
     "sirv": "^0.4.6"
   },
   "devDependencies": {
-    "@sentry/browser": "^5.17.0",
+    "@sentry/browser": "^6.2.0",
     "autoprefixer": "^9.8.0",
     "idb": "^5.0.4",
     "postcss-hexrgba": "^2.0.0",
