@@ -165,6 +165,12 @@
     })));
     $lines = $lines;
   }
+
+  function removeSyllable({ line, syllable })
+  {
+    line.syllables.splice(line.syllables.indexOf(syllable), 1);
+    $lines = $lines;
+  }
 </script>
 
 <style>
@@ -211,6 +217,6 @@
     <Item on:SMUI:action={() => changeSyllablePitch(stylableMenuDetails)}><Text>Change Note</Text></Item>
     <Separator />
     <Item on:SMUI:action={() => splitSyllable(stylableMenuDetails)}><Text>Split</Text></Item>
-    <Item on:SMUI:action={() => console.log('Remove')}><Text>Remove</Text></Item>
+    <Item on:SMUI:action={() => removeSyllable(stylableMenuDetails)}><Text>Remove</Text></Item>
   </List>
 </Menu>
