@@ -1,16 +1,20 @@
 <script context="module">
-  export async function preload({ params }, session)
+  export async function load({ page, session, fetch })
   {
-    const res = await this.fetch(`sing/${params.vid}.json`);
+    const { params } = page;
+    const res = await fetch(`${params.vid}.json`);
     const data = await res.json();
 
     if (res.status === 200)
     {
       session.played.add(params.vid);
-      return data;
+      return { props: data };
     }
 
-    this.error(res.status, data.message);
+    return {
+      status: res.status,
+      error: data.message,
+    }
   }
 </script>
 

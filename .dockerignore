@@ -1,4 +1,3 @@
 node_modules
-src/node_modules
-__sapper__
+.svelte-kit
 public

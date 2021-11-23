@@ -87,14 +87,15 @@
   /* global YT */
 
   import { onDestroy, onMount } from 'svelte';
-  import { goto } from '@sapper/app';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/env';
   import AnimationFrames from '../services/AnimationFrames';
 
   export let width;
   export let height;
   export let controls = false;
 
-  const win = process.browser ? window : {};
+  const win = browser ? window : {};
   let playerElement;
   let animationFrames, videoUnsubscriber;
   let size = 100;

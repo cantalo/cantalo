@@ -8,7 +8,8 @@
   import { onMount, getContext } from 'svelte';
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
-  import { goto } from '@sapper/app';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/env';
 
   import { players } from '../../../stores/players';
   import { getHighScoreStore } from '../../../stores/highscores';
@@ -19,8 +20,8 @@
   import PlayerColor from '../../../components/PlayerColor.svelte';
   import { resetVideo } from '../../../components/YouTube.svelte';
 
-  import backIcon from './back-icon.svg';
-  import winIcon from './win-icon.svg';
+  import backIcon from './back-icon.svg?raw';
+  import winIcon from './win-icon.svg?raw';
 
   const meta = getContext('meta');
   const suggestion = getContext('suggestion');
@@ -29,7 +30,7 @@
   const playerColorByHighScoreId = {};
 
   let showCurrentScore = false;
-  let showHighScore = !process.browser;
+  let showHighScore = !browser;
 
   $: highScoresView = $highScores.sort((a, b) => b.score - a.score).slice(0, 10);
 

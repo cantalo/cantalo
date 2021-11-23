@@ -1,4 +1,4 @@
-import { register, init, getLocaleFromNavigator } from 'svelte-i18n';
+import { register } from 'svelte-i18n';
 
 const appName = '¡\u202FCantalo\u202F!'
 
@@ -123,8 +123,3 @@ register('de', () => Promise.resolve({
     }
   },
 }));
-
-init({
-  fallbackLocale: 'en',
-  initialLocale: getLocaleFromNavigator(),
-});

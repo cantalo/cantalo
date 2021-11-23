@@ -1,21 +1,17 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-	%sapper.base%
-
 	<link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600" rel="stylesheet">
-	<link href="assets/icons/favicon.svg" rel="shortcut icon" type="image/svg+xml">
-	<link href="global.css" rel="stylesheet">
-	%sapper.styles%
+	<link href="/assets/icons/favicon.svg" rel="shortcut icon" type="image/svg+xml">
+	<link href="/global.css" rel="stylesheet">
+	<link href="/manifest.json" rel="manifest">
 
-	%sapper.head%
+	%svelte.head%
 </head>
 <body>
-	<cantalo>%sapper.html%</cantalo>
-
-	%sapper.scripts%
+	%svelte.body%
 </body>
 </html>

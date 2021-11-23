@@ -1,13 +1,14 @@
 <script>
+  import { browser } from '$app/env';
   import Icon from '../Icon.svelte';
 
-  import searchIcon from './search-icon.svg';
+  import searchIcon from './search-icon.svg?raw';
 
   export let value;
 
   let searchbar;
 
-  $: if (process.browser)
+  $: if (browser)
   {
     const url = new URL(location.href);
     if (value) url.searchParams.set('q', value);

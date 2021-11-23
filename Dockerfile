@@ -1,4 +1,4 @@
-FROM node:12-alpine
+FROM node:16-alpine
 
 WORKDIR /app
 
@@ -9,4 +9,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node", "__sapper__/build"]
+CMD ["node", "build"]
