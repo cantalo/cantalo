@@ -24,9 +24,9 @@
   import { page } from '$app/stores';
   import { _ } from 'svelte-i18n';
 
-  import Logo from '../components/Logo.svelte';
-  import BrowseSongs from '../components/browse/BrowseSongs.svelte';
-  import SearchBar from '../components/browse/SearchBar.svelte';
+  import Logo from '$lib/components/Logo.svelte';
+  import BrowseSongs from '$lib/components/browse/BrowseSongs.svelte';
+  import SearchBar from '$lib/components/browse/SearchBar.svelte';
 
   export let songs;
 

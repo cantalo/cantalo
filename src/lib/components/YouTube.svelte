@@ -1,6 +1,6 @@
 <script context="module">
   import { readable, writable } from 'svelte/store';
-  import { defer } from '../services/utils';
+  import defer from '$lib/defer';
 
   let player;
 

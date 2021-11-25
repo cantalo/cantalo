@@ -1,5 +1,4 @@
-
-export function defer()
+export default function ()
 {
   let _resolve;
   const promise = new Promise(resolve => _resolve = resolve);

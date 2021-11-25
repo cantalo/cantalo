@@ -21,10 +21,10 @@
 <script>
   import { onDestroy, setContext } from 'svelte';
   import { get as getStore } from 'svelte/store';
-  import { song as songStore } from '../../../stores/song';
-  import { players } from '../../../stores/players'
+  import { song as songStore } from '$lib/stores/song';
+  import { players } from '$lib/stores/players'
 
-  import YouTube, { resetVideo } from "../../../components/YouTube.svelte";
+  import YouTube, { resetVideo } from "$lib/components/YouTube.svelte";
 
   export let meta;
   export let lines;

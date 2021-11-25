@@ -23,8 +23,8 @@
   import { get as getStore } from 'svelte/store';
   import { session } from '$app/stores';
 
-  import { time } from '../components/YouTube.svelte';
-  import { currentLine, currentSyllable } from '../stores/song';
+  import { time } from '$lib/components/YouTube.svelte';
+  import { currentLine, currentSyllable } from '$lib/stores/song';
 
   onMount(() =>
   {
