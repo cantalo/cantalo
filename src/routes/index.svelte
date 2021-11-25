@@ -32,7 +32,7 @@
 
   const { query } = $page;
 
-  let search = query.q || '';
+  let search = query.get('q') || '';
 
   let pause = false;
   let scrollTimeout;
