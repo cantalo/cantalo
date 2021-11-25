@@ -213,7 +213,7 @@
   {
     animationFrames = new AnimationFrames();
 
-    if (win.YT)
+    if (win.YT?.Player)
     {
       init();
     }
