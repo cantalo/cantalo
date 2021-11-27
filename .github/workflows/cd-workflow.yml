@@ -3,7 +3,7 @@ name: Docker CD
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - 'v*.*.*'
 
