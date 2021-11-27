@@ -1,6 +1,6 @@
 <script context="module">
   import { readable, writable } from 'svelte/store';
-  import { defer } from '../services/utils';
+  import defer from '$lib/defer';
 
   let player;
 
@@ -87,14 +87,15 @@
   /* global YT */
 
   import { onDestroy, onMount } from 'svelte';
-  import { goto } from '@sapper/app';
+  import { goto } from '$app/navigation';
+  import { browser } from '$app/env';
   import AnimationFrames from '../services/AnimationFrames';
 
   export let width;
   export let height;
   export let controls = false;
 
-  const win = process.browser ? window : {};
+  const win = browser ? window : {};
   let playerElement;
   let animationFrames, videoUnsubscriber;
   let size = 100;
@@ -212,7 +213,7 @@
   {
     animationFrames = new AnimationFrames();
 
-    if (win.YT)
+    if (win.YT?.Player)
     {
       init();
     }

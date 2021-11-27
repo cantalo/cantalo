@@ -1,7 +1,7 @@
 <script>
   import Score from './Score.svelte';
   import { currentLine } from '../stores/song';
-  import { time, playing } from '../components/YouTube.svelte';
+  import { time, playing } from './YouTube.svelte';
   import isAhead from '../stores/players/ahead';
 
   export let player;

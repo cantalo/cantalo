@@ -13,7 +13,7 @@
   let elements, originalViewbox;
 
   $: {
-    originalViewbox = data.match(/viewBox="([^"]+)"/)[1];
+    [, originalViewbox] = data.match(/viewBox="([^"]+)"/);
     elements = data.replace(/<svg ([^>]*)>/, '').replace('</svg>', '');
   }
 </script>

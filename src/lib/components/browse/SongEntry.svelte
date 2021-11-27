@@ -3,7 +3,7 @@
 
   import { getHighScoreStore } from '../../stores/highscores';
 
-  import highScoreIcon from './highscore-icon.svg';
+  import highScoreIcon from './highscore-icon.svg?raw';
 
   export let song;
   export let songsElm;

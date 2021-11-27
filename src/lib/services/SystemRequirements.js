@@ -17,7 +17,7 @@ class SystemRequirements
 {
   add(type, name, supported)
   {
-    if (!process.browser) return;
+    if (typeof window === 'undefined') return;
     required.push({ type, name, supported });
     console.debug('Supports [%s] %s', type, name, ':', proof(supported));
   }

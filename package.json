@@ -1,38 +1,28 @@
 {
   "name": "cantalo",
   "version": "1.2.1",
+  "type": "module",
   "dependencies": {
     "accept-language": "^3.0.18",
-    "cookie-parser": "^1.4.5",
-    "compression": "^1.7.1",
-    "lowdb": "^1.0.0",
-    "polka": "next",
-    "sirv": "^0.4.6"
+    "cookie": "^0.4.1",
+    "lowdb": "^1.0.0"
   },
   "devDependencies": {
     "@sentry/browser": "^6.2.0",
+    "@sveltejs/adapter-node": "next",
+    "@sveltejs/kit": "next",
     "autoprefixer": "^9.8.0",
     "idb": "^5.0.4",
     "postcss-hexrgba": "^2.0.0",
     "postcss-nested": "^4.2.1",
     "raf-pool": "^0.1.4",
-    "rollup": "^2.11.2",
-    "rollup-plugin-commonjs": "^10.1.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-replace": "^2.2.0",
-    "rollup-plugin-string": "^3.0.0",
-    "rollup-plugin-svelte": "^5.2.2",
-    "rollup-plugin-terser": "^6.1.0",
-    "sapper": "^0.27.13",
-    "sirv-cli": "^0.4.6",
-    "svelte": "^3.23.0",
+    "svelte": "^3.44.2",
     "svelte-i18n": "^3.0.3",
     "svelte-preprocess-postcss": "^1.1.1"
   },
   "scripts": {
-    "dev": "sapper dev",
-    "build": "sapper build",
-    "export": "sapper export",
-    "start": "node __sapper__/build"
+    "dev": "svelte-kit dev",
+    "build": "svelte-kit build",
+    "start": "node build"
   }
 }

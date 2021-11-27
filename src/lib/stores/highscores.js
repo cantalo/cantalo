@@ -1,12 +1,13 @@
 import { openDB } from 'idb';
 import { writable, get as getStore } from 'svelte/store';
+import { browser } from '$app/env';
 
 const dbStoreName = 'highscores';
 const storeMap = new Map();
 
 function init()
 {
-  if (process.browser)
+  if (browser)
   {
     return openDB('cantalo', 1,
     {

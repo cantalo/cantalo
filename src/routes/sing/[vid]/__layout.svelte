@@ -1,26 +1,30 @@
 <script context="module">
-  export async function preload({ params }, session)
+  export async function load({ page, session, fetch })
   {
-    const res = await this.fetch(`sing/${params.vid}.json`);
+    const { params } = page;
+    const res = await fetch(`${params.vid}.json`);
     const data = await res.json();
 
     if (res.status === 200)
     {
       session.played.add(params.vid);
-      return data;
+      return { props: data };
     }
 
-    this.error(res.status, data.message);
+    return {
+      status: res.status,
+      error: data.message,
+    }
   }
 </script>
 
 <script>
   import { onDestroy, setContext } from 'svelte';
   import { get as getStore } from 'svelte/store';
-  import { song as songStore } from '../../../stores/song';
-  import { players } from '../../../stores/players'
+  import { song as songStore } from '$lib/stores/song';
+  import { players } from '$lib/stores/players'
 
-  import YouTube, { resetVideo } from "../../../components/YouTube.svelte";
+  import YouTube, { resetVideo } from "$lib/components/YouTube.svelte";
 
   export let meta;
   export let lines;

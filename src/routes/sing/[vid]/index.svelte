@@ -2,23 +2,23 @@
   import { onMount, onDestroy, getContext } from 'svelte';
   import { get as getStore } from 'svelte/store';
   import { _ } from 'svelte-i18n';
-  import { goto } from '@sapper/app';
+  import { goto } from '$app/navigation';
 
-  import MicSetup from '../../../components/MicSetup.svelte';
-  import Icon from '../../../components/Icon.svelte';
-  import Notes from '../../../components/Notes.svelte';
-  import Lyrics from '../../../components/Lyrics.svelte';
-  import Keyboard from '../../../components/hardware/Keyboard.svelte';
-  import IconButton from '../../../components/IconButton.svelte';
+  import MicSetup from '$lib/components/MicSetup.svelte';
+  import Icon from '$lib/components/Icon.svelte';
+  import Notes from '$lib/components/Notes.svelte';
+  import Lyrics from '$lib/components/Lyrics.svelte';
+  import Keyboard from '$lib/components/hardware/Keyboard.svelte';
+  import IconButton from '$lib/components/IconButton.svelte';
 
-  import { players } from '../../../stores/players';
-  import { playing, time, loadVideo } from '../../../components/YouTube.svelte';
+  import { players } from '$lib/stores/players';
+  import { playing, time, loadVideo } from '$lib/components/YouTube.svelte';
 
-  import playIcon from './play-icon.svg';
-  import pauseIcon from './pause-icon.svg';
-  import backIcon from './back-icon.svg';
-  import restartIcon from './restart-icon.svg';
-  import videoIcon from './video-icon.svg';
+  import playIcon from './play-icon.svg?raw';
+  import pauseIcon from './pause-icon.svg?raw';
+  import backIcon from './back-icon.svg?raw';
+  import restartIcon from './restart-icon.svg?raw';
+  import videoIcon from './video-icon.svg?raw';
 
   const meta = getContext('meta');
 

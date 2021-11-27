@@ -1,34 +1,38 @@
 <script context="module">
   const shiftPlayedToEnd = played => song => played.has(song.id) ? 1 : -1;
 
-  export async function preload(page, session)
+  export async function load({ session, fetch })
   {
-    const res = await this.fetch(`index.json`);
+    const res = await fetch(`index.json`);
     const data = await res.json();
 
     if (res.status === 200)
     {
-      return { songs: data.sort(shiftPlayedToEnd(session.played)) };
+      return {
+        props: { songs: data.sort(shiftPlayedToEnd(session.played)) },
+      };
     }
 
-    this.error(res.status, data.message);
+    return {
+      status: res.status,
+      error: new Error(data.message),
+    }
   }
 </script>
 
 <script>
-  import { get as getStore } from 'svelte/store';
-  import { stores } from '@sapper/app';
+  import { page } from '$app/stores';
   import { _ } from 'svelte-i18n';
 
-  import Logo from '../components/Logo.svelte';
-  import BrowseSongs from '../components/browse/BrowseSongs.svelte';
-  import SearchBar from '../components/browse/SearchBar.svelte';
+  import Logo from '$lib/components/Logo.svelte';
+  import BrowseSongs from '$lib/components/browse/BrowseSongs.svelte';
+  import SearchBar from '$lib/components/browse/SearchBar.svelte';
 
   export let songs;
 
-  const { query } = getStore(stores().page);
+  const { query } = $page;
 
-  let search = query.q || '';
+  let search = query.get('q') || '';
 
   let pause = false;
   let scrollTimeout;
