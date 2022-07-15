@@ -16,7 +16,7 @@
     "postcss-hexrgba": "^2.0.0",
     "postcss-nested": "^4.2.1",
     "raf-pool": "^0.1.4",
-    "svelte": "^3.44.2",
+    "svelte": "^3.49.0",
     "svelte-i18n": "^3.0.3",
     "svelte-preprocess-postcss": "^1.1.1"
   },
