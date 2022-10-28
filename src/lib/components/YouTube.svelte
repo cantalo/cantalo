@@ -111,6 +111,7 @@
 
     player = new YT.Player(playerElement,
     {
+      host: 'https://www.youtube-nocookie.com',
       height: height || size + '%',
       width: width || size + '%',
       playerVars:
