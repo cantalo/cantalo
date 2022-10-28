@@ -5,7 +5,8 @@
 </script>
 
 <script>
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext, onDestroy } from 'svelte';
+  import { get as getStore } from 'svelte/store';
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
@@ -40,6 +41,11 @@
     setTimeout(() => showHighScore = true, 1000);
   });
 
+  onDestroy(() =>
+  {
+    getStore(players).forEach(player => player.sung.reset());
+  });
+
   async function save(playerIndex, playerColor, data)
   {
     if (highScoreIdByPlayer.has(playerIndex))
@@ -57,7 +63,7 @@
   function goToSuggestion()
   {
     resetVideo();
-    goto(`/sing/${suggestion.id}`, { replaceState: true });
+    goto(`/sing/${suggestion.id}/`, { replaceState: true });
   }
 </script>
 
@@ -65,7 +71,7 @@
   <title>{$_('score.title', { values: { song: meta.title, artist: meta.artist, title: $_('app.title') }})}</title>
 </svelte:head>
 
-<style>
+<style type="text/scss">
   main
   {
     display: flex;

@@ -27,6 +27,7 @@
     await players.initialized;
     await Promise.all(getStore(players).map(player => player.mic.init()));
     loadVideo(meta.id, meta.videogap, meta.videoend, true);
+    getStore(players).forEach(player => player.sung.reset());
   });
 
   onDestroy(() =>

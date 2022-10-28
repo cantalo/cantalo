@@ -2,7 +2,7 @@
   export async function load({ page, session, fetch })
   {
     const { params } = page;
-    const res = await fetch(`${params.vid}.json`);
+    const res = await fetch(`/sing/${params.vid}.json`);
     const data = await res.json();
 
     if (res.status === 200)
@@ -19,33 +19,22 @@
 </script>
 
 <script>
-  import { onDestroy, setContext } from 'svelte';
-  import { get as getStore } from 'svelte/store';
+  import { setContext } from 'svelte';
   import { song as songStore } from '$lib/stores/song';
-  import { players } from '$lib/stores/players'
 
-  import YouTube, { resetVideo } from "$lib/components/YouTube.svelte";
+  import YouTube from "$lib/components/YouTube.svelte";
 
   export let meta;
   export let lines;
   export let suggestion;
 
-  function reset()
-  {
-    songStore.reset();
-    resetVideo();
-    getStore(players).forEach(player => player.sung.reset())
-  }
-
   $:
   {
-    reset();
     setContext('meta', meta);
     setContext('suggestion', suggestion);
+    songStore.reset();
     songStore.set(meta, lines);
   }
-
-  onDestroy(reset);
 </script>
 
 <svelte:head>
