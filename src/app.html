@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-	<link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600" rel="stylesheet">
-	<link href="/assets/icons/favicon.svg" rel="shortcut icon" type="image/svg+xml">
-	<link href="/global.css" rel="stylesheet">
-	<link href="/manifest.json" rel="manifest">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,400i,600" rel="stylesheet">
+  <link href="%sveltekit.assets%/assets/icons/favicon.svg" rel="icon" type="text/xml+svg"/>
+  <link href="/global.css" rel="stylesheet">
+  <link href="/manifest.json" rel="manifest">
 
-	%svelte.head%
+  %sveltekit.head%
 </head>
-<body>
-	%svelte.body%
+<body data-sveltekit-preload-data="hover">
+<div style="display: contents">%sveltekit.body%</div>
 </body>
 </html>

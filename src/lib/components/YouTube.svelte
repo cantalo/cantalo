@@ -88,7 +88,7 @@
 
   import { onDestroy, onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { browser } from '$app/env';
+  import { browser } from '$app/environment';
   import AnimationFrames from '../services/AnimationFrames';
 
   export let width;

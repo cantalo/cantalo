@@ -10,7 +10,7 @@
   import { fly } from 'svelte/transition';
   import { _ } from 'svelte-i18n';
   import { goto } from '$app/navigation';
-  import { browser } from '$app/env';
+  import { browser } from '$app/environment';
 
   import { players } from '$lib/stores/players';
   import { getHighScoreStore } from '$lib/stores/highscores';
@@ -21,8 +21,8 @@
   import PlayerColor from '$lib/components/PlayerColor.svelte';
   import { resetVideo } from '$lib/components/YouTube.svelte';
 
-  import backIcon from './back-icon.svg?raw';
-  import winIcon from './win-icon.svg?raw';
+  import backIcon from '../back-icon.svg?raw';
+  import winIcon from '../win-icon.svg?raw';
 
   const meta = getContext('meta');
   const suggestion = getContext('suggestion');

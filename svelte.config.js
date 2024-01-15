@@ -1,29 +1,19 @@
-import node from '@sveltejs/adapter-node';
-import sveltePreprocessPostcss from 'svelte-preprocess-postcss';
-import postcssNested from 'postcss-nested';
-import postcssHexrgba from 'postcss-hexrgba';
-import autoprefixer from 'autoprefixer';
-
-const stylePreprocessor = sveltePreprocessPostcss
-({
-  useConfigFile: false,
-  plugins:
-  [
-    postcssNested,
-    postcssHexrgba,
-    autoprefixer,
-  ],
-});
+import preprocess from "svelte-preprocess";
+import adapter from "@sveltejs/adapter-auto";
+import { vitePreprocess } from "@sveltejs/kit/vite";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   kit: {
-    adapter: node(),
+    adapter: adapter()
   },
 
-  preprocess: {
-    style: stylePreprocessor
-  },
+  preprocess: [
+    vitePreprocess(),
+    preprocess({
+      postcss: true,
+    }),
+  ],
 };
 
 export default config;

@@ -1,25 +1,3 @@
-<script context="module">
-  const shiftPlayedToEnd = played => song => played.has(song.id) ? 1 : -1;
-
-  export async function load({ session, fetch })
-  {
-    const res = await fetch(`index.json`);
-    const data = await res.json();
-
-    if (res.status === 200)
-    {
-      return {
-        props: { songs: data.sort(shiftPlayedToEnd(session.played)) },
-      };
-    }
-
-    return {
-      status: res.status,
-      error: new Error(data.message),
-    }
-  }
-</script>
-
 <script>
   import { page } from '$app/stores';
   import { _ } from 'svelte-i18n';
@@ -28,11 +6,11 @@
   import BrowseSongs from '$lib/components/browse/BrowseSongs.svelte';
   import SearchBar from '$lib/components/browse/SearchBar.svelte';
 
-  export let songs;
+  export let data;
 
-  const { query } = $page;
+  const { url } = $page;
 
-  let search = query.get('q') || '';
+  let search = url.searchParams.get('q') || '';
 
   let pause = false;
   let scrollTimeout;
@@ -87,7 +65,7 @@
     <Logo />
   </header>
 
-  <BrowseSongs {songs} {search} on:scroll={scrolling} />
+  <BrowseSongs songs={data.songs} {search} on:scroll={scrolling} />
 
   <SearchBar bind:value={search} />
 </div>

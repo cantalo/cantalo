@@ -1,19 +1,19 @@
-import { register } from 'svelte-i18n';
+import { browser } from '$app/environment';
+import { init, register } from 'svelte-i18n';
 
-const appName = '¡\u202FCantalo\u202F!'
+const defaultLocale = 'en';
+
+const appName = '¡\u202FCantalo\u202F!';
 
 register('en', () => Promise.resolve({
-  app:
-  {
+  app: {
     name: appName,
     title: `${appName} (beta)`,
     description: 'Sing your favorite songs online on Cantalo!',
   },
-  welcome:
-  {
+  welcome: {
     title: 'Welcome to Cantalo!',
-    setup:
-    {
+    setup: {
       title: 'Setup microphones',
       permissions: 'Microphone permissions',
       permissions_desc: 'To play Cantalo we need the permission to access your microphone.',
@@ -32,11 +32,9 @@ register('en', () => Promise.resolve({
     },
     continue: 'Continue',
   },
-  sing:
-  {
+  sing: {
     title: 'Sing {song} from {artist} at {title}',
-    pause:
-    {
+    pause: {
       headline: 'Paused',
       continue: 'Continue playing',
       restart: 'Start from beginning',
@@ -44,36 +42,30 @@ register('en', () => Promise.resolve({
       open_youtube: 'Open video on YouTube',
     },
   },
-  score:
-  {
+  score: {
     title: 'Song score for {song} from {artist} at {title}',
     headline: 'Song score',
     back: 'Song overview',
-    table:
-    {
+    table: {
       notes: 'notes',
       lineBonus: 'line bonus',
       goldenNotes: 'golden notes',
       total: 'total',
     },
-    highscores:
-    {
+    highscores: {
       headline: 'High scores',
       empty: 'No high score stored yet',
-    }
+    },
   },
 }));
 
 register('de', () => Promise.resolve({
-  app:
-  {
+  app: {
     description: 'Singe auf Cantalo online deine lieblings Songs!',
   },
-  welcome:
-  {
+  welcome: {
     title: 'Willkommen bei Cantalo!',
-    setup:
-    {
+    setup: {
       title: 'Mikrofone einrichten',
       permissions: 'Zugriff auf das Mikrofon',
       permissions_desc: 'Damit du Cantalo spielen kannst benötigen wir die Berechtigung auf dein Mikrofon zuzugreifen.',
@@ -92,11 +84,9 @@ register('de', () => Promise.resolve({
     },
     continue: 'Weiter',
   },
-  sing:
-  {
+  sing: {
     title: 'Singe {song} von {artist} auf {title}',
-    pause:
-    {
+    pause: {
       headline: 'Pausiert',
       continue: 'Weiter spielen',
       restart: 'Von vorne anfangen',
@@ -104,22 +94,24 @@ register('de', () => Promise.resolve({
       open_youtube: 'Video auf YouTube öffnen',
     },
   },
-  score:
-  {
+  score: {
     title: 'Punkte für {song} von {artist} auf {title}',
     headline: 'Punkte',
     back: 'Zur Übersicht',
-    table:
-    {
+    table: {
       notes: 'Noten',
       lineBonus: 'Zeilenbonus',
       goldenNotes: 'Goldene Noten',
       total: 'Gesamt',
     },
-    highscores:
-    {
+    highscores: {
       headline: 'Bestenliste',
       empty: 'Bisher noch kein Eintrag',
-    }
+    },
   },
 }));
+
+init({
+  fallbackLocale: defaultLocale,
+  initialLocale: browser ? window.navigator.language : defaultLocale,
+});

@@ -1,6 +1,6 @@
 import { openDB } from 'idb';
 import { writable, get as getStore } from 'svelte/store';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
 const dbStoreName = 'highscores';
 const storeMap = new Map();

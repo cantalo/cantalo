@@ -1,5 +1,5 @@
 <script>
-  import { browser } from '$app/env';
+  import { browser } from '$app/environment';
   import Icon from '../Icon.svelte';
 
   import searchIcon from './search-icon.svg?raw';

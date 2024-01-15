@@ -1,28 +1,36 @@
 {
   "name": "cantalo",
-  "version": "1.2.1",
-  "type": "module",
+  "version": "2.0.0",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+  },
   "dependencies": {
     "accept-language": "^3.0.18",
-    "cookie": "^0.4.1",
     "lowdb": "^1.0.0"
   },
   "devDependencies": {
     "@sentry/browser": "^6.2.0",
-    "@sveltejs/adapter-node": "next",
-    "@sveltejs/kit": "next",
+    "@sveltejs/adapter-auto": "^2.1.0",
+    "@sveltejs/kit": "^1.20.5",
     "autoprefixer": "^9.8.0",
     "idb": "^5.0.4",
+    "postcss": "^8.4.31",
     "postcss-hexrgba": "^2.0.0",
+    "postcss-load-config": "^4.0.1",
     "postcss-nested": "^4.2.1",
     "raf-pool": "^0.1.4",
-    "svelte": "^3.52.0",
-    "svelte-i18n": "^3.4.0",
-    "svelte-preprocess-postcss": "^1.1.1"
+    "svelte": "^4.2.4",
+    "svelte-check": "^3.4.4",
+    "svelte-i18n": "^4.0.0",
+    "svelte-preprocess": "^5.0.4",
+    "tslib": "^2.5.3",
+    "typescript": "^5.1.3",
+    "vite": "^4.3.9",
+    "vitest": "^1.2.0"
   },
-  "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
-    "start": "node build"
-  }
+  "type": "module"
 }

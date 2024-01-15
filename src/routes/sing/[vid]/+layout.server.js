@@ -1,7 +1,6 @@
 import DB from '../../_db';
 
-export async function get({ params, locals })
-{
+export const load = async ({ params, locals, cookies }) => {
   const { vid } = params;
   const db = await DB();
 
@@ -10,6 +9,9 @@ export async function get({ params, locals })
     .value();
 
   locals.played.add(vid);
+  cookies.set('played', Array.from(locals.played).join(), {
+    path: '/',
+  });
 
   const suggestions = db.get('songs').filter(it => !locals.played.has(it.id));
 
@@ -18,24 +20,16 @@ export async function get({ params, locals })
     .shuffle()
     .value();
 
-  if (!suggestion)
-  {
+  if (!suggestion) {
     [suggestion] = suggestions
       .filter(it => it.meta.language === data.meta.language)
       .shuffle()
-      .value()
+      .value();
   }
 
-  if (suggestion)
-  {
+  if (suggestion) {
     data.suggestion = suggestion.meta;
   }
 
-  return {
-    headers:
-    {
-      'Set-Cookie': `played=${Array.from(locals.played).join()}; Path=/; Max-Age=${6 * 60 * 60}`,
-    },
-    body: data,
-  };
-}
+  return data;
+};
