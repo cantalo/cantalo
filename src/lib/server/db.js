@@ -1,29 +1,19 @@
-import lowDB from 'lowdb';
-import FileAsync from 'lowdb/adapters/FileAsync.js';
+import { Client, fql } from 'fauna';
 
-const adapter = new FileAsync(process.env['DB_PATH'], {
-  serialize: obj => JSON.stringify(obj),
-});
-
-export default async function DB()
-{
-  const db = await lowDB(adapter);
-  return db.defaults({ songs: [] })
-}
+const client = new Client();
 
 export async function getSongs() {
-  const db = await DB();
+  // TODO implement pagination (infinite scroll? refactor song browser?)
+  const document_query = fql `songs.all().map(.meta).paginate(16000)`;
+  const document_result = await client.query(document_query);
 
-  return db.get('songs')
-    .map(it => it.meta)
-    .shuffle()
-    .value();
+  return document_result.data.data;
 }
 
 export async function getSong(id) {
-  const db = await DB();
+  const document_query = fql `songs.byVid(${id}).first()`;
+  const document_result = await client.query(document_query);
+  const { meta, lines } = document_result.data;
 
-  return db.get('songs')
-    .find({ id })
-    .value();
+  return { meta, lines };
 }

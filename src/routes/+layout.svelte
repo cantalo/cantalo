@@ -7,8 +7,6 @@
   import { time } from '$lib/components/YouTube.svelte';
   import { currentLine, currentSyllable } from '$lib/stores/song';
 
-  export let data;
-
   onMount(() =>
   {
     Sentry.init({

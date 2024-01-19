@@ -6,6 +6,8 @@ export const load = async ({ locals }) => {
   const songs = await getSongs();
 
   return {
-    songs: songs.sort(shiftPlayedToEnd(locals.played)),
+    songs: songs
+      .sort(() => .5 - Math.random())
+      .sort(shiftPlayedToEnd(locals.played)),
   }
 };
