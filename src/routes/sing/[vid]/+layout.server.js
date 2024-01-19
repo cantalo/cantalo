@@ -1,12 +1,8 @@
-import DB from '../../_db';
+import { getSong } from '$lib/server/db.js';
 
 export const load = async ({ params, locals, cookies }) => {
   const { vid } = params;
-  const db = await DB();
-
-  const data = db.get('songs')
-    .find({ id: vid })
-    .value();
+  const data = await getSong(vid);
 
   locals.played.add(vid);
   cookies.set('played', Array.from(locals.played).join(), {
