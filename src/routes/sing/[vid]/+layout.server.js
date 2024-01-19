@@ -1,34 +1,29 @@
-import DB from '../../_db';
+import { getSongs, getSong } from '$lib/server/db.js';
 
 export const load = async ({ params, locals, cookies }) => {
   const { vid } = params;
-  const db = await DB();
-
-  const data = db.get('songs')
-    .find({ id: vid })
-    .value();
+  const data = await getSong(vid);
+  const songs = await getSongs();
 
   locals.played.add(vid);
   cookies.set('played', Array.from(locals.played).join(), {
     path: '/',
   });
 
-  const suggestions = db.get('songs').filter(it => !locals.played.has(it.id));
+  const suggestions = songs.filter(it => !locals.played.has(it.id));
 
-  let [suggestion] = suggestions
-    .filter(it => it.meta.genre === data.meta.genre && it.meta.language === data.meta.language)
-    .shuffle()
-    .value();
+  let suggestionsByLanguage, suggestionsByGenre = suggestions
+    .filter(it => it.genre === data.genre && it.language === data.language);
 
-  if (!suggestion) {
-    [suggestion] = suggestions
-      .filter(it => it.meta.language === data.meta.language)
-      .shuffle()
-      .value();
+  if (!suggestionsByGenre) {
+    suggestionsByLanguage = suggestions
+      .filter(it => it.language === data.language);
   }
 
-  if (suggestion) {
-    data.suggestion = suggestion.meta;
+  if (suggestionsByGenre) {
+    data.suggestion = suggestionsByGenre[Math.floor(Math.random() * suggestionsByGenre.length)];
+  } else if (suggestionsByLanguage) {
+    data.suggestion = suggestionsByLanguage[Math.floor(Math.random() * suggestionsByLanguage.length)];
   }
 
   return data;

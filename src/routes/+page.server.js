@@ -1,15 +1,11 @@
-import DB from './_db';
+import { getSongs } from '$lib/server/db.js';
 
 const shiftPlayedToEnd = played => song => played.has(song.id) ? 1 : -1;
 
 export const load = async ({ locals }) => {
-  const db = await DB();
+  const songs = await getSongs();
 
   return {
-    songs: db.get('songs')
-      .map(it => it.meta)
-      .shuffle()
-      .value()
-      .sort(shiftPlayedToEnd(locals.played)),
+    songs: songs.sort(shiftPlayedToEnd(locals.played)),
   }
 };
