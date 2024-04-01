@@ -1,0 +1,25 @@
+name: Sync Repositories
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Push to destination repository
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "<>"
+          git config --unset-all http.https://github.com/.extraheader
+          git remote add ${{ secrets.ORG_NAME }} https://${{ secrets.ORG_NAME }}:${{ secrets.PAT }}@github.com/${{ secrets.ORG_NAME }}/${{ env.REPO_NAME }}.git
+          git push ${{ secrets.ORG_NAME }} main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          REPO_NAME: ${{ github.event.repository.name }}
